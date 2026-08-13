@@ -1,6 +1,0 @@
-rank,slack_ns,input_net,output_net,input_transition,output_transition,gate_count,gates,input_pins,transitions
-1,-0.006003000000000008,A,O2,rise,rise,2,G1 -> G3,0 -> 0,rise -> fall -> rise
-2,-0.006003000000000008,B,O2,rise,rise,2,G1 -> G3,1 -> 0,rise -> fall -> rise
-3,0.003996499999999986,A,O3,fall,rise,2,G1 -> G4,0 -> 0,fall -> rise -> rise
-4,0.003996499999999986,B,O3,fall,rise,2,G1 -> G4,1 -> 0,fall -> rise -> rise
-5,0.007996999999999976,A,O1,rise,rise,2,G1 -> G2,0 -> 0,rise -> fall -> rise

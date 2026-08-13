@@ -1,5 +1,0 @@
-iteration,phase,accepted,changed_gate,previous_cell,new_cell,rejection_reason,before_cost,after_cost,cost_improvement,before_wns_ns,after_wns_ns,wns_delta_ns,before_tns_ns,after_tns_ns,tns_delta_ns,before_delay_ns,after_delay_ns,delay_delta_ns,before_area,after_area,area_delta,before_power_uW,after_power_uW,power_delta_uW,termination,elapsed_seconds
-0,initial,,,,,,1.4,1.4,0.0,0.008999999999999994,0.008999999999999994,0.0,0,0,0,0.101,0.101,0.0,3.6,3.6,0.0,0.2555,0.2555,0.0,,
-1,rejected,False,G3,INV_X1,INV_X2,timing is met and the best cost improvement 0 is below 1e-06,1.4,1.4,0.0,0.008999999999999994,0.008999999999999994,0.0,0,0,0,0.101,0.101,0.0,3.6,3.6,0.0,0.2555,0.2555,0.0,,
-2,rejected,False,G2,BUF_X1,BUF_X2,timing is met and the best cost improvement 0 is below 1e-06,1.4,1.4,0.0,0.008999999999999994,0.008999999999999994,0.0,0,0,0,0.101,0.101,0.0,3.6,3.6,0.0,0.2555,0.2555,0.0,,
-3,rejected,False,,,,all one-step critical-path upsizes were exhausted,1.4,1.4,0.0,0.008999999999999994,0.008999999999999994,0.0,0,0,0,0.101,0.101,0.0,3.6,3.6,0.0,0.2555,0.2555,0.0,no_feasible_change,0.0012811000342480838

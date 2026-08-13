@@ -6,3 +6,5 @@ __pycache__/
 .coverage
 htmlcov/
 
+# Generated circuit analyses, reports, plots, and visualizer data.
+/outputs/

@@ -1,9 +1,0 @@
-{
-  "configuration": {
-    "enabled": false,
-    "random_seed": 1405,
-    "samples": 3000
-  },
-  "reason": "disabled_by_configuration",
-  "status": "skipped"
-}

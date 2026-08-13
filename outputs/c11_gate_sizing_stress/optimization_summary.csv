@@ -1,3 +1,0 @@
-method,role,heuristic,random_seed,maximum_iterations,total_iterations,accepted_iterations,sta_calls,elapsed_seconds,termination,timing_met,wns_ns,tns_ns,circuit_delay_ns,area,power_uW,cost
-slack_weighted_capacitance,logical_effort_guided,slack_weighted_capacitance,,100,2,1,6,0.008364570967387408,timing_met_no_cost_improvement,True,0.03250000000000003,0,0.2975,11.8,0.9130000000000001,1.2828225071926613
-random_greedy,greedy_baseline,random_greedy,0,100,6,1,5,0.005801539984531701,no_feasible_change,True,0.03250000000000003,0,0.2975,11.8,0.9130000000000001,1.2828225071926613
