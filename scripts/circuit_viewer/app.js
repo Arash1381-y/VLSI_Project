@@ -5,8 +5,14 @@ const context = canvas.getContext("2d");
 const state = {
   topology: null,
   nodes: [],
+  analysisNodes: [],
+  schematicNodes: [],
   nodeById: new Map(),
   nets: [],
+  schematicRoutes: new Map(),
+  gateSymbols: new Map(),
+  viewMode: "analysis",
+  schematicReady: false,
   scale: 1,
   targetScale: 1,
   x: 0,
@@ -22,6 +28,17 @@ const state = {
   showNetLabels: false,
   visibleStates: { original: true, optimized: true },
   criticalNets: { original: new Map(), optimized: new Map() },
+};
+
+const gateFamilies = [
+  "AND2", "AND3", "BUF", "INV", "NAND2", "NAND3",
+  "NOR2", "NOR3", "OR2", "OR3", "XNOR2", "XOR2",
+];
+
+const inputPinFractions = {
+  1: [0.5],
+  2: [0.32, 0.68],
+  3: [0.24, 0.5, 0.76],
 };
 
 const colors = {
@@ -47,6 +64,7 @@ async function initialize() {
     validateTopology(topology);
     loadTopology(topology);
     document.querySelector("#loading-state").hidden = true;
+    prepareSchematicView(topology);
   } catch (error) {
     showLoadError(error instanceof Error ? error.message : String(error));
   }
@@ -64,7 +82,8 @@ function validateTopology(topology) {
 
 function loadTopology(topology) {
   state.topology = topology;
-  state.nodes = layoutNodes(topology.nodes);
+  state.analysisNodes = layoutNodes(topology.nodes);
+  state.nodes = state.analysisNodes;
   state.nodeById = new Map(state.nodes.map((node) => [node.id, node]));
   state.nets = topology.nets.filter(
     (net) => state.nodeById.has(net.source) && net.targets.some((target) => state.nodeById.has(target.node)),
@@ -80,6 +99,43 @@ function loadTopology(topology) {
   document.querySelector("#output-count").textContent = topology.counts.primary_outputs;
   fitView();
   requestFrame();
+}
+
+async function prepareSchematicView(topology) {
+  const status = document.querySelector("#layout-status");
+  status.hidden = false;
+  status.textContent = "Preparing pin-aware schematic layout…";
+  try {
+    const [layout] = await Promise.all([
+      buildSchematicLayout(topology),
+      preloadGateSymbols(),
+    ]);
+    state.schematicNodes = layout.nodes;
+    state.schematicRoutes = layout.routes;
+    state.schematicReady = true;
+    const button = document.querySelector('[data-view="schematic"]');
+    button.disabled = false;
+    status.hidden = true;
+    const requestedView = new URLSearchParams(window.location.search).get("view");
+    if (requestedView === "schematic" || state.viewMode === "schematic") {
+      activateView("schematic");
+    }
+  } catch (error) {
+    status.textContent = `Schematic layout unavailable: ${error instanceof Error ? error.message : String(error)}`;
+    status.style.color = colors.signal;
+  }
+}
+
+async function preloadGateSymbols() {
+  await Promise.all(gateFamilies.map((family) => new Promise((resolve, reject) => {
+    const image = new Image();
+    image.addEventListener("load", () => {
+      state.gateSymbols.set(family, image);
+      resolve();
+    }, { once: true });
+    image.addEventListener("error", () => reject(new Error(`cannot load ${family} gate symbol`)), { once: true });
+    image.src = `/gate-symbols/${family}.svg`;
+  })));
 }
 
 function layoutNodes(rawNodes) {
@@ -108,6 +164,138 @@ function layoutNodes(rawNodes) {
     });
   });
   return laidOut;
+}
+
+async function buildSchematicLayout(topology) {
+  if (typeof globalThis.ELK !== "function") {
+    throw new Error("ELK layout engine did not load");
+  }
+  const rawById = new Map(topology.nodes.map((node) => [node.id, node]));
+  const inputCounts = schematicInputCounts(topology);
+  const children = topology.nodes.map((node) => schematicElkNode(node, inputCounts.get(node.id) ?? 0, topology));
+  const edgeNetNames = new Map();
+  const edges = topology.nets.flatMap((net, netIndex) => net.targets.map((target, targetIndex) => {
+    const id = `edge:${netIndex}:${targetIndex}`;
+    edgeNetNames.set(id, net.name);
+    return {
+      id,
+      sources: [`${net.source}:out`],
+      targets: [target.pin === null ? `${target.node}:in` : `${target.node}:in:${target.pin}`],
+    };
+  }));
+  const graph = {
+    id: "circuit-schematic",
+    layoutOptions: {
+      "org.eclipse.elk.algorithm": "layered",
+      "org.eclipse.elk.direction": "RIGHT",
+      "org.eclipse.elk.edgeRouting": "ORTHOGONAL",
+      "org.eclipse.elk.spacing.nodeNode": "52",
+      "org.eclipse.elk.layered.spacing.nodeNodeBetweenLayers": "105",
+      "org.eclipse.elk.layered.spacing.edgeNodeBetweenLayers": "36",
+      "org.eclipse.elk.layered.spacing.edgeEdgeBetweenLayers": "18",
+      "org.eclipse.elk.layered.layering.strategy": "LONGEST_PATH",
+      "org.eclipse.elk.layered.crossingMinimization.strategy": "LAYER_SWEEP",
+      "org.eclipse.elk.layered.nodePlacement.strategy": "NETWORK_SIMPLEX",
+      "org.eclipse.elk.layered.mergeEdges": "true",
+      "org.eclipse.elk.layered.unnecessaryBendpoints": "true",
+      "org.eclipse.elk.separateConnectedComponents": "false",
+      "org.eclipse.elk.aspectRatio": "1.8",
+    },
+    children,
+    edges,
+  };
+  const layout = await new globalThis.ELK().layout(graph);
+  const nodes = (layout.children ?? []).map((child) => {
+    const raw = rawById.get(child.id);
+    if (!raw) throw new Error(`layout returned unknown node ${child.id}`);
+    return {
+      ...raw,
+      x: Number(child.x) + Number(child.width) / 2,
+      y: Number(child.y) + Number(child.height) / 2,
+      width: Number(child.width),
+      height: Number(child.height),
+      schematic: true,
+    };
+  });
+  const routes = new Map();
+  (layout.edges ?? []).forEach((edge) => {
+    const netName = edgeNetNames.get(edge.id);
+    if (!netName) return;
+    const route = routes.get(netName) ?? { sections: [], junctionPoints: [] };
+    route.sections.push(...(edge.sections ?? []));
+    route.junctionPoints.push(...(edge.junctionPoints ?? []));
+    routes.set(netName, route);
+  });
+  return { nodes, routes };
+}
+
+function schematicInputCounts(topology) {
+  const counts = new Map();
+  topology.nets.forEach((net) => net.targets.forEach((target) => {
+    if (target.pin !== null) {
+      counts.set(target.node, Math.max(counts.get(target.node) ?? 0, Number(target.pin) + 1));
+    }
+  }));
+  return counts;
+}
+
+function schematicElkNode(node, inputCount, topology) {
+  if (node.kind === "input") {
+    return schematicBoundaryNode(node, "out");
+  }
+  if (node.kind === "output") {
+    return schematicBoundaryNode(node, "in");
+  }
+
+  const factor = schematicGateScale(node.name, topology);
+  const width = 92 * factor;
+  const height = 70 * factor;
+  const fractions = inputPinFractions[inputCount];
+  if (!fractions) throw new Error(`unsupported ${inputCount}-input gate ${node.name}`);
+  const ports = fractions.map((fraction, pin) => ({
+    id: `${node.id}:in:${pin}`,
+    width: 0,
+    height: 0,
+    x: 0,
+    y: height * fraction,
+  }));
+  ports.push({ id: `${node.id}:out`, width: 0, height: 0, x: width, y: height / 2 });
+  return {
+    id: node.id,
+    width,
+    height,
+    ports,
+    layoutOptions: { "org.eclipse.elk.portConstraints": "FIXED_POS" },
+  };
+}
+
+function schematicBoundaryNode(node, portDirection) {
+  const size = 32;
+  return {
+    id: node.id,
+    width: size,
+    height: size,
+    ports: [{
+      id: `${node.id}:${portDirection}`,
+      width: 0,
+      height: 0,
+      x: portDirection === "out" ? size : 0,
+      y: size / 2,
+    }],
+    layoutOptions: { "org.eclipse.elk.portConstraints": "FIXED_POS" },
+  };
+}
+
+function schematicGateScale(gateName, topology) {
+  const original = topology.states.original.gates[gateName]?.size;
+  const optimized = topology.states.optimized.gates[gateName]?.size;
+  return Math.max(gateSizeScale(original), gateSizeScale(optimized));
+}
+
+function gateSizeScale(size) {
+  if (size === "X4") return 1.28;
+  if (size === "X2") return 1.13;
+  return 1;
 }
 
 function graphBounds() {
@@ -228,6 +416,10 @@ function drawWorldGrid(width, height) {
 }
 
 function drawNet(net) {
+  if (state.viewMode === "schematic") {
+    drawSchematicNet(net);
+    return;
+  }
   const source = state.nodeById.get(net.source);
   if (!source) return;
   const selected = netIsSelected(net);
@@ -253,6 +445,119 @@ function drawNet(net) {
     }
   });
   context.globalAlpha = 1;
+}
+
+function drawSchematicNet(net) {
+  const route = state.schematicRoutes.get(net.name);
+  if (!route) return;
+  const selected = netIsSelected(net);
+  const faded = Boolean(state.selectedId) && !selected;
+  const sections = route.sections.map((section) => [
+    section.startPoint,
+    ...(section.bendPoints ?? []),
+    section.endPoint,
+  ]);
+
+  sections.forEach((points) => drawOrthogonalLine(
+    points,
+    selected ? colors.ink : colors.line,
+    selected ? 3 : 1.45,
+    faded ? 0.1 : selected ? 0.9 : 0.62,
+  ));
+
+  const originalRank = visibleCriticalRank("original", net.name);
+  const optimizedRank = visibleCriticalRank("optimized", net.name);
+  if (originalRank !== null) {
+    sections.forEach((points) => drawOrthogonalLine(
+      points,
+      colors.signal,
+      originalRank === 1 ? 4.8 : 3.2,
+      faded ? 0.15 : originalRank === 1 ? 0.92 : 0.66,
+      [9, 6],
+    ));
+  }
+  if (optimizedRank !== null) {
+    sections.forEach((points) => drawOrthogonalLine(
+      points,
+      colors.optimized,
+      optimizedRank === 1 ? 3.1 : 2.2,
+      faded ? 0.15 : optimizedRank === 1 ? 0.96 : 0.72,
+    ));
+  }
+
+  context.save();
+  context.fillStyle = selected ? colors.ink : colors.line;
+  context.globalAlpha = faded ? 0.1 : 0.85;
+  schematicJunctionPoints(route, sections).forEach((point) => {
+    context.beginPath();
+    context.arc(point.x, point.y, 3.1 / Math.sqrt(state.scale), 0, Math.PI * 2);
+    context.fill();
+  });
+  context.restore();
+
+  if ((state.showNetLabels || selected) && state.scale > 0.24) {
+    const labelPoint = schematicLabelPoint(sections);
+    if (labelPoint) drawNetLabel(net.name, labelPoint.x, labelPoint.y - 7, selected);
+  }
+}
+
+function schematicJunctionPoints(route, sections) {
+  const points = new Map();
+  const connect = (point, neighbor) => {
+    const key = `${point.x.toFixed(3)},${point.y.toFixed(3)}`;
+    const neighborKey = `${neighbor.x.toFixed(3)},${neighbor.y.toFixed(3)}`;
+    const record = points.get(key) ?? { point, neighbors: new Set() };
+    record.neighbors.add(neighborKey);
+    points.set(key, record);
+  };
+  sections.forEach((section) => {
+    for (let index = 1; index < section.length; index += 1) {
+      connect(section[index - 1], section[index]);
+      connect(section[index], section[index - 1]);
+    }
+  });
+  const derived = [...points.values()]
+    .filter((record) => record.neighbors.size >= 3)
+    .map((record) => record.point);
+  const combined = [...route.junctionPoints, ...derived];
+  const unique = new Map(combined.map((point) => [
+    `${point.x.toFixed(3)},${point.y.toFixed(3)}`,
+    point,
+  ]));
+  return [...unique.values()];
+}
+
+function drawOrthogonalLine(points, color, width, alpha, dash = []) {
+  if (points.length < 2) return;
+  context.save();
+  context.beginPath();
+  context.moveTo(points[0].x, points[0].y);
+  points.slice(1).forEach((point) => context.lineTo(point.x, point.y));
+  context.strokeStyle = color;
+  context.globalAlpha = alpha;
+  context.lineWidth = width / Math.sqrt(state.scale);
+  context.lineCap = "round";
+  context.lineJoin = "round";
+  context.setLineDash(dash.map((value) => value / Math.sqrt(state.scale)));
+  context.stroke();
+  context.restore();
+}
+
+function schematicLabelPoint(sections) {
+  let best = null;
+  let bestLength = -1;
+  sections.forEach((points) => {
+    for (let index = 1; index < points.length; index += 1) {
+      const start = points[index - 1];
+      const end = points[index];
+      const length = Math.abs(end.x - start.x) + Math.abs(end.y - start.y);
+      if (length > bestLength) {
+        bestLength = length;
+        best = { x: (start.x + end.x) / 2, y: (start.y + end.y) / 2 };
+      }
+    }
+  });
+  return best;
 }
 
 function drawNetCurve(start, end, color, width, alpha, offset) {
@@ -322,6 +627,11 @@ function drawNode(node) {
   if (node.kind === "gate" && showResizeDifference() && gateWasResized(node.name)) {
     drawResizeHighlight(node);
   }
+  if (node.kind === "gate" && state.viewMode === "schematic") {
+    drawSchematicGateNode(node, selected);
+    context.restore();
+    return;
+  }
   context.lineWidth = (selected ? 3.5 : 2) / Math.sqrt(state.scale);
   context.strokeStyle = selected ? colors.signal : nodeColor(node.kind);
   context.fillStyle = nodeFill(node.kind);
@@ -353,6 +663,72 @@ function drawNode(node) {
     context.fillText(node.gate_type, node.x, node.y + 11);
   }
   context.restore();
+}
+
+function drawSchematicGateNode(node, selected) {
+  const symbol = state.gateSymbols.get(node.gate_type);
+  if (selected) {
+    context.save();
+    roundedRect(
+      node.x - node.width / 2 - 8,
+      node.y - node.height / 2 - 8,
+      node.width + 16,
+      node.height + 16,
+      12,
+    );
+    context.strokeStyle = colors.signal;
+    context.lineWidth = 3 / Math.sqrt(state.scale);
+    context.setLineDash([7 / Math.sqrt(state.scale), 4 / Math.sqrt(state.scale)]);
+    context.stroke();
+    context.restore();
+  }
+
+  if (symbol) {
+    context.drawImage(
+      symbol,
+      node.x - node.width / 2,
+      node.y - node.height / 2,
+      node.width,
+      node.height,
+    );
+  } else {
+    context.save();
+    roundedRect(node.x - node.width / 2, node.y - node.height / 2, node.width, node.height, 8);
+    context.fillStyle = colors.paper;
+    context.strokeStyle = colors.ink;
+    context.lineWidth = 2 / Math.sqrt(state.scale);
+    context.fill();
+    context.stroke();
+    context.restore();
+  }
+
+  context.textAlign = "center";
+  context.textBaseline = "middle";
+  context.fillStyle = colors.ink;
+  context.font = "700 12px 'IBM Plex Mono', monospace";
+  drawTextPlate(node.name, node.x, node.y - node.height / 2 - 11);
+  context.fillStyle = colors.blueprint;
+  context.font = "700 9px 'IBM Plex Mono', monospace";
+  drawTextPlate(schematicGateCaption(node.name), node.x, node.y + node.height / 2 + 11);
+}
+
+function schematicGateCaption(gateName) {
+  const original = state.topology.states.original.gates[gateName];
+  const optimized = state.topology.states.optimized.gates[gateName];
+  if (state.visibleStates.original && !state.visibleStates.optimized) return original.cell;
+  if (!state.visibleStates.original && state.visibleStates.optimized) return optimized.cell;
+  if (original.cell === optimized.cell) return original.cell;
+  return `${original.cell} → ${optimized.cell}`;
+}
+
+function drawTextPlate(text, x, y) {
+  const previousFill = context.fillStyle;
+  const width = context.measureText(text).width + 8;
+  context.fillStyle = "rgba(255, 253, 247, 0.9)";
+  roundedRect(x - width / 2, y - 7, width, 14, 4);
+  context.fill();
+  context.fillStyle = previousFill;
+  context.fillText(text, x, y);
 }
 
 function drawResizeHighlight(node) {
@@ -509,6 +885,27 @@ function localPointer(event) {
   return { x: event.clientX - bounds.left, y: event.clientY - bounds.top };
 }
 
+function activateView(viewMode) {
+  if (viewMode === "schematic" && !state.schematicReady) return;
+  state.viewMode = viewMode;
+  state.nodes = viewMode === "schematic" ? state.schematicNodes : state.analysisNodes;
+  state.nodeById = new Map(state.nodes.map((node) => [node.id, node]));
+  state.fitted = false;
+  document.querySelectorAll("[data-view]").forEach((button) => {
+    const active = button.dataset.view === viewMode;
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-pressed", String(active));
+  });
+  const graph = document.querySelector("#graph");
+  graph.setAttribute(
+    "aria-label",
+    viewMode === "schematic"
+      ? "Interactive circuit schematic with orthogonal pin-aware wiring"
+      : "Interactive circuit topology",
+  );
+  fitView();
+}
+
 panel.addEventListener("wheel", (event) => {
   event.preventDefault();
   const point = localPointer(event);
@@ -555,6 +952,9 @@ panel.addEventListener("keydown", (event) => {
   else if (event.key === "-") zoomAt(1 / 1.2);
   else if (event.key === "0" || event.key.toLowerCase() === "f") fitView();
   else if (event.key === "Escape") selectNode(null);
+  else if (event.key.toLowerCase() === "v" && state.schematicReady) {
+    activateView(state.viewMode === "analysis" ? "schematic" : "analysis");
+  }
   else return;
   event.preventDefault();
 });
@@ -562,6 +962,9 @@ panel.addEventListener("keydown", (event) => {
 document.querySelector("#zoom-in").addEventListener("click", () => zoomAt(1.25));
 document.querySelector("#zoom-out").addEventListener("click", () => zoomAt(1 / 1.25));
 document.querySelector("#fit-view").addEventListener("click", fitView);
+document.querySelectorAll("[data-view]").forEach((button) => {
+  button.addEventListener("click", () => activateView(button.dataset.view));
+});
 document.querySelector("#show-net-labels").addEventListener("change", (event) => {
   state.showNetLabels = event.target.checked;
   requestFrame();

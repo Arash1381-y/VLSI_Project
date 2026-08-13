@@ -23,7 +23,16 @@ ASSETS = {
     "/index.html": ("index.html", "text/html; charset=utf-8"),
     "/styles.css": ("styles.css", "text/css; charset=utf-8"),
     "/app.js": ("app.js", "text/javascript; charset=utf-8"),
+    "/vendor/elk.bundled.js": (
+        "vendor/elk.bundled.js",
+        "text/javascript; charset=utf-8",
+    ),
 }
+for symbol_path in (ASSET_DIRECTORY / "gate_symbols").glob("*.svg"):
+    ASSETS[f"/gate-symbols/{symbol_path.name}"] = (
+        f"gate_symbols/{symbol_path.name}",
+        "image/svg+xml",
+    )
 
 
 class ViewerError(RuntimeError):

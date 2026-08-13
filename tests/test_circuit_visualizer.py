@@ -5,7 +5,7 @@ import threading
 from pathlib import Path
 from urllib.request import urlopen
 
-from scripts.circuit_visualizer import create_server, load_topology
+from scripts.circuit_visualizer import ASSETS, create_server, load_topology
 
 
 SAMPLE_TOPOLOGY = {
@@ -103,10 +103,38 @@ def test_viewer_serves_app_and_topology_api() -> None:
             f"{base_url}/api/topology", timeout=2
         ) as response:
             topology = json.load(response)
+        with urlopen(  # noqa: S310 - local test server
+            f"{base_url}/gate-symbols/NAND3.svg", timeout=2
+        ) as response:
+            symbol_type = response.headers.get_content_type()
+            symbol = response.read()
+        with urlopen(  # noqa: S310 - local test server
+            f"{base_url}/vendor/elk.bundled.js", timeout=2
+        ) as response:
+            elk_type = response.headers.get_content_type()
+            elk_bundle = response.read()
     finally:
         server.shutdown()
         server.server_close()
         thread.join(timeout=2)
 
     assert "Interactive circuit topology" in html
+    assert 'data-view="schematic"' in html
     assert topology == SAMPLE_TOPOLOGY
+    assert symbol_type == "image/svg+xml"
+    assert symbol.startswith(b"<svg")
+    assert elk_type == "text/javascript"
+    assert len(elk_bundle) > 1_000_000
+
+
+def test_every_supported_gate_family_has_a_schematic_symbol() -> None:
+    families = {
+        "AND2", "AND3", "BUF", "INV", "NAND2", "NAND3",
+        "NOR2", "NOR3", "OR2", "OR3", "XNOR2", "XOR2",
+    }
+
+    assert {
+        path.removeprefix("/gate-symbols/").removesuffix(".svg")
+        for path in ASSETS
+        if path.startswith("/gate-symbols/")
+    } == families

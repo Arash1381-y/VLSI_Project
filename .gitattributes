@@ -1,0 +1,6 @@
+# Avoid recursively embedding previously generated packages in git archives.
+/dist export-ignore
+/dist/** export-ignore
+
+# Generated third-party bundle; avoid noisy diffs and local whitespace rules.
+/scripts/circuit_viewer/vendor/elk.bundled.js -diff

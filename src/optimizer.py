@@ -425,8 +425,8 @@ class CircuitOptimizer:
         for gate, candidate_cells in choices:
             # Primary-input boundary policy: comment out this condition and its
             # `continue` to allow resizing gates connected directly to a PI.
-            if any(net.net_type is NetType.INPUT for net in gate.inputs):
-                continue
+            # if any(net.net_type is NetType.INPUT for net in gate.inputs):
+            #     continue
 
             alternatives = tuple(
                 cell

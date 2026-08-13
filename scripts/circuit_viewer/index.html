@@ -19,6 +19,11 @@
           </div>
         </div>
 
+        <div class="view-switch" role="group" aria-label="Circuit view">
+          <button class="active" data-view="analysis" type="button" aria-pressed="true">Analysis</button>
+          <button data-view="schematic" type="button" aria-pressed="false" disabled>Schematic</button>
+        </div>
+
         <fieldset class="state-filters" aria-label="Visible analysis states">
           <legend>Compare states</legend>
           <label class="original-filter">
@@ -62,6 +67,7 @@
             <span class="loader" aria-hidden="true"></span>
             Reading circuit topology
           </div>
+          <div class="layout-status" id="layout-status" role="status" hidden></div>
         </section>
 
         <aside class="inspector" aria-labelledby="inspector-title">
@@ -122,6 +128,7 @@
         </aside>
       </section>
     </main>
+    <script src="/vendor/elk.bundled.js"></script>
     <script type="module" src="/app.js"></script>
   </body>
 </html>
