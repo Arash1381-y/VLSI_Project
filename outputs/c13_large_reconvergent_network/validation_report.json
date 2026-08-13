@@ -1,0 +1,21 @@
+{
+  "circuit_name": "c13_large_reconvergent_network",
+  "counts": {
+    "gates": 74,
+    "nets": 86,
+    "primary_inputs": 12,
+    "primary_outputs": 6
+  },
+  "errors": [],
+  "inputs": {
+    "config": "/home/halfblood/common/uni/master/VLSI/project/impl/Input_Files/circuits/valid/c13_large_reconvergent_network/config.json",
+    "netlist": "/home/halfblood/common/uni/master/VLSI/project/impl/Input_Files/circuits/valid/c13_large_reconvergent_network/netlist.txt"
+  },
+  "stages": {
+    "cell_library": "passed",
+    "configuration": "passed",
+    "dag": "passed",
+    "netlist": "passed"
+  },
+  "valid": true
+}

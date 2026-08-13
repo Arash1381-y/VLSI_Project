@@ -1,0 +1,80 @@
+{
+  "canonical_method": "slack_weighted_capacitance",
+  "difference_definition": "greedy_baseline - logical_effort_guided",
+  "differences": {
+    "area": 0.0,
+    "circuit_delay_ns": 0.0,
+    "power_uW": 0.0,
+    "runtime_seconds": -0.00043603393714874983,
+    "sta_calls": 0,
+    "tns_ns": 0.0,
+    "wns_ns": 0.0
+  },
+  "greedy_baseline": {
+    "accepted_iterations": 0,
+    "final": {
+      "area": 15.6,
+      "circuit_delay_ns": 0.20900000000000002,
+      "compliance": {
+        "area_compliant": true,
+        "power_compliant": true,
+        "timing_compliant": false
+      },
+      "cost": 1.4956937799043062,
+      "dynamic_power_uW": 0.5189,
+      "leakage_power_uW": 0.78,
+      "power_uW": 1.2989000000000002,
+      "tns_ns": -0.007250000000000034,
+      "wns_ns": -0.0040000000000000036
+    },
+    "heuristic": "random_greedy",
+    "maximum_iterations": 100,
+    "method": "random_greedy",
+    "random_seed": 0,
+    "runtime_seconds": 0.0004098190111108124,
+    "sta_calls": 1,
+    "termination": "no_feasible_change",
+    "total_iterations": 1
+  },
+  "logical_effort_guided": {
+    "accepted_iterations": 0,
+    "final": {
+      "area": 15.6,
+      "circuit_delay_ns": 0.20900000000000002,
+      "compliance": {
+        "area_compliant": true,
+        "power_compliant": true,
+        "timing_compliant": false
+      },
+      "cost": 1.4956937799043062,
+      "dynamic_power_uW": 0.5189,
+      "leakage_power_uW": 0.78,
+      "power_uW": 1.2989000000000002,
+      "tns_ns": -0.007250000000000034,
+      "wns_ns": -0.0040000000000000036
+    },
+    "heuristic": "slack_weighted_capacitance",
+    "maximum_iterations": 100,
+    "method": "slack_weighted_capacitance",
+    "random_seed": null,
+    "runtime_seconds": 0.0008458529482595623,
+    "sta_calls": 1,
+    "termination": "no_feasible_change",
+    "total_iterations": 1
+  },
+  "pre_optimization": {
+    "area": 15.6,
+    "circuit_delay_ns": 0.20900000000000002,
+    "compliance": {
+      "area_compliant": true,
+      "power_compliant": true,
+      "timing_compliant": false
+    },
+    "cost": 1.4956937799043062,
+    "dynamic_power_uW": 0.5189,
+    "leakage_power_uW": 0.78,
+    "power_uW": 1.2989000000000002,
+    "tns_ns": -0.007250000000000034,
+    "wns_ns": -0.0040000000000000036
+  }
+}

@@ -1,0 +1,112 @@
+from __future__ import annotations
+
+import json
+import threading
+from pathlib import Path
+from urllib.request import urlopen
+
+from scripts.circuit_visualizer import create_server, load_topology
+
+
+SAMPLE_TOPOLOGY = {
+    "schema_version": 2,
+    "circuit_name": "sample",
+    "counts": {
+        "nodes": 3,
+        "gates": 1,
+        "nets": 2,
+        "primary_inputs": 1,
+        "primary_outputs": 1,
+    },
+    "nodes": [
+        {"id": "input:A", "kind": "input", "name": "A", "level": 0},
+        {
+            "id": "gate:G1",
+            "kind": "gate",
+            "name": "G1",
+            "gate_type": "INV",
+            "level": 1,
+        },
+        {"id": "output:Z", "kind": "output", "name": "Z", "level": 2},
+    ],
+    "nets": [
+        {
+            "id": "net:A",
+            "name": "A",
+            "source": "input:A",
+            "targets": [{"node": "gate:G1", "pin": 0}],
+        },
+        {
+            "id": "net:Z",
+            "name": "Z",
+            "source": "gate:G1",
+            "targets": [{"node": "output:Z", "pin": None}],
+        },
+    ],
+    "units": {"capacitance": "fF", "time": "ns"},
+    "states": {
+        "original": {
+            "gates": {
+                "G1": {
+                    "cell": "INV_X1",
+                    "size": "X1",
+                    "load_capacitance": 1.0,
+                    "delay_rise": 0.1,
+                    "delay_fall": 0.11,
+                }
+            },
+            "critical_paths": [
+                {
+                    "rank": 1,
+                    "slack": -0.1,
+                    "input": "A",
+                    "output": "Z",
+                    "gates": ["G1"],
+                    "nets": ["A", "Z"],
+                }
+            ],
+        },
+        "optimized": {
+            "gates": {
+                "G1": {
+                    "cell": "INV_X2",
+                    "size": "X2",
+                    "load_capacitance": 1.0,
+                    "delay_rise": 0.07,
+                    "delay_fall": 0.08,
+                }
+            },
+            "critical_paths": [],
+        },
+    },
+}
+
+
+def test_load_topology_from_circuit_output_directory(tmp_path: Path) -> None:
+    (tmp_path / "circuit_topology.json").write_text(
+        json.dumps(SAMPLE_TOPOLOGY),
+        encoding="utf-8",
+    )
+
+    assert load_topology(tmp_path) == SAMPLE_TOPOLOGY
+
+
+def test_viewer_serves_app_and_topology_api() -> None:
+    server = create_server("127.0.0.1", 0, SAMPLE_TOPOLOGY)
+    thread = threading.Thread(target=server.serve_forever)
+    thread.start()
+    try:
+        base_url = f"http://127.0.0.1:{server.server_port}"
+        with urlopen(base_url, timeout=2) as response:  # noqa: S310 - local test server
+            html = response.read().decode()
+        with urlopen(  # noqa: S310 - local test server
+            f"{base_url}/api/topology", timeout=2
+        ) as response:
+            topology = json.load(response)
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=2)
+
+    assert "Interactive circuit topology" in html
+    assert topology == SAMPLE_TOPOLOGY

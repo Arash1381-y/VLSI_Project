@@ -1,0 +1,88 @@
+2026-08-13 17:53:34,066 [INFO] __main__: Configuration validation passed: /home/halfblood/common/uni/master/VLSI/project/impl/Input_Files/circuits/valid/c07_parallel_paths/config.json
+2026-08-13 17:53:34,066 [INFO] __main__: Loading circuit c07_parallel_paths
+2026-08-13 17:53:34,067 [INFO] __main__: Cell-library validation passed: /home/halfblood/common/uni/master/VLSI/project/impl/Input_Files/cell_library.json
+2026-08-13 17:53:34,067 [INFO] __main__: Netlist parsing and driver validation passed: /home/halfblood/common/uni/master/VLSI/project/impl/Input_Files/circuits/valid/c07_parallel_paths/netlist.txt
+2026-08-13 17:53:34,067 [INFO] src.circuit: Preparing circuit c07_parallel_paths (6 gates, 11 nets)
+2026-08-13 17:53:34,067 [INFO] src.circuit: Building the gate topological order
+2026-08-13 17:53:34,067 [INFO] src.circuit: Computing gate fanout capacitances
+2026-08-13 17:53:34,067 [INFO] src.circuit: Computing gate rise/fall delays
+2026-08-13 17:53:34,068 [INFO] src.circuit: Computing circuit power
+2026-08-13 17:53:34,068 [INFO] __main__: DAG validation passed
+2026-08-13 17:53:34,068 [INFO] src.experiments: Running experiment: fanout_capacitances
+2026-08-13 17:53:34,068 [INFO] src.experiments: Running experiment: gate_delays
+2026-08-13 17:53:34,068 [INFO] src.experiments: Running experiment: timing_analysis
+2026-08-13 17:53:34,068 [INFO] src.sta: Running static timing analysis
+2026-08-13 17:53:34,068 [INFO] src.sta: Timing FAILED: WNS=-0.00784 ns, TNS=-0.00784 ns
+2026-08-13 17:53:34,069 [INFO] src.experiments: Running experiment: logical_effort_analysis
+2026-08-13 17:53:34,070 [INFO] src.experiments: Running experiment: optimization
+2026-08-13 17:53:34,070 [INFO] src.experiments: Running slack_weighted_capacitance optimization
+2026-08-13 17:53:34,070 [INFO] src.sta: Running static timing analysis
+2026-08-13 17:53:34,070 [INFO] src.sta: Timing FAILED: WNS=-0.00784 ns, TNS=-0.00784 ns
+2026-08-13 17:53:34,070 [INFO] src.optimizer: Starting circuit optimization with initial cost 1.54263
+2026-08-13 17:53:34,070 [INFO] src.optimizer: Optimization attempt 1/100
+2026-08-13 17:53:34,070 [INFO] src.circuit: Preparing circuit c07_parallel_paths (6 gates, 11 nets)
+2026-08-13 17:53:34,070 [INFO] src.circuit: Building the gate topological order
+2026-08-13 17:53:34,070 [INFO] src.circuit: Computing gate fanout capacitances
+2026-08-13 17:53:34,071 [INFO] src.circuit: Computing gate rise/fall delays
+2026-08-13 17:53:34,071 [INFO] src.circuit: Computing circuit power
+2026-08-13 17:53:34,071 [INFO] src.sta: Running static timing analysis
+2026-08-13 17:53:34,071 [INFO] src.sta: Timing PASSED: WNS=0.011157 ns, TNS=0 ns
+2026-08-13 17:53:34,071 [INFO] src.circuit: Preparing circuit c07_parallel_paths (6 gates, 11 nets)
+2026-08-13 17:53:34,071 [INFO] src.circuit: Building the gate topological order
+2026-08-13 17:53:34,071 [INFO] src.circuit: Computing gate fanout capacitances
+2026-08-13 17:53:34,071 [INFO] src.circuit: Computing gate rise/fall delays
+2026-08-13 17:53:34,071 [INFO] src.circuit: Computing circuit power
+2026-08-13 17:53:34,071 [INFO] src.circuit: Preparing circuit c07_parallel_paths (6 gates, 11 nets)
+2026-08-13 17:53:34,071 [INFO] src.circuit: Building the gate topological order
+2026-08-13 17:53:34,071 [INFO] src.circuit: Computing gate fanout capacitances
+2026-08-13 17:53:34,071 [INFO] src.circuit: Computing gate rise/fall delays
+2026-08-13 17:53:34,071 [INFO] src.circuit: Computing circuit power
+2026-08-13 17:53:34,071 [INFO] src.sta: Running static timing analysis
+2026-08-13 17:53:34,072 [INFO] src.sta: Timing FAILED: WNS=-0.0078385 ns, TNS=-0.0078385 ns
+2026-08-13 17:53:34,072 [INFO] src.optimizer: Accepted timing repair: WNS -0.00784 -> 0.011157 ns, TNS -0.00784 -> 0 ns
+2026-08-13 17:53:34,072 [INFO] src.optimizer: Optimization attempt 2/100
+2026-08-13 17:53:34,072 [INFO] src.circuit: Preparing circuit c07_parallel_paths (6 gates, 11 nets)
+2026-08-13 17:53:34,072 [INFO] src.circuit: Building the gate topological order
+2026-08-13 17:53:34,072 [INFO] src.circuit: Computing gate fanout capacitances
+2026-08-13 17:53:34,072 [INFO] src.circuit: Computing gate rise/fall delays
+2026-08-13 17:53:34,072 [INFO] src.circuit: Computing circuit power
+2026-08-13 17:53:34,072 [INFO] src.circuit: Preparing circuit c07_parallel_paths (6 gates, 11 nets)
+2026-08-13 17:53:34,072 [INFO] src.circuit: Building the gate topological order
+2026-08-13 17:53:34,072 [INFO] src.circuit: Computing gate fanout capacitances
+2026-08-13 17:53:34,073 [INFO] src.circuit: Computing gate rise/fall delays
+2026-08-13 17:53:34,073 [INFO] src.circuit: Computing circuit power
+2026-08-13 17:53:34,073 [INFO] src.optimizer: Optimization stopped: no selected sizing change is available within area and power constraints
+2026-08-13 17:53:34,073 [INFO] src.experiments: slack_weighted_capacitance optimization completed in 0.003055 s
+2026-08-13 17:53:34,073 [INFO] src.experiments: Running random_greedy optimization
+2026-08-13 17:53:34,073 [INFO] src.sta: Running static timing analysis
+2026-08-13 17:53:34,073 [INFO] src.sta: Timing FAILED: WNS=-0.00784 ns, TNS=-0.00784 ns
+2026-08-13 17:53:34,073 [INFO] src.optimizer: Starting circuit optimization with initial cost 1.54263
+2026-08-13 17:53:34,073 [INFO] src.optimizer: Optimization attempt 1/100
+2026-08-13 17:53:34,073 [INFO] src.circuit: Preparing circuit c07_parallel_paths (6 gates, 11 nets)
+2026-08-13 17:53:34,073 [INFO] src.circuit: Building the gate topological order
+2026-08-13 17:53:34,073 [INFO] src.circuit: Computing gate fanout capacitances
+2026-08-13 17:53:34,073 [INFO] src.circuit: Computing gate rise/fall delays
+2026-08-13 17:53:34,073 [INFO] src.circuit: Computing circuit power
+2026-08-13 17:53:34,073 [INFO] src.sta: Running static timing analysis
+2026-08-13 17:53:34,073 [INFO] src.sta: Timing PASSED: WNS=0.011157 ns, TNS=0 ns
+2026-08-13 17:53:34,074 [INFO] src.optimizer: Accepted timing repair: WNS -0.00784 -> 0.011157 ns, TNS -0.00784 -> 0 ns
+2026-08-13 17:53:34,074 [INFO] src.optimizer: Optimization attempt 2/100
+2026-08-13 17:53:34,074 [INFO] src.circuit: Preparing circuit c07_parallel_paths (6 gates, 11 nets)
+2026-08-13 17:53:34,074 [INFO] src.circuit: Building the gate topological order
+2026-08-13 17:53:34,074 [INFO] src.circuit: Computing gate fanout capacitances
+2026-08-13 17:53:34,074 [INFO] src.circuit: Computing gate rise/fall delays
+2026-08-13 17:53:34,074 [INFO] src.circuit: Computing circuit power
+2026-08-13 17:53:34,074 [INFO] src.optimizer: Optimization attempt 3/100
+2026-08-13 17:53:34,074 [INFO] src.circuit: Preparing circuit c07_parallel_paths (6 gates, 11 nets)
+2026-08-13 17:53:34,074 [INFO] src.circuit: Building the gate topological order
+2026-08-13 17:53:34,074 [INFO] src.circuit: Computing gate fanout capacitances
+2026-08-13 17:53:34,074 [INFO] src.circuit: Computing gate rise/fall delays
+2026-08-13 17:53:34,074 [INFO] src.circuit: Computing circuit power
+2026-08-13 17:53:34,074 [INFO] src.optimizer: Optimization attempt 4/100
+2026-08-13 17:53:34,074 [INFO] src.optimizer: Optimization stopped: all one-step critical-path upsizes were exhausted
+2026-08-13 17:53:34,075 [INFO] src.experiments: random_greedy optimization completed in 0.001764 s
+2026-08-13 17:53:34,075 [INFO] src.experiments: Running experiment: visualization
+2026-08-13 17:53:35,091 [INFO] src.experiments: Running experiment: monte_carlo
+2026-08-13 17:53:35,091 [INFO] src.experiments: Monte Carlo experiment is disabled by configuration
+2026-08-13 17:53:35,091 [INFO] src.experiments: Running experiment: summary
+2026-08-13 17:53:35,092 [INFO] src.experiments: Circuit experiments completed; results are in /home/halfblood/common/uni/master/VLSI/project/impl/outputs/c07_parallel_paths

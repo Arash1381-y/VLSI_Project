@@ -1,0 +1,71 @@
+{
+  "circuit_name": "c04_reconvergent_paths",
+  "cell_library": "../../../cell_library.json",
+  "input_arrival_times": {
+    "A": {
+      "rise": 0.0,
+      "fall": 0.0
+    },
+    "B": {
+      "rise": 0.0,
+      "fall": 0.0
+    },
+    "C": {
+      "rise": 0.0,
+      "fall": 0.0
+    },
+    "D": {
+      "rise": 0.0,
+      "fall": 0.0
+    }
+  },
+  "output_required_times": {
+    "OUT": {
+      "rise": 0.265,
+      "fall": 0.265
+    }
+  },
+  "output_loads": {
+    "OUT": 7.0
+  },
+  "timing_analysis": {
+    "top_k_paths": 5,
+    "separate_rise_fall": true
+  },
+  "operating_conditions": {
+    "supply_voltage": 1.0,
+    "frequency_hz": 100000000,
+    "temperature_c": 25.0,
+    "default_activity_factor": 0.1,
+    "node_activity_factors": {}
+  },
+  "design_constraints": {
+    "maximum_area": 20.0,
+    "maximum_power_uW": 1.4
+  },
+  "optimization": {
+    "enabled": true,
+    "allowed_sizes": [
+      "X1",
+      "X2",
+      "X4"
+    ],
+    "maximum_iterations": 100,
+    "minimum_cost_improvement": 1e-06,
+    "normalization_reference": "initial_design",
+    "weights": {
+      "delay": 1.0,
+      "power": 0.2,
+      "area": 0.2,
+      "timing_violation": 5.0
+    }
+  },
+  "monte_carlo": {
+    "enabled": false,
+    "samples": 3000,
+    "global_sigma": 0.03,
+    "local_sigma": 0.05,
+    "random_seed": 1405,
+    "negative_delay_policy": "resample"
+  }
+}

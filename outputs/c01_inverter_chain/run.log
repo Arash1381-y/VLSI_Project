@@ -1,0 +1,71 @@
+2026-08-13 17:53:24,317 [INFO] __main__: Configuration validation passed: /home/halfblood/common/uni/master/VLSI/project/impl/Input_Files/circuits/valid/c01_inverter_chain/config.json
+2026-08-13 17:53:24,318 [INFO] __main__: Loading circuit c01_inverter_chain
+2026-08-13 17:53:24,319 [INFO] __main__: Cell-library validation passed: /home/halfblood/common/uni/master/VLSI/project/impl/Input_Files/cell_library.json
+2026-08-13 17:53:24,319 [INFO] __main__: Netlist parsing and driver validation passed: /home/halfblood/common/uni/master/VLSI/project/impl/Input_Files/circuits/valid/c01_inverter_chain/netlist.txt
+2026-08-13 17:53:24,319 [INFO] src.circuit: Preparing circuit c01_inverter_chain (3 gates, 4 nets)
+2026-08-13 17:53:24,319 [INFO] src.circuit: Building the gate topological order
+2026-08-13 17:53:24,320 [INFO] src.circuit: Computing gate fanout capacitances
+2026-08-13 17:53:24,320 [INFO] src.circuit: Computing gate rise/fall delays
+2026-08-13 17:53:24,320 [INFO] src.circuit: Computing circuit power
+2026-08-13 17:53:24,320 [INFO] __main__: DAG validation passed
+2026-08-13 17:53:24,320 [INFO] src.experiments: Running experiment: fanout_capacitances
+2026-08-13 17:53:24,321 [INFO] src.experiments: Running experiment: gate_delays
+2026-08-13 17:53:24,321 [INFO] src.experiments: Running experiment: timing_analysis
+2026-08-13 17:53:24,321 [INFO] src.sta: Running static timing analysis
+2026-08-13 17:53:24,321 [INFO] src.sta: Timing PASSED: WNS=0.009 ns, TNS=0 ns
+2026-08-13 17:53:24,322 [INFO] src.experiments: Running experiment: logical_effort_analysis
+2026-08-13 17:53:24,322 [INFO] src.experiments: Running experiment: optimization
+2026-08-13 17:53:24,322 [INFO] src.experiments: Running slack_weighted_capacitance optimization
+2026-08-13 17:53:24,322 [INFO] src.sta: Running static timing analysis
+2026-08-13 17:53:24,322 [INFO] src.sta: Timing PASSED: WNS=0.009 ns, TNS=0 ns
+2026-08-13 17:53:24,322 [INFO] src.optimizer: Starting circuit optimization with initial cost 1.4
+2026-08-13 17:53:24,323 [INFO] src.optimizer: Optimization attempt 1/100
+2026-08-13 17:53:24,323 [INFO] src.circuit: Preparing circuit c01_inverter_chain (3 gates, 4 nets)
+2026-08-13 17:53:24,323 [INFO] src.circuit: Building the gate topological order
+2026-08-13 17:53:24,323 [INFO] src.circuit: Computing gate fanout capacitances
+2026-08-13 17:53:24,323 [INFO] src.circuit: Computing gate rise/fall delays
+2026-08-13 17:53:24,323 [INFO] src.circuit: Computing circuit power
+2026-08-13 17:53:24,323 [INFO] src.sta: Running static timing analysis
+2026-08-13 17:53:24,323 [INFO] src.sta: Timing PASSED: WNS=0.017 ns, TNS=0 ns
+2026-08-13 17:53:24,323 [INFO] src.circuit: Preparing circuit c01_inverter_chain (3 gates, 4 nets)
+2026-08-13 17:53:24,323 [INFO] src.circuit: Building the gate topological order
+2026-08-13 17:53:24,323 [INFO] src.circuit: Computing gate fanout capacitances
+2026-08-13 17:53:24,323 [INFO] src.circuit: Computing gate rise/fall delays
+2026-08-13 17:53:24,323 [INFO] src.circuit: Computing circuit power
+2026-08-13 17:53:24,324 [INFO] src.circuit: Preparing circuit c01_inverter_chain (3 gates, 4 nets)
+2026-08-13 17:53:24,324 [INFO] src.circuit: Building the gate topological order
+2026-08-13 17:53:24,324 [INFO] src.circuit: Computing gate fanout capacitances
+2026-08-13 17:53:24,324 [INFO] src.circuit: Computing gate rise/fall delays
+2026-08-13 17:53:24,324 [INFO] src.circuit: Computing circuit power
+2026-08-13 17:53:24,324 [INFO] src.sta: Running static timing analysis
+2026-08-13 17:53:24,324 [INFO] src.sta: Timing PASSED: WNS=0.00525 ns, TNS=0 ns
+2026-08-13 17:53:24,324 [INFO] src.optimizer: Optimization stopped: timing is met and the best cost improvement 0 is below 1e-06
+2026-08-13 17:53:24,324 [INFO] src.experiments: slack_weighted_capacitance optimization completed in 0.001772 s
+2026-08-13 17:53:24,324 [INFO] src.experiments: Running random_greedy optimization
+2026-08-13 17:53:24,324 [INFO] src.sta: Running static timing analysis
+2026-08-13 17:53:24,324 [INFO] src.sta: Timing PASSED: WNS=0.009 ns, TNS=0 ns
+2026-08-13 17:53:24,324 [INFO] src.optimizer: Starting circuit optimization with initial cost 1.4
+2026-08-13 17:53:24,324 [INFO] src.optimizer: Optimization attempt 1/100
+2026-08-13 17:53:24,324 [INFO] src.circuit: Preparing circuit c01_inverter_chain (3 gates, 4 nets)
+2026-08-13 17:53:24,324 [INFO] src.circuit: Building the gate topological order
+2026-08-13 17:53:24,324 [INFO] src.circuit: Computing gate fanout capacitances
+2026-08-13 17:53:24,324 [INFO] src.circuit: Computing gate rise/fall delays
+2026-08-13 17:53:24,324 [INFO] src.circuit: Computing circuit power
+2026-08-13 17:53:24,325 [INFO] src.sta: Running static timing analysis
+2026-08-13 17:53:24,325 [INFO] src.sta: Timing PASSED: WNS=0.017 ns, TNS=0 ns
+2026-08-13 17:53:24,325 [INFO] src.optimizer: Optimization attempt 2/100
+2026-08-13 17:53:24,325 [INFO] src.circuit: Preparing circuit c01_inverter_chain (3 gates, 4 nets)
+2026-08-13 17:53:24,325 [INFO] src.circuit: Building the gate topological order
+2026-08-13 17:53:24,325 [INFO] src.circuit: Computing gate fanout capacitances
+2026-08-13 17:53:24,325 [INFO] src.circuit: Computing gate rise/fall delays
+2026-08-13 17:53:24,325 [INFO] src.circuit: Computing circuit power
+2026-08-13 17:53:24,325 [INFO] src.sta: Running static timing analysis
+2026-08-13 17:53:24,325 [INFO] src.sta: Timing PASSED: WNS=0.00525 ns, TNS=0 ns
+2026-08-13 17:53:24,325 [INFO] src.optimizer: Optimization attempt 3/100
+2026-08-13 17:53:24,325 [INFO] src.optimizer: Optimization stopped: all one-step critical-path upsizes were exhausted
+2026-08-13 17:53:24,325 [INFO] src.experiments: random_greedy optimization completed in 0.001281 s
+2026-08-13 17:53:24,326 [INFO] src.experiments: Running experiment: visualization
+2026-08-13 17:53:25,229 [INFO] src.experiments: Running experiment: monte_carlo
+2026-08-13 17:53:25,229 [INFO] src.experiments: Monte Carlo experiment is disabled by configuration
+2026-08-13 17:53:25,229 [INFO] src.experiments: Running experiment: summary
+2026-08-13 17:53:25,230 [INFO] src.experiments: Circuit experiments completed; results are in /home/halfblood/common/uni/master/VLSI/project/impl/outputs/c01_inverter_chain

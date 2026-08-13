@@ -1,0 +1,51 @@
+2026-08-13 17:53:27,282 [INFO] __main__: Configuration validation passed: /home/halfblood/common/uni/master/VLSI/project/impl/Input_Files/circuits/valid/c03_fanout_branch/config.json
+2026-08-13 17:53:27,283 [INFO] __main__: Loading circuit c03_fanout_branch
+2026-08-13 17:53:27,284 [INFO] __main__: Cell-library validation passed: /home/halfblood/common/uni/master/VLSI/project/impl/Input_Files/cell_library.json
+2026-08-13 17:53:27,284 [INFO] __main__: Netlist parsing and driver validation passed: /home/halfblood/common/uni/master/VLSI/project/impl/Input_Files/circuits/valid/c03_fanout_branch/netlist.txt
+2026-08-13 17:53:27,284 [INFO] src.circuit: Preparing circuit c03_fanout_branch (4 gates, 8 nets)
+2026-08-13 17:53:27,284 [INFO] src.circuit: Building the gate topological order
+2026-08-13 17:53:27,284 [INFO] src.circuit: Computing gate fanout capacitances
+2026-08-13 17:53:27,284 [INFO] src.circuit: Computing gate rise/fall delays
+2026-08-13 17:53:27,284 [INFO] src.circuit: Computing circuit power
+2026-08-13 17:53:27,284 [INFO] __main__: DAG validation passed
+2026-08-13 17:53:27,285 [INFO] src.experiments: Running experiment: fanout_capacitances
+2026-08-13 17:53:27,285 [INFO] src.experiments: Running experiment: gate_delays
+2026-08-13 17:53:27,285 [INFO] src.experiments: Running experiment: timing_analysis
+2026-08-13 17:53:27,285 [INFO] src.sta: Running static timing analysis
+2026-08-13 17:53:27,286 [INFO] src.sta: Timing FAILED: WNS=-0.006003 ns, TNS=-0.006003 ns
+2026-08-13 17:53:27,286 [INFO] src.experiments: Running experiment: logical_effort_analysis
+2026-08-13 17:53:27,287 [INFO] src.experiments: Running experiment: optimization
+2026-08-13 17:53:27,287 [INFO] src.experiments: Running slack_weighted_capacitance optimization
+2026-08-13 17:53:27,287 [INFO] src.sta: Running static timing analysis
+2026-08-13 17:53:27,287 [INFO] src.sta: Timing FAILED: WNS=-0.006003 ns, TNS=-0.006003 ns
+2026-08-13 17:53:27,287 [INFO] src.optimizer: Starting circuit optimization with initial cost 1.54933
+2026-08-13 17:53:27,288 [INFO] src.optimizer: Optimization attempt 1/100
+2026-08-13 17:53:27,288 [INFO] src.circuit: Preparing circuit c03_fanout_branch (4 gates, 8 nets)
+2026-08-13 17:53:27,288 [INFO] src.circuit: Building the gate topological order
+2026-08-13 17:53:27,288 [INFO] src.circuit: Computing gate fanout capacitances
+2026-08-13 17:53:27,288 [INFO] src.circuit: Computing gate rise/fall delays
+2026-08-13 17:53:27,288 [INFO] src.circuit: Computing circuit power
+2026-08-13 17:53:27,288 [INFO] src.sta: Running static timing analysis
+2026-08-13 17:53:27,288 [INFO] src.sta: Timing FAILED: WNS=-0.015003 ns, TNS=-0.0215065 ns
+2026-08-13 17:53:27,288 [INFO] src.optimizer: Optimization stopped: no candidate improves WNS or tied-WNS TNS
+2026-08-13 17:53:27,289 [INFO] src.experiments: slack_weighted_capacitance optimization completed in 0.001466 s
+2026-08-13 17:53:27,289 [INFO] src.experiments: Running random_greedy optimization
+2026-08-13 17:53:27,289 [INFO] src.sta: Running static timing analysis
+2026-08-13 17:53:27,289 [INFO] src.sta: Timing FAILED: WNS=-0.006003 ns, TNS=-0.006003 ns
+2026-08-13 17:53:27,289 [INFO] src.optimizer: Starting circuit optimization with initial cost 1.54933
+2026-08-13 17:53:27,289 [INFO] src.optimizer: Optimization attempt 1/100
+2026-08-13 17:53:27,289 [INFO] src.circuit: Preparing circuit c03_fanout_branch (4 gates, 8 nets)
+2026-08-13 17:53:27,289 [INFO] src.circuit: Building the gate topological order
+2026-08-13 17:53:27,289 [INFO] src.circuit: Computing gate fanout capacitances
+2026-08-13 17:53:27,289 [INFO] src.circuit: Computing gate rise/fall delays
+2026-08-13 17:53:27,289 [INFO] src.circuit: Computing circuit power
+2026-08-13 17:53:27,289 [INFO] src.sta: Running static timing analysis
+2026-08-13 17:53:27,289 [INFO] src.sta: Timing FAILED: WNS=-0.015003 ns, TNS=-0.0215065 ns
+2026-08-13 17:53:27,289 [INFO] src.optimizer: Optimization attempt 2/100
+2026-08-13 17:53:27,289 [INFO] src.optimizer: Optimization stopped: all one-step critical-path upsizes were exhausted
+2026-08-13 17:53:27,289 [INFO] src.experiments: random_greedy optimization completed in 0.000878 s
+2026-08-13 17:53:27,290 [INFO] src.experiments: Running experiment: visualization
+2026-08-13 17:53:28,278 [INFO] src.experiments: Running experiment: monte_carlo
+2026-08-13 17:53:28,278 [INFO] src.experiments: Monte Carlo experiment is disabled by configuration
+2026-08-13 17:53:28,278 [INFO] src.experiments: Running experiment: summary
+2026-08-13 17:53:28,279 [INFO] src.experiments: Circuit experiments completed; results are in /home/halfblood/common/uni/master/VLSI/project/impl/outputs/c03_fanout_branch

@@ -1,0 +1,397 @@
+{
+  "paths": [
+    {
+      "B_branching_effort": 1.0,
+      "F_total_effort": 15.995999999999999,
+      "G_path_logical_effort": 5.332,
+      "H_electrical_effort": 3.0,
+      "P_parasitic_delay_normalized": 10.0,
+      "endpoint_slack_ns": -0.008664000000000005,
+      "input_net": "C",
+      "minimum_normalized_delay": 17.558896286340286,
+      "minimum_theoretical_delay_ns": 0.2633834442951043,
+      "number_of_stages": 3,
+      "optimal_stage_effort": 2.5196320954467626,
+      "output_net": "OUT",
+      "rank": 1,
+      "stages": [
+        {
+          "b": 1.0,
+          "candidate_cells": [
+            "XNOR2_X1",
+            "XNOR2_X2"
+          ],
+          "cell": "XNOR2_X1",
+          "f_current": 2.0,
+          "g": 2.0,
+          "gate": "G2",
+          "h_on_path": 1.0,
+          "input_capacitance_fF": 2.0,
+          "input_pin_index": 0,
+          "input_pin_name": "A",
+          "on_path_load_fF": 2.0,
+          "p": 4.0,
+          "target_input_capacitance_fF": 1.5875333574407218,
+          "target_size_ratio": 0.7937666787203609,
+          "total_output_load_fF": 2.0
+        },
+        {
+          "b": 1.0,
+          "candidate_cells": [
+            "XOR2_X1",
+            "XOR2_X2"
+          ],
+          "cell": "XOR2_X1",
+          "f_current": 1.333,
+          "g": 2.0,
+          "gate": "G3",
+          "h_on_path": 0.6665,
+          "input_capacitance_fF": 2.0,
+          "input_pin_index": 1,
+          "input_pin_name": "B",
+          "on_path_load_fF": 1.333,
+          "p": 4.0,
+          "target_input_capacitance_fF": 1.058090982734241,
+          "target_size_ratio": 0.5290454913671205,
+          "total_output_load_fF": 1.333
+        },
+        {
+          "b": 1.0,
+          "candidate_cells": [
+            "NAND2_X2",
+            "NAND2_X4"
+          ],
+          "cell": "NAND2_X1",
+          "f_current": 6.000000000000001,
+          "g": 1.333,
+          "gate": "G4",
+          "h_on_path": 4.501125281320331,
+          "input_capacitance_fF": 1.333,
+          "input_pin_index": 0,
+          "input_pin_name": "A",
+          "on_path_load_fF": 6.0,
+          "p": 2.0,
+          "target_input_capacitance_fF": 3.1742729482027228,
+          "target_size_ratio": 2.3813000361610825,
+          "total_output_load_fF": 6.0
+        }
+      ]
+    },
+    {
+      "B_branching_effort": 1.0,
+      "F_total_effort": 15.995999999999999,
+      "G_path_logical_effort": 5.332,
+      "H_electrical_effort": 3.0,
+      "P_parasitic_delay_normalized": 10.0,
+      "endpoint_slack_ns": -0.008664000000000005,
+      "input_net": "C",
+      "minimum_normalized_delay": 17.558896286340286,
+      "minimum_theoretical_delay_ns": 0.2633834442951043,
+      "number_of_stages": 3,
+      "optimal_stage_effort": 2.5196320954467626,
+      "output_net": "OUT",
+      "rank": 2,
+      "stages": [
+        {
+          "b": 1.0,
+          "candidate_cells": [
+            "XNOR2_X1",
+            "XNOR2_X2"
+          ],
+          "cell": "XNOR2_X1",
+          "f_current": 2.0,
+          "g": 2.0,
+          "gate": "G2",
+          "h_on_path": 1.0,
+          "input_capacitance_fF": 2.0,
+          "input_pin_index": 0,
+          "input_pin_name": "A",
+          "on_path_load_fF": 2.0,
+          "p": 4.0,
+          "target_input_capacitance_fF": 1.5875333574407218,
+          "target_size_ratio": 0.7937666787203609,
+          "total_output_load_fF": 2.0
+        },
+        {
+          "b": 1.0,
+          "candidate_cells": [
+            "XOR2_X1",
+            "XOR2_X2"
+          ],
+          "cell": "XOR2_X1",
+          "f_current": 1.333,
+          "g": 2.0,
+          "gate": "G3",
+          "h_on_path": 0.6665,
+          "input_capacitance_fF": 2.0,
+          "input_pin_index": 1,
+          "input_pin_name": "B",
+          "on_path_load_fF": 1.333,
+          "p": 4.0,
+          "target_input_capacitance_fF": 1.058090982734241,
+          "target_size_ratio": 0.5290454913671205,
+          "total_output_load_fF": 1.333
+        },
+        {
+          "b": 1.0,
+          "candidate_cells": [
+            "NAND2_X2",
+            "NAND2_X4"
+          ],
+          "cell": "NAND2_X1",
+          "f_current": 6.000000000000001,
+          "g": 1.333,
+          "gate": "G4",
+          "h_on_path": 4.501125281320331,
+          "input_capacitance_fF": 1.333,
+          "input_pin_index": 0,
+          "input_pin_name": "A",
+          "on_path_load_fF": 6.0,
+          "p": 2.0,
+          "target_input_capacitance_fF": 3.1742729482027228,
+          "target_size_ratio": 2.3813000361610825,
+          "total_output_load_fF": 6.0
+        }
+      ]
+    },
+    {
+      "B_branching_effort": 1.0,
+      "F_total_effort": 15.995999999999999,
+      "G_path_logical_effort": 5.332,
+      "H_electrical_effort": 3.0,
+      "P_parasitic_delay_normalized": 10.0,
+      "endpoint_slack_ns": -0.008664000000000005,
+      "input_net": "D",
+      "minimum_normalized_delay": 17.558896286340286,
+      "minimum_theoretical_delay_ns": 0.2633834442951043,
+      "number_of_stages": 3,
+      "optimal_stage_effort": 2.5196320954467626,
+      "output_net": "OUT",
+      "rank": 3,
+      "stages": [
+        {
+          "b": 1.0,
+          "candidate_cells": [
+            "XNOR2_X1",
+            "XNOR2_X2"
+          ],
+          "cell": "XNOR2_X1",
+          "f_current": 2.0,
+          "g": 2.0,
+          "gate": "G2",
+          "h_on_path": 1.0,
+          "input_capacitance_fF": 2.0,
+          "input_pin_index": 1,
+          "input_pin_name": "B",
+          "on_path_load_fF": 2.0,
+          "p": 4.0,
+          "target_input_capacitance_fF": 1.5875333574407218,
+          "target_size_ratio": 0.7937666787203609,
+          "total_output_load_fF": 2.0
+        },
+        {
+          "b": 1.0,
+          "candidate_cells": [
+            "XOR2_X1",
+            "XOR2_X2"
+          ],
+          "cell": "XOR2_X1",
+          "f_current": 1.333,
+          "g": 2.0,
+          "gate": "G3",
+          "h_on_path": 0.6665,
+          "input_capacitance_fF": 2.0,
+          "input_pin_index": 1,
+          "input_pin_name": "B",
+          "on_path_load_fF": 1.333,
+          "p": 4.0,
+          "target_input_capacitance_fF": 1.058090982734241,
+          "target_size_ratio": 0.5290454913671205,
+          "total_output_load_fF": 1.333
+        },
+        {
+          "b": 1.0,
+          "candidate_cells": [
+            "NAND2_X2",
+            "NAND2_X4"
+          ],
+          "cell": "NAND2_X1",
+          "f_current": 6.000000000000001,
+          "g": 1.333,
+          "gate": "G4",
+          "h_on_path": 4.501125281320331,
+          "input_capacitance_fF": 1.333,
+          "input_pin_index": 0,
+          "input_pin_name": "A",
+          "on_path_load_fF": 6.0,
+          "p": 2.0,
+          "target_input_capacitance_fF": 3.1742729482027228,
+          "target_size_ratio": 2.3813000361610825,
+          "total_output_load_fF": 6.0
+        }
+      ]
+    },
+    {
+      "B_branching_effort": 1.0,
+      "F_total_effort": 15.995999999999999,
+      "G_path_logical_effort": 5.332,
+      "H_electrical_effort": 3.0,
+      "P_parasitic_delay_normalized": 10.0,
+      "endpoint_slack_ns": -0.008664000000000005,
+      "input_net": "D",
+      "minimum_normalized_delay": 17.558896286340286,
+      "minimum_theoretical_delay_ns": 0.2633834442951043,
+      "number_of_stages": 3,
+      "optimal_stage_effort": 2.5196320954467626,
+      "output_net": "OUT",
+      "rank": 4,
+      "stages": [
+        {
+          "b": 1.0,
+          "candidate_cells": [
+            "XNOR2_X1",
+            "XNOR2_X2"
+          ],
+          "cell": "XNOR2_X1",
+          "f_current": 2.0,
+          "g": 2.0,
+          "gate": "G2",
+          "h_on_path": 1.0,
+          "input_capacitance_fF": 2.0,
+          "input_pin_index": 1,
+          "input_pin_name": "B",
+          "on_path_load_fF": 2.0,
+          "p": 4.0,
+          "target_input_capacitance_fF": 1.5875333574407218,
+          "target_size_ratio": 0.7937666787203609,
+          "total_output_load_fF": 2.0
+        },
+        {
+          "b": 1.0,
+          "candidate_cells": [
+            "XOR2_X1",
+            "XOR2_X2"
+          ],
+          "cell": "XOR2_X1",
+          "f_current": 1.333,
+          "g": 2.0,
+          "gate": "G3",
+          "h_on_path": 0.6665,
+          "input_capacitance_fF": 2.0,
+          "input_pin_index": 1,
+          "input_pin_name": "B",
+          "on_path_load_fF": 1.333,
+          "p": 4.0,
+          "target_input_capacitance_fF": 1.058090982734241,
+          "target_size_ratio": 0.5290454913671205,
+          "total_output_load_fF": 1.333
+        },
+        {
+          "b": 1.0,
+          "candidate_cells": [
+            "NAND2_X2",
+            "NAND2_X4"
+          ],
+          "cell": "NAND2_X1",
+          "f_current": 6.000000000000001,
+          "g": 1.333,
+          "gate": "G4",
+          "h_on_path": 4.501125281320331,
+          "input_capacitance_fF": 1.333,
+          "input_pin_index": 0,
+          "input_pin_name": "A",
+          "on_path_load_fF": 6.0,
+          "p": 2.0,
+          "target_input_capacitance_fF": 3.1742729482027228,
+          "target_size_ratio": 2.3813000361610825,
+          "total_output_load_fF": 6.0
+        }
+      ]
+    },
+    {
+      "B_branching_effort": 1.0,
+      "F_total_effort": 15.995999999999999,
+      "G_path_logical_effort": 5.332,
+      "H_electrical_effort": 3.0,
+      "P_parasitic_delay_normalized": 10.0,
+      "endpoint_slack_ns": -0.0043300000000000005,
+      "input_net": "C",
+      "minimum_normalized_delay": 17.558896286340286,
+      "minimum_theoretical_delay_ns": 0.2633834442951043,
+      "number_of_stages": 3,
+      "optimal_stage_effort": 2.5196320954467626,
+      "output_net": "OUT",
+      "rank": 5,
+      "stages": [
+        {
+          "b": 1.0,
+          "candidate_cells": [
+            "XNOR2_X1",
+            "XNOR2_X2"
+          ],
+          "cell": "XNOR2_X1",
+          "f_current": 2.0,
+          "g": 2.0,
+          "gate": "G2",
+          "h_on_path": 1.0,
+          "input_capacitance_fF": 2.0,
+          "input_pin_index": 0,
+          "input_pin_name": "A",
+          "on_path_load_fF": 2.0,
+          "p": 4.0,
+          "target_input_capacitance_fF": 1.5875333574407218,
+          "target_size_ratio": 0.7937666787203609,
+          "total_output_load_fF": 2.0
+        },
+        {
+          "b": 1.0,
+          "candidate_cells": [
+            "XOR2_X1",
+            "XOR2_X2"
+          ],
+          "cell": "XOR2_X1",
+          "f_current": 1.333,
+          "g": 2.0,
+          "gate": "G3",
+          "h_on_path": 0.6665,
+          "input_capacitance_fF": 2.0,
+          "input_pin_index": 1,
+          "input_pin_name": "B",
+          "on_path_load_fF": 1.333,
+          "p": 4.0,
+          "target_input_capacitance_fF": 1.058090982734241,
+          "target_size_ratio": 0.5290454913671205,
+          "total_output_load_fF": 1.333
+        },
+        {
+          "b": 1.0,
+          "candidate_cells": [
+            "NAND2_X2",
+            "NAND2_X4"
+          ],
+          "cell": "NAND2_X1",
+          "f_current": 6.000000000000001,
+          "g": 1.333,
+          "gate": "G4",
+          "h_on_path": 4.501125281320331,
+          "input_capacitance_fF": 1.333,
+          "input_pin_index": 0,
+          "input_pin_name": "A",
+          "on_path_load_fF": 6.0,
+          "p": 2.0,
+          "target_input_capacitance_fF": 3.1742729482027228,
+          "target_size_ratio": 2.3813000361610825,
+          "total_output_load_fF": 6.0
+        }
+      ]
+    }
+  ],
+  "tau_ns": 0.015,
+  "units": {
+    "area": "normalized_unit",
+    "capacitance": "fF",
+    "leakage_power": "uW",
+    "resistance": "kOhm",
+    "time": "ns"
+  }
+}

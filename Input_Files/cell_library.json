@@ -1,0 +1,1246 @@
+{
+  "metadata": {
+    "units": {
+      "time": "ns",
+      "capacitance": "fF",
+      "resistance": "kOhm",
+      "leakage_power": "uW",
+      "area": "normalized_unit"
+    },
+    "delay_unit_conversion_kappa": 0.001,
+    "dynamic_power_to_uW_factor": 1e-09,
+    "logical_effort_tau": 0.015,
+    "nominal_temperature_c": 25.0,
+    "notes": [
+      "Input capacitance, internal capacitance, leakage power, and area scale with cell size.",
+      "Output resistance scales inversely with cell size.",
+      "XOR2 and XNOR2 logical effort is specified per physical input pin."
+    ]
+  },
+  "cells": {
+    "INV_X1": {
+      "family": "INV",
+      "size": "X1",
+      "size_factor": 1,
+      "num_inputs": 1,
+      "input_pins": [
+        {
+          "name": "A",
+          "capacitance": 1.0,
+          "logical_effort": 1.0,
+          "timing_sense": "negative_unate"
+        }
+      ],
+      "timing_sense": "negative_unate",
+      "intrinsic_delay": {
+        "rise": 0.015,
+        "fall": 0.012
+      },
+      "output_resistance": {
+        "rise": 9.0,
+        "fall": 6.5
+      },
+      "internal_capacitance": 0.4,
+      "parasitic_delay": 1.0,
+      "leakage_power": 0.05,
+      "area": 1.0
+    },
+    "INV_X2": {
+      "family": "INV",
+      "size": "X2",
+      "size_factor": 2,
+      "num_inputs": 1,
+      "input_pins": [
+        {
+          "name": "A",
+          "capacitance": 2.0,
+          "logical_effort": 1.0,
+          "timing_sense": "negative_unate"
+        }
+      ],
+      "timing_sense": "negative_unate",
+      "intrinsic_delay": {
+        "rise": 0.015,
+        "fall": 0.012
+      },
+      "output_resistance": {
+        "rise": 4.5,
+        "fall": 3.25
+      },
+      "internal_capacitance": 0.8,
+      "parasitic_delay": 1.0,
+      "leakage_power": 0.1,
+      "area": 2.0
+    },
+    "INV_X4": {
+      "family": "INV",
+      "size": "X4",
+      "size_factor": 4,
+      "num_inputs": 1,
+      "input_pins": [
+        {
+          "name": "A",
+          "capacitance": 4.0,
+          "logical_effort": 1.0,
+          "timing_sense": "negative_unate"
+        }
+      ],
+      "timing_sense": "negative_unate",
+      "intrinsic_delay": {
+        "rise": 0.015,
+        "fall": 0.012
+      },
+      "output_resistance": {
+        "rise": 2.25,
+        "fall": 1.625
+      },
+      "internal_capacitance": 1.6,
+      "parasitic_delay": 1.0,
+      "leakage_power": 0.2,
+      "area": 4.0
+    },
+    "BUF_X1": {
+      "family": "BUF",
+      "size": "X1",
+      "size_factor": 1,
+      "num_inputs": 1,
+      "input_pins": [
+        {
+          "name": "A",
+          "capacitance": 1.0,
+          "logical_effort": 1.0,
+          "timing_sense": "positive_unate"
+        }
+      ],
+      "timing_sense": "positive_unate",
+      "intrinsic_delay": {
+        "rise": 0.03,
+        "fall": 0.026
+      },
+      "output_resistance": {
+        "rise": 7.0,
+        "fall": 5.5
+      },
+      "internal_capacitance": 0.75,
+      "parasitic_delay": 2.0,
+      "leakage_power": 0.08,
+      "area": 1.6
+    },
+    "BUF_X2": {
+      "family": "BUF",
+      "size": "X2",
+      "size_factor": 2,
+      "num_inputs": 1,
+      "input_pins": [
+        {
+          "name": "A",
+          "capacitance": 2.0,
+          "logical_effort": 1.0,
+          "timing_sense": "positive_unate"
+        }
+      ],
+      "timing_sense": "positive_unate",
+      "intrinsic_delay": {
+        "rise": 0.03,
+        "fall": 0.026
+      },
+      "output_resistance": {
+        "rise": 3.5,
+        "fall": 2.75
+      },
+      "internal_capacitance": 1.5,
+      "parasitic_delay": 2.0,
+      "leakage_power": 0.16,
+      "area": 3.2
+    },
+    "BUF_X4": {
+      "family": "BUF",
+      "size": "X4",
+      "size_factor": 4,
+      "num_inputs": 1,
+      "input_pins": [
+        {
+          "name": "A",
+          "capacitance": 4.0,
+          "logical_effort": 1.0,
+          "timing_sense": "positive_unate"
+        }
+      ],
+      "timing_sense": "positive_unate",
+      "intrinsic_delay": {
+        "rise": 0.03,
+        "fall": 0.026
+      },
+      "output_resistance": {
+        "rise": 1.75,
+        "fall": 1.375
+      },
+      "internal_capacitance": 3.0,
+      "parasitic_delay": 2.0,
+      "leakage_power": 0.32,
+      "area": 6.4
+    },
+    "NAND2_X1": {
+      "family": "NAND2",
+      "size": "X1",
+      "size_factor": 1,
+      "num_inputs": 2,
+      "input_pins": [
+        {
+          "name": "A",
+          "capacitance": 1.333,
+          "logical_effort": 1.333,
+          "timing_sense": "negative_unate"
+        },
+        {
+          "name": "B",
+          "capacitance": 1.333,
+          "logical_effort": 1.333,
+          "timing_sense": "negative_unate"
+        }
+      ],
+      "timing_sense": "negative_unate",
+      "intrinsic_delay": {
+        "rise": 0.03,
+        "fall": 0.028
+      },
+      "output_resistance": {
+        "rise": 10.5,
+        "fall": 9.0
+      },
+      "internal_capacitance": 0.85,
+      "parasitic_delay": 2.0,
+      "leakage_power": 0.09,
+      "area": 1.8
+    },
+    "NAND2_X2": {
+      "family": "NAND2",
+      "size": "X2",
+      "size_factor": 2,
+      "num_inputs": 2,
+      "input_pins": [
+        {
+          "name": "A",
+          "capacitance": 2.666,
+          "logical_effort": 1.333,
+          "timing_sense": "negative_unate"
+        },
+        {
+          "name": "B",
+          "capacitance": 2.666,
+          "logical_effort": 1.333,
+          "timing_sense": "negative_unate"
+        }
+      ],
+      "timing_sense": "negative_unate",
+      "intrinsic_delay": {
+        "rise": 0.03,
+        "fall": 0.028
+      },
+      "output_resistance": {
+        "rise": 5.25,
+        "fall": 4.5
+      },
+      "internal_capacitance": 1.7,
+      "parasitic_delay": 2.0,
+      "leakage_power": 0.18,
+      "area": 3.6
+    },
+    "NAND2_X4": {
+      "family": "NAND2",
+      "size": "X4",
+      "size_factor": 4,
+      "num_inputs": 2,
+      "input_pins": [
+        {
+          "name": "A",
+          "capacitance": 5.332,
+          "logical_effort": 1.333,
+          "timing_sense": "negative_unate"
+        },
+        {
+          "name": "B",
+          "capacitance": 5.332,
+          "logical_effort": 1.333,
+          "timing_sense": "negative_unate"
+        }
+      ],
+      "timing_sense": "negative_unate",
+      "intrinsic_delay": {
+        "rise": 0.03,
+        "fall": 0.028
+      },
+      "output_resistance": {
+        "rise": 2.625,
+        "fall": 2.25
+      },
+      "internal_capacitance": 3.4,
+      "parasitic_delay": 2.0,
+      "leakage_power": 0.36,
+      "area": 7.2
+    },
+    "NAND3_X1": {
+      "family": "NAND3",
+      "size": "X1",
+      "size_factor": 1,
+      "num_inputs": 3,
+      "input_pins": [
+        {
+          "name": "A",
+          "capacitance": 1.667,
+          "logical_effort": 1.667,
+          "timing_sense": "negative_unate"
+        },
+        {
+          "name": "B",
+          "capacitance": 1.667,
+          "logical_effort": 1.667,
+          "timing_sense": "negative_unate"
+        },
+        {
+          "name": "C",
+          "capacitance": 1.667,
+          "logical_effort": 1.667,
+          "timing_sense": "negative_unate"
+        }
+      ],
+      "timing_sense": "negative_unate",
+      "intrinsic_delay": {
+        "rise": 0.045,
+        "fall": 0.042
+      },
+      "output_resistance": {
+        "rise": 11.0,
+        "fall": 13.0
+      },
+      "internal_capacitance": 1.2,
+      "parasitic_delay": 3.0,
+      "leakage_power": 0.12,
+      "area": 2.4
+    },
+    "NAND3_X2": {
+      "family": "NAND3",
+      "size": "X2",
+      "size_factor": 2,
+      "num_inputs": 3,
+      "input_pins": [
+        {
+          "name": "A",
+          "capacitance": 3.334,
+          "logical_effort": 1.667,
+          "timing_sense": "negative_unate"
+        },
+        {
+          "name": "B",
+          "capacitance": 3.334,
+          "logical_effort": 1.667,
+          "timing_sense": "negative_unate"
+        },
+        {
+          "name": "C",
+          "capacitance": 3.334,
+          "logical_effort": 1.667,
+          "timing_sense": "negative_unate"
+        }
+      ],
+      "timing_sense": "negative_unate",
+      "intrinsic_delay": {
+        "rise": 0.045,
+        "fall": 0.042
+      },
+      "output_resistance": {
+        "rise": 5.5,
+        "fall": 6.5
+      },
+      "internal_capacitance": 2.4,
+      "parasitic_delay": 3.0,
+      "leakage_power": 0.24,
+      "area": 4.8
+    },
+    "NAND3_X4": {
+      "family": "NAND3",
+      "size": "X4",
+      "size_factor": 4,
+      "num_inputs": 3,
+      "input_pins": [
+        {
+          "name": "A",
+          "capacitance": 6.668,
+          "logical_effort": 1.667,
+          "timing_sense": "negative_unate"
+        },
+        {
+          "name": "B",
+          "capacitance": 6.668,
+          "logical_effort": 1.667,
+          "timing_sense": "negative_unate"
+        },
+        {
+          "name": "C",
+          "capacitance": 6.668,
+          "logical_effort": 1.667,
+          "timing_sense": "negative_unate"
+        }
+      ],
+      "timing_sense": "negative_unate",
+      "intrinsic_delay": {
+        "rise": 0.045,
+        "fall": 0.042
+      },
+      "output_resistance": {
+        "rise": 2.75,
+        "fall": 3.25
+      },
+      "internal_capacitance": 4.8,
+      "parasitic_delay": 3.0,
+      "leakage_power": 0.48,
+      "area": 9.6
+    },
+    "NOR2_X1": {
+      "family": "NOR2",
+      "size": "X1",
+      "size_factor": 1,
+      "num_inputs": 2,
+      "input_pins": [
+        {
+          "name": "A",
+          "capacitance": 1.667,
+          "logical_effort": 1.667,
+          "timing_sense": "negative_unate"
+        },
+        {
+          "name": "B",
+          "capacitance": 1.667,
+          "logical_effort": 1.667,
+          "timing_sense": "negative_unate"
+        }
+      ],
+      "timing_sense": "negative_unate",
+      "intrinsic_delay": {
+        "rise": 0.038,
+        "fall": 0.03
+      },
+      "output_resistance": {
+        "rise": 14.0,
+        "fall": 7.5
+      },
+      "internal_capacitance": 0.95,
+      "parasitic_delay": 2.0,
+      "leakage_power": 0.1,
+      "area": 2.0
+    },
+    "NOR2_X2": {
+      "family": "NOR2",
+      "size": "X2",
+      "size_factor": 2,
+      "num_inputs": 2,
+      "input_pins": [
+        {
+          "name": "A",
+          "capacitance": 3.334,
+          "logical_effort": 1.667,
+          "timing_sense": "negative_unate"
+        },
+        {
+          "name": "B",
+          "capacitance": 3.334,
+          "logical_effort": 1.667,
+          "timing_sense": "negative_unate"
+        }
+      ],
+      "timing_sense": "negative_unate",
+      "intrinsic_delay": {
+        "rise": 0.038,
+        "fall": 0.03
+      },
+      "output_resistance": {
+        "rise": 7.0,
+        "fall": 3.75
+      },
+      "internal_capacitance": 1.9,
+      "parasitic_delay": 2.0,
+      "leakage_power": 0.2,
+      "area": 4.0
+    },
+    "NOR2_X4": {
+      "family": "NOR2",
+      "size": "X4",
+      "size_factor": 4,
+      "num_inputs": 2,
+      "input_pins": [
+        {
+          "name": "A",
+          "capacitance": 6.668,
+          "logical_effort": 1.667,
+          "timing_sense": "negative_unate"
+        },
+        {
+          "name": "B",
+          "capacitance": 6.668,
+          "logical_effort": 1.667,
+          "timing_sense": "negative_unate"
+        }
+      ],
+      "timing_sense": "negative_unate",
+      "intrinsic_delay": {
+        "rise": 0.038,
+        "fall": 0.03
+      },
+      "output_resistance": {
+        "rise": 3.5,
+        "fall": 1.875
+      },
+      "internal_capacitance": 3.8,
+      "parasitic_delay": 2.0,
+      "leakage_power": 0.4,
+      "area": 8.0
+    },
+    "NOR3_X1": {
+      "family": "NOR3",
+      "size": "X1",
+      "size_factor": 1,
+      "num_inputs": 3,
+      "input_pins": [
+        {
+          "name": "A",
+          "capacitance": 2.333,
+          "logical_effort": 2.333,
+          "timing_sense": "negative_unate"
+        },
+        {
+          "name": "B",
+          "capacitance": 2.333,
+          "logical_effort": 2.333,
+          "timing_sense": "negative_unate"
+        },
+        {
+          "name": "C",
+          "capacitance": 2.333,
+          "logical_effort": 2.333,
+          "timing_sense": "negative_unate"
+        }
+      ],
+      "timing_sense": "negative_unate",
+      "intrinsic_delay": {
+        "rise": 0.055,
+        "fall": 0.04
+      },
+      "output_resistance": {
+        "rise": 18.0,
+        "fall": 8.0
+      },
+      "internal_capacitance": 1.35,
+      "parasitic_delay": 3.0,
+      "leakage_power": 0.14,
+      "area": 2.8
+    },
+    "NOR3_X2": {
+      "family": "NOR3",
+      "size": "X2",
+      "size_factor": 2,
+      "num_inputs": 3,
+      "input_pins": [
+        {
+          "name": "A",
+          "capacitance": 4.666,
+          "logical_effort": 2.333,
+          "timing_sense": "negative_unate"
+        },
+        {
+          "name": "B",
+          "capacitance": 4.666,
+          "logical_effort": 2.333,
+          "timing_sense": "negative_unate"
+        },
+        {
+          "name": "C",
+          "capacitance": 4.666,
+          "logical_effort": 2.333,
+          "timing_sense": "negative_unate"
+        }
+      ],
+      "timing_sense": "negative_unate",
+      "intrinsic_delay": {
+        "rise": 0.055,
+        "fall": 0.04
+      },
+      "output_resistance": {
+        "rise": 9.0,
+        "fall": 4.0
+      },
+      "internal_capacitance": 2.7,
+      "parasitic_delay": 3.0,
+      "leakage_power": 0.28,
+      "area": 5.6
+    },
+    "NOR3_X4": {
+      "family": "NOR3",
+      "size": "X4",
+      "size_factor": 4,
+      "num_inputs": 3,
+      "input_pins": [
+        {
+          "name": "A",
+          "capacitance": 9.332,
+          "logical_effort": 2.333,
+          "timing_sense": "negative_unate"
+        },
+        {
+          "name": "B",
+          "capacitance": 9.332,
+          "logical_effort": 2.333,
+          "timing_sense": "negative_unate"
+        },
+        {
+          "name": "C",
+          "capacitance": 9.332,
+          "logical_effort": 2.333,
+          "timing_sense": "negative_unate"
+        }
+      ],
+      "timing_sense": "negative_unate",
+      "intrinsic_delay": {
+        "rise": 0.055,
+        "fall": 0.04
+      },
+      "output_resistance": {
+        "rise": 4.5,
+        "fall": 2.0
+      },
+      "internal_capacitance": 5.4,
+      "parasitic_delay": 3.0,
+      "leakage_power": 0.56,
+      "area": 11.2
+    },
+    "AND2_X1": {
+      "family": "AND2",
+      "size": "X1",
+      "size_factor": 1,
+      "num_inputs": 2,
+      "input_pins": [
+        {
+          "name": "A",
+          "capacitance": 1.333,
+          "logical_effort": 1.333,
+          "timing_sense": "positive_unate"
+        },
+        {
+          "name": "B",
+          "capacitance": 1.333,
+          "logical_effort": 1.333,
+          "timing_sense": "positive_unate"
+        }
+      ],
+      "timing_sense": "positive_unate",
+      "intrinsic_delay": {
+        "rise": 0.05,
+        "fall": 0.048
+      },
+      "output_resistance": {
+        "rise": 8.0,
+        "fall": 6.5
+      },
+      "internal_capacitance": 1.2,
+      "parasitic_delay": 3.0,
+      "leakage_power": 0.14,
+      "area": 2.8
+    },
+    "AND2_X2": {
+      "family": "AND2",
+      "size": "X2",
+      "size_factor": 2,
+      "num_inputs": 2,
+      "input_pins": [
+        {
+          "name": "A",
+          "capacitance": 2.666,
+          "logical_effort": 1.333,
+          "timing_sense": "positive_unate"
+        },
+        {
+          "name": "B",
+          "capacitance": 2.666,
+          "logical_effort": 1.333,
+          "timing_sense": "positive_unate"
+        }
+      ],
+      "timing_sense": "positive_unate",
+      "intrinsic_delay": {
+        "rise": 0.05,
+        "fall": 0.048
+      },
+      "output_resistance": {
+        "rise": 4.0,
+        "fall": 3.25
+      },
+      "internal_capacitance": 2.4,
+      "parasitic_delay": 3.0,
+      "leakage_power": 0.28,
+      "area": 5.6
+    },
+    "AND2_X4": {
+      "family": "AND2",
+      "size": "X4",
+      "size_factor": 4,
+      "num_inputs": 2,
+      "input_pins": [
+        {
+          "name": "A",
+          "capacitance": 5.332,
+          "logical_effort": 1.333,
+          "timing_sense": "positive_unate"
+        },
+        {
+          "name": "B",
+          "capacitance": 5.332,
+          "logical_effort": 1.333,
+          "timing_sense": "positive_unate"
+        }
+      ],
+      "timing_sense": "positive_unate",
+      "intrinsic_delay": {
+        "rise": 0.05,
+        "fall": 0.048
+      },
+      "output_resistance": {
+        "rise": 2.0,
+        "fall": 1.625
+      },
+      "internal_capacitance": 4.8,
+      "parasitic_delay": 3.0,
+      "leakage_power": 0.56,
+      "area": 11.2
+    },
+    "AND3_X1": {
+      "family": "AND3",
+      "size": "X1",
+      "size_factor": 1,
+      "num_inputs": 3,
+      "input_pins": [
+        {
+          "name": "A",
+          "capacitance": 1.667,
+          "logical_effort": 1.667,
+          "timing_sense": "positive_unate"
+        },
+        {
+          "name": "B",
+          "capacitance": 1.667,
+          "logical_effort": 1.667,
+          "timing_sense": "positive_unate"
+        },
+        {
+          "name": "C",
+          "capacitance": 1.667,
+          "logical_effort": 1.667,
+          "timing_sense": "positive_unate"
+        }
+      ],
+      "timing_sense": "positive_unate",
+      "intrinsic_delay": {
+        "rise": 0.066,
+        "fall": 0.063
+      },
+      "output_resistance": {
+        "rise": 8.5,
+        "fall": 7.0
+      },
+      "internal_capacitance": 1.55,
+      "parasitic_delay": 4.0,
+      "leakage_power": 0.175,
+      "area": 3.5
+    },
+    "AND3_X2": {
+      "family": "AND3",
+      "size": "X2",
+      "size_factor": 2,
+      "num_inputs": 3,
+      "input_pins": [
+        {
+          "name": "A",
+          "capacitance": 3.334,
+          "logical_effort": 1.667,
+          "timing_sense": "positive_unate"
+        },
+        {
+          "name": "B",
+          "capacitance": 3.334,
+          "logical_effort": 1.667,
+          "timing_sense": "positive_unate"
+        },
+        {
+          "name": "C",
+          "capacitance": 3.334,
+          "logical_effort": 1.667,
+          "timing_sense": "positive_unate"
+        }
+      ],
+      "timing_sense": "positive_unate",
+      "intrinsic_delay": {
+        "rise": 0.066,
+        "fall": 0.063
+      },
+      "output_resistance": {
+        "rise": 4.25,
+        "fall": 3.5
+      },
+      "internal_capacitance": 3.1,
+      "parasitic_delay": 4.0,
+      "leakage_power": 0.35,
+      "area": 7.0
+    },
+    "AND3_X4": {
+      "family": "AND3",
+      "size": "X4",
+      "size_factor": 4,
+      "num_inputs": 3,
+      "input_pins": [
+        {
+          "name": "A",
+          "capacitance": 6.668,
+          "logical_effort": 1.667,
+          "timing_sense": "positive_unate"
+        },
+        {
+          "name": "B",
+          "capacitance": 6.668,
+          "logical_effort": 1.667,
+          "timing_sense": "positive_unate"
+        },
+        {
+          "name": "C",
+          "capacitance": 6.668,
+          "logical_effort": 1.667,
+          "timing_sense": "positive_unate"
+        }
+      ],
+      "timing_sense": "positive_unate",
+      "intrinsic_delay": {
+        "rise": 0.066,
+        "fall": 0.063
+      },
+      "output_resistance": {
+        "rise": 2.125,
+        "fall": 1.75
+      },
+      "internal_capacitance": 6.2,
+      "parasitic_delay": 4.0,
+      "leakage_power": 0.7,
+      "area": 14.0
+    },
+    "OR2_X1": {
+      "family": "OR2",
+      "size": "X1",
+      "size_factor": 1,
+      "num_inputs": 2,
+      "input_pins": [
+        {
+          "name": "A",
+          "capacitance": 1.667,
+          "logical_effort": 1.667,
+          "timing_sense": "positive_unate"
+        },
+        {
+          "name": "B",
+          "capacitance": 1.667,
+          "logical_effort": 1.667,
+          "timing_sense": "positive_unate"
+        }
+      ],
+      "timing_sense": "positive_unate",
+      "intrinsic_delay": {
+        "rise": 0.058,
+        "fall": 0.05
+      },
+      "output_resistance": {
+        "rise": 8.5,
+        "fall": 6.5
+      },
+      "internal_capacitance": 1.3,
+      "parasitic_delay": 3.0,
+      "leakage_power": 0.15,
+      "area": 3.0
+    },
+    "OR2_X2": {
+      "family": "OR2",
+      "size": "X2",
+      "size_factor": 2,
+      "num_inputs": 2,
+      "input_pins": [
+        {
+          "name": "A",
+          "capacitance": 3.334,
+          "logical_effort": 1.667,
+          "timing_sense": "positive_unate"
+        },
+        {
+          "name": "B",
+          "capacitance": 3.334,
+          "logical_effort": 1.667,
+          "timing_sense": "positive_unate"
+        }
+      ],
+      "timing_sense": "positive_unate",
+      "intrinsic_delay": {
+        "rise": 0.058,
+        "fall": 0.05
+      },
+      "output_resistance": {
+        "rise": 4.25,
+        "fall": 3.25
+      },
+      "internal_capacitance": 2.6,
+      "parasitic_delay": 3.0,
+      "leakage_power": 0.3,
+      "area": 6.0
+    },
+    "OR2_X4": {
+      "family": "OR2",
+      "size": "X4",
+      "size_factor": 4,
+      "num_inputs": 2,
+      "input_pins": [
+        {
+          "name": "A",
+          "capacitance": 6.668,
+          "logical_effort": 1.667,
+          "timing_sense": "positive_unate"
+        },
+        {
+          "name": "B",
+          "capacitance": 6.668,
+          "logical_effort": 1.667,
+          "timing_sense": "positive_unate"
+        }
+      ],
+      "timing_sense": "positive_unate",
+      "intrinsic_delay": {
+        "rise": 0.058,
+        "fall": 0.05
+      },
+      "output_resistance": {
+        "rise": 2.125,
+        "fall": 1.625
+      },
+      "internal_capacitance": 5.2,
+      "parasitic_delay": 3.0,
+      "leakage_power": 0.6,
+      "area": 12.0
+    },
+    "OR3_X1": {
+      "family": "OR3",
+      "size": "X1",
+      "size_factor": 1,
+      "num_inputs": 3,
+      "input_pins": [
+        {
+          "name": "A",
+          "capacitance": 2.333,
+          "logical_effort": 2.333,
+          "timing_sense": "positive_unate"
+        },
+        {
+          "name": "B",
+          "capacitance": 2.333,
+          "logical_effort": 2.333,
+          "timing_sense": "positive_unate"
+        },
+        {
+          "name": "C",
+          "capacitance": 2.333,
+          "logical_effort": 2.333,
+          "timing_sense": "positive_unate"
+        }
+      ],
+      "timing_sense": "positive_unate",
+      "intrinsic_delay": {
+        "rise": 0.078,
+        "fall": 0.067
+      },
+      "output_resistance": {
+        "rise": 9.0,
+        "fall": 7.0
+      },
+      "internal_capacitance": 1.7,
+      "parasitic_delay": 4.0,
+      "leakage_power": 0.19,
+      "area": 3.8
+    },
+    "OR3_X2": {
+      "family": "OR3",
+      "size": "X2",
+      "size_factor": 2,
+      "num_inputs": 3,
+      "input_pins": [
+        {
+          "name": "A",
+          "capacitance": 4.666,
+          "logical_effort": 2.333,
+          "timing_sense": "positive_unate"
+        },
+        {
+          "name": "B",
+          "capacitance": 4.666,
+          "logical_effort": 2.333,
+          "timing_sense": "positive_unate"
+        },
+        {
+          "name": "C",
+          "capacitance": 4.666,
+          "logical_effort": 2.333,
+          "timing_sense": "positive_unate"
+        }
+      ],
+      "timing_sense": "positive_unate",
+      "intrinsic_delay": {
+        "rise": 0.078,
+        "fall": 0.067
+      },
+      "output_resistance": {
+        "rise": 4.5,
+        "fall": 3.5
+      },
+      "internal_capacitance": 3.4,
+      "parasitic_delay": 4.0,
+      "leakage_power": 0.38,
+      "area": 7.6
+    },
+    "OR3_X4": {
+      "family": "OR3",
+      "size": "X4",
+      "size_factor": 4,
+      "num_inputs": 3,
+      "input_pins": [
+        {
+          "name": "A",
+          "capacitance": 9.332,
+          "logical_effort": 2.333,
+          "timing_sense": "positive_unate"
+        },
+        {
+          "name": "B",
+          "capacitance": 9.332,
+          "logical_effort": 2.333,
+          "timing_sense": "positive_unate"
+        },
+        {
+          "name": "C",
+          "capacitance": 9.332,
+          "logical_effort": 2.333,
+          "timing_sense": "positive_unate"
+        }
+      ],
+      "timing_sense": "positive_unate",
+      "intrinsic_delay": {
+        "rise": 0.078,
+        "fall": 0.067
+      },
+      "output_resistance": {
+        "rise": 2.25,
+        "fall": 1.75
+      },
+      "internal_capacitance": 6.8,
+      "parasitic_delay": 4.0,
+      "leakage_power": 0.76,
+      "area": 15.2
+    },
+    "XOR2_X1": {
+      "family": "XOR2",
+      "size": "X1",
+      "size_factor": 1,
+      "num_inputs": 2,
+      "input_pins": [
+        {
+          "name": "A",
+          "capacitance": 2.0,
+          "logical_effort": 2.0,
+          "timing_sense": "non_unate"
+        },
+        {
+          "name": "B",
+          "capacitance": 2.0,
+          "logical_effort": 2.0,
+          "timing_sense": "non_unate"
+        }
+      ],
+      "timing_sense": "non_unate",
+      "intrinsic_delay": {
+        "rise": 0.072,
+        "fall": 0.068
+      },
+      "output_resistance": {
+        "rise": 10.0,
+        "fall": 8.0
+      },
+      "internal_capacitance": 2.2,
+      "parasitic_delay": 4.0,
+      "leakage_power": 0.25,
+      "area": 5.0
+    },
+    "XOR2_X2": {
+      "family": "XOR2",
+      "size": "X2",
+      "size_factor": 2,
+      "num_inputs": 2,
+      "input_pins": [
+        {
+          "name": "A",
+          "capacitance": 4.0,
+          "logical_effort": 2.0,
+          "timing_sense": "non_unate"
+        },
+        {
+          "name": "B",
+          "capacitance": 4.0,
+          "logical_effort": 2.0,
+          "timing_sense": "non_unate"
+        }
+      ],
+      "timing_sense": "non_unate",
+      "intrinsic_delay": {
+        "rise": 0.072,
+        "fall": 0.068
+      },
+      "output_resistance": {
+        "rise": 5.0,
+        "fall": 4.0
+      },
+      "internal_capacitance": 4.4,
+      "parasitic_delay": 4.0,
+      "leakage_power": 0.5,
+      "area": 10.0
+    },
+    "XOR2_X4": {
+      "family": "XOR2",
+      "size": "X4",
+      "size_factor": 4,
+      "num_inputs": 2,
+      "input_pins": [
+        {
+          "name": "A",
+          "capacitance": 8.0,
+          "logical_effort": 2.0,
+          "timing_sense": "non_unate"
+        },
+        {
+          "name": "B",
+          "capacitance": 8.0,
+          "logical_effort": 2.0,
+          "timing_sense": "non_unate"
+        }
+      ],
+      "timing_sense": "non_unate",
+      "intrinsic_delay": {
+        "rise": 0.072,
+        "fall": 0.068
+      },
+      "output_resistance": {
+        "rise": 2.5,
+        "fall": 2.0
+      },
+      "internal_capacitance": 8.8,
+      "parasitic_delay": 4.0,
+      "leakage_power": 1.0,
+      "area": 20.0
+    },
+    "XNOR2_X1": {
+      "family": "XNOR2",
+      "size": "X1",
+      "size_factor": 1,
+      "num_inputs": 2,
+      "input_pins": [
+        {
+          "name": "A",
+          "capacitance": 2.0,
+          "logical_effort": 2.0,
+          "timing_sense": "non_unate"
+        },
+        {
+          "name": "B",
+          "capacitance": 2.0,
+          "logical_effort": 2.0,
+          "timing_sense": "non_unate"
+        }
+      ],
+      "timing_sense": "non_unate",
+      "intrinsic_delay": {
+        "rise": 0.076,
+        "fall": 0.072
+      },
+      "output_resistance": {
+        "rise": 10.5,
+        "fall": 8.5
+      },
+      "internal_capacitance": 2.3,
+      "parasitic_delay": 4.0,
+      "leakage_power": 0.26,
+      "area": 5.2
+    },
+    "XNOR2_X2": {
+      "family": "XNOR2",
+      "size": "X2",
+      "size_factor": 2,
+      "num_inputs": 2,
+      "input_pins": [
+        {
+          "name": "A",
+          "capacitance": 4.0,
+          "logical_effort": 2.0,
+          "timing_sense": "non_unate"
+        },
+        {
+          "name": "B",
+          "capacitance": 4.0,
+          "logical_effort": 2.0,
+          "timing_sense": "non_unate"
+        }
+      ],
+      "timing_sense": "non_unate",
+      "intrinsic_delay": {
+        "rise": 0.076,
+        "fall": 0.072
+      },
+      "output_resistance": {
+        "rise": 5.25,
+        "fall": 4.25
+      },
+      "internal_capacitance": 4.6,
+      "parasitic_delay": 4.0,
+      "leakage_power": 0.52,
+      "area": 10.4
+    },
+    "XNOR2_X4": {
+      "family": "XNOR2",
+      "size": "X4",
+      "size_factor": 4,
+      "num_inputs": 2,
+      "input_pins": [
+        {
+          "name": "A",
+          "capacitance": 8.0,
+          "logical_effort": 2.0,
+          "timing_sense": "non_unate"
+        },
+        {
+          "name": "B",
+          "capacitance": 8.0,
+          "logical_effort": 2.0,
+          "timing_sense": "non_unate"
+        }
+      ],
+      "timing_sense": "non_unate",
+      "intrinsic_delay": {
+        "rise": 0.076,
+        "fall": 0.072
+      },
+      "output_resistance": {
+        "rise": 2.625,
+        "fall": 2.125
+      },
+      "internal_capacitance": 9.2,
+      "parasitic_delay": 4.0,
+      "leakage_power": 1.04,
+      "area": 20.8
+    }
+  }
+}

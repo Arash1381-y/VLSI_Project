@@ -1,0 +1,21 @@
+{
+  "circuit_name": "c11_gate_sizing_stress",
+  "counts": {
+    "gates": 6,
+    "nets": 9,
+    "primary_inputs": 3,
+    "primary_outputs": 1
+  },
+  "errors": [],
+  "inputs": {
+    "config": "/home/halfblood/common/uni/master/VLSI/project/impl/Input_Files/circuits/valid/c11_gate_sizing_stress/config.json",
+    "netlist": "/home/halfblood/common/uni/master/VLSI/project/impl/Input_Files/circuits/valid/c11_gate_sizing_stress/netlist.txt"
+  },
+  "stages": {
+    "cell_library": "passed",
+    "configuration": "passed",
+    "dag": "passed",
+    "netlist": "passed"
+  },
+  "valid": true
+}

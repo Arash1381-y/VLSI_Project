@@ -1,0 +1,21 @@
+{
+  "circuit_name": "c09_high_fanout",
+  "counts": {
+    "gates": 6,
+    "nets": 12,
+    "primary_inputs": 6,
+    "primary_outputs": 5
+  },
+  "errors": [],
+  "inputs": {
+    "config": "/home/halfblood/common/uni/master/VLSI/project/impl/Input_Files/circuits/valid/c09_high_fanout/config.json",
+    "netlist": "/home/halfblood/common/uni/master/VLSI/project/impl/Input_Files/circuits/valid/c09_high_fanout/netlist.txt"
+  },
+  "stages": {
+    "cell_library": "passed",
+    "configuration": "passed",
+    "dag": "passed",
+    "netlist": "passed"
+  },
+  "valid": true
+}

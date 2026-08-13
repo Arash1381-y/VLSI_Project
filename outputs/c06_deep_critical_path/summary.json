@@ -1,0 +1,202 @@
+{
+  "artifacts": {
+    "circuit_graph_post_optimization.png": "circuit_graph_post_optimization.png",
+    "circuit_graph_pre_optimization.png": "circuit_graph_pre_optimization.png",
+    "critical_paths.csv": "critical_paths.csv",
+    "fanout_capacitances.json": "fanout_capacitances.json",
+    "gate_delays.json": "gate_delays.json",
+    "logical_effort_analysis.json": "logical_effort_analysis.json",
+    "monte_carlo_critical_paths.csv": "monte_carlo_critical_paths.csv",
+    "monte_carlo_gate_criticality.csv": "monte_carlo_gate_criticality.csv",
+    "monte_carlo_samples.csv": "monte_carlo_samples.csv",
+    "monte_carlo_statistics.csv": "monte_carlo_statistics.csv",
+    "monte_carlo_summary.json": "monte_carlo_summary.json",
+    "monte_carlo_variations.csv": "monte_carlo_variations.csv",
+    "optimization_comparison.json": "optimization_comparison.json",
+    "optimization_random_greedy.csv": "optimization_random_greedy.csv",
+    "optimization_slack_weighted_capacitance.csv": "optimization_slack_weighted_capacitance.csv",
+    "optimization_summary.csv": "optimization_summary.csv",
+    "run.log": "run.log",
+    "summary.json": "summary.json",
+    "timing_analysis.csv": "timing_analysis.csv",
+    "timing_analysis.json": "timing_analysis.json",
+    "validation_report.json": "validation_report.json"
+  },
+  "canonical_method": "slack_weighted_capacitance",
+  "circuit": {
+    "cell_library_file": "/home/halfblood/common/uni/master/VLSI/project/impl/Input_Files/cell_library.json",
+    "config_file": "/home/halfblood/common/uni/master/VLSI/project/impl/Input_Files/circuits/valid/c06_deep_critical_path/config.json",
+    "gate_count": 10,
+    "name": "c06_deep_critical_path",
+    "net_count": 14,
+    "netlist_file": "/home/halfblood/common/uni/master/VLSI/project/impl/Input_Files/circuits/valid/c06_deep_critical_path/netlist.txt",
+    "primary_input_count": 4,
+    "primary_output_count": 1,
+    "units": {
+      "area": "normalized_unit",
+      "capacitance": "fF",
+      "leakage_power": "uW",
+      "resistance": "kOhm",
+      "time": "ns"
+    }
+  },
+  "compliance": {
+    "all_constraints_compliant": true,
+    "area_compliant": true,
+    "power_compliant": true,
+    "timing_compliant": true
+  },
+  "constraints": {
+    "maximum_area": 20.0,
+    "maximum_power_uW": 1.3,
+    "timing_requirement": "WNS >= 0 ns"
+  },
+  "critical_paths": {
+    "configured_top_k": 5,
+    "reported_count": 4,
+    "worst": {
+      "gate_count": 10,
+      "gates": "G1 -> G2 -> G3 -> G4 -> G5 -> G6 -> G7 -> G8 -> G9 -> G10",
+      "input_net": "A",
+      "input_pins": "0 -> 0 -> 0 -> 0 -> 0 -> 0 -> 0 -> 0 -> 0 -> 0",
+      "input_transition": "rise",
+      "output_net": "OUT",
+      "output_transition": "rise",
+      "rank": 1,
+      "slack_ns": -0.022668000000000077,
+      "transitions": "rise -> fall -> rise -> fall -> fall -> fall -> rise -> rise -> fall -> rise -> rise"
+    }
+  },
+  "initial": {
+    "area": 17.6,
+    "circuit_delay_ns": 0.45266800000000007,
+    "compliance": {
+      "area_compliant": true,
+      "power_compliant": true,
+      "timing_compliant": false
+    },
+    "cost": 1.6503821785502848,
+    "dynamic_power_uW": 0.2885000000000001,
+    "leakage_power_uW": 0.88,
+    "power_uW": 1.1685,
+    "tns_ns": -0.026834500000000094,
+    "wns_ns": -0.022668000000000077
+  },
+  "logical_effort_worst_path": {
+    "B": 1.0,
+    "F": 49.377772963210006,
+    "G": 6.5820571359958935,
+    "H": 7.501875468867217,
+    "P": 19.0,
+    "minimum_theoretical_delay_ns": 0.5065360504865296,
+    "optimal_stage_effort": 1.4769070032435305
+  },
+  "monte_carlo": {
+    "configuration": {
+      "enabled": false,
+      "random_seed": 1405,
+      "samples": 3000
+    },
+    "reason": "disabled_by_configuration",
+    "status": "skipped"
+  },
+  "optimizer_comparison": {
+    "area": 0.0,
+    "circuit_delay_ns": 0.0,
+    "power_uW": 0.0,
+    "runtime_seconds": -0.0038754199631512165,
+    "sta_calls": -3,
+    "tns_ns": 0,
+    "wns_ns": 0.0
+  },
+  "optimizers": {
+    "greedy_baseline": {
+      "accepted_iterations": 1,
+      "final": {
+        "area": 19.2,
+        "circuit_delay_ns": 0.4266680000000001,
+        "compliance": {
+          "area_compliant": true,
+          "power_compliant": true,
+          "timing_compliant": true
+        },
+        "cost": 1.377432641028257,
+        "dynamic_power_uW": 0.30600000000000005,
+        "leakage_power_uW": 0.9600000000000001,
+        "power_uW": 1.266,
+        "tns_ns": 0,
+        "wns_ns": 0.0033319999999998906
+      },
+      "heuristic": "random_greedy",
+      "maximum_iterations": 100,
+      "method": "random_greedy",
+      "random_seed": 0,
+      "runtime_seconds": 0.004108314984478056,
+      "sta_calls": 3,
+      "termination": "no_feasible_change",
+      "total_iterations": 8
+    },
+    "logical_effort_guided": {
+      "accepted_iterations": 1,
+      "final": {
+        "area": 19.2,
+        "circuit_delay_ns": 0.4266680000000001,
+        "compliance": {
+          "area_compliant": true,
+          "power_compliant": true,
+          "timing_compliant": true
+        },
+        "cost": 1.377432641028257,
+        "dynamic_power_uW": 0.30600000000000005,
+        "leakage_power_uW": 0.9600000000000001,
+        "power_uW": 1.266,
+        "tns_ns": 0,
+        "wns_ns": 0.0033319999999998906
+      },
+      "heuristic": "slack_weighted_capacitance",
+      "maximum_iterations": 100,
+      "method": "slack_weighted_capacitance",
+      "random_seed": null,
+      "runtime_seconds": 0.007983734947629273,
+      "sta_calls": 6,
+      "termination": "no_feasible_change",
+      "total_iterations": 2
+    }
+  },
+  "post_optimization": {
+    "area": 19.2,
+    "circuit_delay_ns": 0.4266680000000001,
+    "compliance": {
+      "area_compliant": true,
+      "power_compliant": true,
+      "timing_compliant": true
+    },
+    "cost": 1.377432641028257,
+    "dynamic_power_uW": 0.30600000000000005,
+    "leakage_power_uW": 0.9600000000000001,
+    "power_uW": 1.266,
+    "tns_ns": 0,
+    "wns_ns": 0.0033319999999998906
+  },
+  "validation": {
+    "circuit_name": "c06_deep_critical_path",
+    "counts": {
+      "gates": 10,
+      "nets": 14,
+      "primary_inputs": 4,
+      "primary_outputs": 1
+    },
+    "errors": [],
+    "inputs": {
+      "config": "/home/halfblood/common/uni/master/VLSI/project/impl/Input_Files/circuits/valid/c06_deep_critical_path/config.json",
+      "netlist": "/home/halfblood/common/uni/master/VLSI/project/impl/Input_Files/circuits/valid/c06_deep_critical_path/netlist.txt"
+    },
+    "stages": {
+      "cell_library": "passed",
+      "configuration": "passed",
+      "dag": "passed",
+      "netlist": "passed"
+    },
+    "valid": true
+  }
+}

@@ -1,0 +1,5141 @@
+{
+  "circuit_name": "c15_high_fanout_sizing_fabric",
+  "counts": {
+    "gates": 118,
+    "nets": 136,
+    "nodes": 144,
+    "primary_inputs": 18,
+    "primary_outputs": 8
+  },
+  "nets": [
+    {
+      "id": "net:A",
+      "name": "A",
+      "source": "input:A",
+      "targets": [
+        {
+          "node": "gate:G1",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B",
+      "name": "B",
+      "source": "input:B",
+      "targets": [
+        {
+          "node": "gate:G2",
+          "pin": 0
+        },
+        {
+          "node": "gate:G9",
+          "pin": 2
+        },
+        {
+          "node": "gate:G15",
+          "pin": 1
+        }
+      ]
+    },
+    {
+      "id": "net:C",
+      "name": "C",
+      "source": "input:C",
+      "targets": [
+        {
+          "node": "gate:G3",
+          "pin": 0
+        },
+        {
+          "node": "gate:G10",
+          "pin": 2
+        },
+        {
+          "node": "gate:G16",
+          "pin": 1
+        }
+      ]
+    },
+    {
+      "id": "net:D",
+      "name": "D",
+      "source": "input:D",
+      "targets": [
+        {
+          "node": "gate:G4",
+          "pin": 0
+        },
+        {
+          "node": "gate:G11",
+          "pin": 2
+        },
+        {
+          "node": "gate:G17",
+          "pin": 1
+        }
+      ]
+    },
+    {
+      "id": "net:E",
+      "name": "E",
+      "source": "input:E",
+      "targets": [
+        {
+          "node": "gate:G5",
+          "pin": 0
+        },
+        {
+          "node": "gate:G12",
+          "pin": 2
+        },
+        {
+          "node": "gate:G18",
+          "pin": 1
+        }
+      ]
+    },
+    {
+      "id": "net:F",
+      "name": "F",
+      "source": "input:F",
+      "targets": [
+        {
+          "node": "gate:G6",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:G",
+      "name": "G",
+      "source": "input:G",
+      "targets": [
+        {
+          "node": "gate:G7",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:H",
+      "name": "H",
+      "source": "input:H",
+      "targets": [
+        {
+          "node": "gate:G3",
+          "pin": 1
+        },
+        {
+          "node": "gate:G8",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:I",
+      "name": "I",
+      "source": "input:I",
+      "targets": [
+        {
+          "node": "gate:G4",
+          "pin": 1
+        },
+        {
+          "node": "gate:G9",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:J",
+      "name": "J",
+      "source": "input:J",
+      "targets": [
+        {
+          "node": "gate:G5",
+          "pin": 1
+        },
+        {
+          "node": "gate:G10",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:K",
+      "name": "K",
+      "source": "input:K",
+      "targets": [
+        {
+          "node": "gate:G6",
+          "pin": 1
+        },
+        {
+          "node": "gate:G11",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:L",
+      "name": "L",
+      "source": "input:L",
+      "targets": [
+        {
+          "node": "gate:G7",
+          "pin": 1
+        },
+        {
+          "node": "gate:G12",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:M",
+      "name": "M",
+      "source": "input:M",
+      "targets": [
+        {
+          "node": "gate:G8",
+          "pin": 1
+        },
+        {
+          "node": "gate:G13",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:N",
+      "name": "N",
+      "source": "input:N",
+      "targets": [
+        {
+          "node": "gate:G9",
+          "pin": 1
+        },
+        {
+          "node": "gate:G14",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:O",
+      "name": "O",
+      "source": "input:O",
+      "targets": [
+        {
+          "node": "gate:G10",
+          "pin": 1
+        },
+        {
+          "node": "gate:G15",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:P",
+      "name": "P",
+      "source": "input:P",
+      "targets": [
+        {
+          "node": "gate:G11",
+          "pin": 1
+        },
+        {
+          "node": "gate:G16",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:Q",
+      "name": "Q",
+      "source": "input:Q",
+      "targets": [
+        {
+          "node": "gate:G12",
+          "pin": 1
+        },
+        {
+          "node": "gate:G17",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:R",
+      "name": "R",
+      "source": "input:R",
+      "targets": [
+        {
+          "node": "gate:G18",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:P1",
+      "name": "P1",
+      "source": "gate:G1",
+      "targets": [
+        {
+          "node": "gate:G19",
+          "pin": 0
+        },
+        {
+          "node": "gate:G56",
+          "pin": 1
+        },
+        {
+          "node": "gate:G73",
+          "pin": 1
+        },
+        {
+          "node": "gate:G90",
+          "pin": 1
+        },
+        {
+          "node": "gate:G114",
+          "pin": 2
+        },
+        {
+          "node": "gate:G116",
+          "pin": 1
+        }
+      ]
+    },
+    {
+      "id": "net:P2",
+      "name": "P2",
+      "source": "gate:G2",
+      "targets": [
+        {
+          "node": "gate:G19",
+          "pin": 1
+        },
+        {
+          "node": "gate:G39",
+          "pin": 1
+        },
+        {
+          "node": "gate:G48",
+          "pin": 1
+        },
+        {
+          "node": "gate:G65",
+          "pin": 1
+        },
+        {
+          "node": "gate:G69",
+          "pin": 2
+        },
+        {
+          "node": "gate:G82",
+          "pin": 1
+        },
+        {
+          "node": "gate:G99",
+          "pin": 1
+        },
+        {
+          "node": "gate:G106",
+          "pin": 2
+        },
+        {
+          "node": "gate:G108",
+          "pin": 1
+        }
+      ]
+    },
+    {
+      "id": "net:P3",
+      "name": "P3",
+      "source": "gate:G3",
+      "targets": [
+        {
+          "node": "gate:G20",
+          "pin": 0
+        },
+        {
+          "node": "gate:G57",
+          "pin": 1
+        },
+        {
+          "node": "gate:G61",
+          "pin": 2
+        },
+        {
+          "node": "gate:G74",
+          "pin": 1
+        },
+        {
+          "node": "gate:G91",
+          "pin": 1
+        },
+        {
+          "node": "gate:G98",
+          "pin": 2
+        },
+        {
+          "node": "gate:G117",
+          "pin": 1
+        }
+      ]
+    },
+    {
+      "id": "net:P4",
+      "name": "P4",
+      "source": "gate:G4",
+      "targets": [
+        {
+          "node": "gate:G20",
+          "pin": 1
+        },
+        {
+          "node": "gate:G40",
+          "pin": 1
+        },
+        {
+          "node": "gate:G53",
+          "pin": 2
+        },
+        {
+          "node": "gate:G66",
+          "pin": 1
+        },
+        {
+          "node": "gate:G83",
+          "pin": 1
+        },
+        {
+          "node": "gate:G100",
+          "pin": 1
+        }
+      ]
+    },
+    {
+      "id": "net:P5",
+      "name": "P5",
+      "source": "gate:G5",
+      "targets": [
+        {
+          "node": "gate:G21",
+          "pin": 0
+        },
+        {
+          "node": "gate:G45",
+          "pin": 2
+        },
+        {
+          "node": "gate:G49",
+          "pin": 1
+        },
+        {
+          "node": "gate:G58",
+          "pin": 1
+        },
+        {
+          "node": "gate:G70",
+          "pin": 2
+        },
+        {
+          "node": "gate:G75",
+          "pin": 1
+        },
+        {
+          "node": "gate:G92",
+          "pin": 1
+        },
+        {
+          "node": "gate:G109",
+          "pin": 1
+        },
+        {
+          "node": "gate:G118",
+          "pin": 1
+        }
+      ]
+    },
+    {
+      "id": "net:P6",
+      "name": "P6",
+      "source": "gate:G6",
+      "targets": [
+        {
+          "node": "gate:G21",
+          "pin": 1
+        },
+        {
+          "node": "gate:G41",
+          "pin": 1
+        },
+        {
+          "node": "gate:G62",
+          "pin": 2
+        },
+        {
+          "node": "gate:G67",
+          "pin": 1
+        },
+        {
+          "node": "gate:G84",
+          "pin": 1
+        },
+        {
+          "node": "gate:G101",
+          "pin": 1
+        }
+      ]
+    },
+    {
+      "id": "net:P7",
+      "name": "P7",
+      "source": "gate:G7",
+      "targets": [
+        {
+          "node": "gate:G22",
+          "pin": 0
+        },
+        {
+          "node": "gate:G50",
+          "pin": 1
+        },
+        {
+          "node": "gate:G54",
+          "pin": 2
+        },
+        {
+          "node": "gate:G76",
+          "pin": 1
+        },
+        {
+          "node": "gate:G79",
+          "pin": 2
+        },
+        {
+          "node": "gate:G93",
+          "pin": 1
+        },
+        {
+          "node": "gate:G110",
+          "pin": 1
+        }
+      ]
+    },
+    {
+      "id": "net:P8",
+      "name": "P8",
+      "source": "gate:G8",
+      "targets": [
+        {
+          "node": "gate:G22",
+          "pin": 1
+        },
+        {
+          "node": "gate:G42",
+          "pin": 1
+        },
+        {
+          "node": "gate:G46",
+          "pin": 2
+        },
+        {
+          "node": "gate:G59",
+          "pin": 1
+        },
+        {
+          "node": "gate:G68",
+          "pin": 1
+        },
+        {
+          "node": "gate:G71",
+          "pin": 2
+        },
+        {
+          "node": "gate:G85",
+          "pin": 1
+        },
+        {
+          "node": "gate:G102",
+          "pin": 1
+        }
+      ]
+    },
+    {
+      "id": "net:P9",
+      "name": "P9",
+      "source": "gate:G9",
+      "targets": [
+        {
+          "node": "gate:G23",
+          "pin": 0
+        },
+        {
+          "node": "gate:G51",
+          "pin": 1
+        },
+        {
+          "node": "gate:G63",
+          "pin": 2
+        },
+        {
+          "node": "gate:G77",
+          "pin": 1
+        },
+        {
+          "node": "gate:G94",
+          "pin": 1
+        },
+        {
+          "node": "gate:G111",
+          "pin": 1
+        }
+      ]
+    },
+    {
+      "id": "net:P10",
+      "name": "P10",
+      "source": "gate:G10",
+      "targets": [
+        {
+          "node": "gate:G23",
+          "pin": 1
+        },
+        {
+          "node": "gate:G43",
+          "pin": 1
+        },
+        {
+          "node": "gate:G55",
+          "pin": 2
+        },
+        {
+          "node": "gate:G60",
+          "pin": 1
+        },
+        {
+          "node": "gate:G80",
+          "pin": 2
+        },
+        {
+          "node": "gate:G86",
+          "pin": 1
+        },
+        {
+          "node": "gate:G103",
+          "pin": 1
+        },
+        {
+          "node": "gate:G111",
+          "pin": 2
+        }
+      ]
+    },
+    {
+      "id": "net:P11",
+      "name": "P11",
+      "source": "gate:G11",
+      "targets": [
+        {
+          "node": "gate:G24",
+          "pin": 0
+        },
+        {
+          "node": "gate:G47",
+          "pin": 2
+        },
+        {
+          "node": "gate:G52",
+          "pin": 1
+        },
+        {
+          "node": "gate:G69",
+          "pin": 1
+        },
+        {
+          "node": "gate:G72",
+          "pin": 2
+        },
+        {
+          "node": "gate:G78",
+          "pin": 1
+        },
+        {
+          "node": "gate:G95",
+          "pin": 1
+        },
+        {
+          "node": "gate:G103",
+          "pin": 2
+        },
+        {
+          "node": "gate:G112",
+          "pin": 1
+        }
+      ]
+    },
+    {
+      "id": "net:P12",
+      "name": "P12",
+      "source": "gate:G12",
+      "targets": [
+        {
+          "node": "gate:G24",
+          "pin": 1
+        },
+        {
+          "node": "gate:G44",
+          "pin": 1
+        },
+        {
+          "node": "gate:G61",
+          "pin": 1
+        },
+        {
+          "node": "gate:G64",
+          "pin": 2
+        },
+        {
+          "node": "gate:G87",
+          "pin": 1
+        },
+        {
+          "node": "gate:G95",
+          "pin": 2
+        },
+        {
+          "node": "gate:G104",
+          "pin": 1
+        }
+      ]
+    },
+    {
+      "id": "net:P13",
+      "name": "P13",
+      "source": "gate:G13",
+      "targets": [
+        {
+          "node": "gate:G25",
+          "pin": 0
+        },
+        {
+          "node": "gate:G53",
+          "pin": 1
+        },
+        {
+          "node": "gate:G56",
+          "pin": 2
+        },
+        {
+          "node": "gate:G70",
+          "pin": 1
+        },
+        {
+          "node": "gate:G87",
+          "pin": 2
+        },
+        {
+          "node": "gate:G96",
+          "pin": 1
+        },
+        {
+          "node": "gate:G112",
+          "pin": 2
+        },
+        {
+          "node": "gate:G113",
+          "pin": 1
+        }
+      ]
+    },
+    {
+      "id": "net:P14",
+      "name": "P14",
+      "source": "gate:G14",
+      "targets": [
+        {
+          "node": "gate:G25",
+          "pin": 1
+        },
+        {
+          "node": "gate:G45",
+          "pin": 1
+        },
+        {
+          "node": "gate:G48",
+          "pin": 2
+        },
+        {
+          "node": "gate:G62",
+          "pin": 1
+        },
+        {
+          "node": "gate:G79",
+          "pin": 1
+        },
+        {
+          "node": "gate:G88",
+          "pin": 1
+        },
+        {
+          "node": "gate:G104",
+          "pin": 2
+        },
+        {
+          "node": "gate:G105",
+          "pin": 1
+        }
+      ]
+    },
+    {
+      "id": "net:P15",
+      "name": "P15",
+      "source": "gate:G15",
+      "targets": [
+        {
+          "node": "gate:G26",
+          "pin": 0
+        },
+        {
+          "node": "gate:G54",
+          "pin": 1
+        },
+        {
+          "node": "gate:G71",
+          "pin": 1
+        },
+        {
+          "node": "gate:G96",
+          "pin": 2
+        },
+        {
+          "node": "gate:G97",
+          "pin": 1
+        },
+        {
+          "node": "gate:G114",
+          "pin": 1
+        }
+      ]
+    },
+    {
+      "id": "net:P16",
+      "name": "P16",
+      "source": "gate:G16",
+      "targets": [
+        {
+          "node": "gate:G26",
+          "pin": 1
+        },
+        {
+          "node": "gate:G46",
+          "pin": 1
+        },
+        {
+          "node": "gate:G63",
+          "pin": 1
+        },
+        {
+          "node": "gate:G80",
+          "pin": 1
+        },
+        {
+          "node": "gate:G88",
+          "pin": 2
+        },
+        {
+          "node": "gate:G106",
+          "pin": 1
+        },
+        {
+          "node": "gate:G113",
+          "pin": 2
+        }
+      ]
+    },
+    {
+      "id": "net:P17",
+      "name": "P17",
+      "source": "gate:G17",
+      "targets": [
+        {
+          "node": "gate:G27",
+          "pin": 0
+        },
+        {
+          "node": "gate:G55",
+          "pin": 1
+        },
+        {
+          "node": "gate:G72",
+          "pin": 1
+        },
+        {
+          "node": "gate:G89",
+          "pin": 1
+        },
+        {
+          "node": "gate:G98",
+          "pin": 1
+        },
+        {
+          "node": "gate:G105",
+          "pin": 2
+        },
+        {
+          "node": "gate:G115",
+          "pin": 1
+        }
+      ]
+    },
+    {
+      "id": "net:P18",
+      "name": "P18",
+      "source": "gate:G18",
+      "targets": [
+        {
+          "node": "gate:G27",
+          "pin": 1
+        },
+        {
+          "node": "gate:G47",
+          "pin": 1
+        },
+        {
+          "node": "gate:G64",
+          "pin": 1
+        },
+        {
+          "node": "gate:G81",
+          "pin": 1
+        },
+        {
+          "node": "gate:G97",
+          "pin": 2
+        },
+        {
+          "node": "gate:G107",
+          "pin": 1
+        }
+      ]
+    },
+    {
+      "id": "net:R1_1",
+      "name": "R1_1",
+      "source": "gate:G19",
+      "targets": [
+        {
+          "node": "gate:G28",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:R1_2",
+      "name": "R1_2",
+      "source": "gate:G20",
+      "targets": [
+        {
+          "node": "gate:G28",
+          "pin": 1
+        }
+      ]
+    },
+    {
+      "id": "net:R1_3",
+      "name": "R1_3",
+      "source": "gate:G21",
+      "targets": [
+        {
+          "node": "gate:G29",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:R1_4",
+      "name": "R1_4",
+      "source": "gate:G22",
+      "targets": [
+        {
+          "node": "gate:G29",
+          "pin": 1
+        }
+      ]
+    },
+    {
+      "id": "net:R1_5",
+      "name": "R1_5",
+      "source": "gate:G23",
+      "targets": [
+        {
+          "node": "gate:G30",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:R1_6",
+      "name": "R1_6",
+      "source": "gate:G24",
+      "targets": [
+        {
+          "node": "gate:G30",
+          "pin": 1
+        }
+      ]
+    },
+    {
+      "id": "net:R1_7",
+      "name": "R1_7",
+      "source": "gate:G25",
+      "targets": [
+        {
+          "node": "gate:G31",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:R1_8",
+      "name": "R1_8",
+      "source": "gate:G26",
+      "targets": [
+        {
+          "node": "gate:G31",
+          "pin": 1
+        }
+      ]
+    },
+    {
+      "id": "net:R1_9",
+      "name": "R1_9",
+      "source": "gate:G27",
+      "targets": [
+        {
+          "node": "gate:G32",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:R2_1",
+      "name": "R2_1",
+      "source": "gate:G28",
+      "targets": [
+        {
+          "node": "gate:G33",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:R2_2",
+      "name": "R2_2",
+      "source": "gate:G29",
+      "targets": [
+        {
+          "node": "gate:G33",
+          "pin": 1
+        }
+      ]
+    },
+    {
+      "id": "net:R2_3",
+      "name": "R2_3",
+      "source": "gate:G30",
+      "targets": [
+        {
+          "node": "gate:G34",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:R2_4",
+      "name": "R2_4",
+      "source": "gate:G31",
+      "targets": [
+        {
+          "node": "gate:G34",
+          "pin": 1
+        }
+      ]
+    },
+    {
+      "id": "net:R2_5",
+      "name": "R2_5",
+      "source": "gate:G32",
+      "targets": [
+        {
+          "node": "gate:G35",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:R3_1",
+      "name": "R3_1",
+      "source": "gate:G33",
+      "targets": [
+        {
+          "node": "gate:G36",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:R3_2",
+      "name": "R3_2",
+      "source": "gate:G34",
+      "targets": [
+        {
+          "node": "gate:G36",
+          "pin": 1
+        }
+      ]
+    },
+    {
+      "id": "net:R3_3",
+      "name": "R3_3",
+      "source": "gate:G35",
+      "targets": [
+        {
+          "node": "gate:G37",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:R4_1",
+      "name": "R4_1",
+      "source": "gate:G36",
+      "targets": [
+        {
+          "node": "gate:G38",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:R4_2",
+      "name": "R4_2",
+      "source": "gate:G37",
+      "targets": [
+        {
+          "node": "gate:G38",
+          "pin": 1
+        }
+      ]
+    },
+    {
+      "id": "net:R5_1",
+      "name": "R5_1",
+      "source": "gate:G38",
+      "targets": [
+        {
+          "node": "gate:G39",
+          "pin": 0
+        },
+        {
+          "node": "gate:G49",
+          "pin": 0
+        },
+        {
+          "node": "gate:G59",
+          "pin": 0
+        },
+        {
+          "node": "gate:G69",
+          "pin": 0
+        },
+        {
+          "node": "gate:G79",
+          "pin": 0
+        },
+        {
+          "node": "gate:G89",
+          "pin": 0
+        },
+        {
+          "node": "gate:G99",
+          "pin": 0
+        },
+        {
+          "node": "gate:G109",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B1_1",
+      "name": "B1_1",
+      "source": "gate:G39",
+      "targets": [
+        {
+          "node": "gate:G40",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B1_2",
+      "name": "B1_2",
+      "source": "gate:G40",
+      "targets": [
+        {
+          "node": "gate:G41",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B1_3",
+      "name": "B1_3",
+      "source": "gate:G41",
+      "targets": [
+        {
+          "node": "gate:G42",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B1_4",
+      "name": "B1_4",
+      "source": "gate:G42",
+      "targets": [
+        {
+          "node": "gate:G43",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B1_5",
+      "name": "B1_5",
+      "source": "gate:G43",
+      "targets": [
+        {
+          "node": "gate:G44",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B1_6",
+      "name": "B1_6",
+      "source": "gate:G44",
+      "targets": [
+        {
+          "node": "gate:G45",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B1_7",
+      "name": "B1_7",
+      "source": "gate:G45",
+      "targets": [
+        {
+          "node": "gate:G46",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B1_8",
+      "name": "B1_8",
+      "source": "gate:G46",
+      "targets": [
+        {
+          "node": "gate:G47",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B1_9",
+      "name": "B1_9",
+      "source": "gate:G47",
+      "targets": [
+        {
+          "node": "gate:G48",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:O1",
+      "name": "O1",
+      "source": "gate:G48",
+      "targets": [
+        {
+          "node": "output:O1",
+          "pin": null
+        }
+      ]
+    },
+    {
+      "id": "net:B2_1",
+      "name": "B2_1",
+      "source": "gate:G49",
+      "targets": [
+        {
+          "node": "gate:G50",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B2_2",
+      "name": "B2_2",
+      "source": "gate:G50",
+      "targets": [
+        {
+          "node": "gate:G51",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B2_3",
+      "name": "B2_3",
+      "source": "gate:G51",
+      "targets": [
+        {
+          "node": "gate:G52",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B2_4",
+      "name": "B2_4",
+      "source": "gate:G52",
+      "targets": [
+        {
+          "node": "gate:G53",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B2_5",
+      "name": "B2_5",
+      "source": "gate:G53",
+      "targets": [
+        {
+          "node": "gate:G54",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B2_6",
+      "name": "B2_6",
+      "source": "gate:G54",
+      "targets": [
+        {
+          "node": "gate:G55",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B2_7",
+      "name": "B2_7",
+      "source": "gate:G55",
+      "targets": [
+        {
+          "node": "gate:G56",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B2_8",
+      "name": "B2_8",
+      "source": "gate:G56",
+      "targets": [
+        {
+          "node": "gate:G57",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B2_9",
+      "name": "B2_9",
+      "source": "gate:G57",
+      "targets": [
+        {
+          "node": "gate:G58",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:O2",
+      "name": "O2",
+      "source": "gate:G58",
+      "targets": [
+        {
+          "node": "output:O2",
+          "pin": null
+        }
+      ]
+    },
+    {
+      "id": "net:B3_1",
+      "name": "B3_1",
+      "source": "gate:G59",
+      "targets": [
+        {
+          "node": "gate:G60",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B3_2",
+      "name": "B3_2",
+      "source": "gate:G60",
+      "targets": [
+        {
+          "node": "gate:G61",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B3_3",
+      "name": "B3_3",
+      "source": "gate:G61",
+      "targets": [
+        {
+          "node": "gate:G62",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B3_4",
+      "name": "B3_4",
+      "source": "gate:G62",
+      "targets": [
+        {
+          "node": "gate:G63",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B3_5",
+      "name": "B3_5",
+      "source": "gate:G63",
+      "targets": [
+        {
+          "node": "gate:G64",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B3_6",
+      "name": "B3_6",
+      "source": "gate:G64",
+      "targets": [
+        {
+          "node": "gate:G65",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B3_7",
+      "name": "B3_7",
+      "source": "gate:G65",
+      "targets": [
+        {
+          "node": "gate:G66",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B3_8",
+      "name": "B3_8",
+      "source": "gate:G66",
+      "targets": [
+        {
+          "node": "gate:G67",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B3_9",
+      "name": "B3_9",
+      "source": "gate:G67",
+      "targets": [
+        {
+          "node": "gate:G68",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:O3",
+      "name": "O3",
+      "source": "gate:G68",
+      "targets": [
+        {
+          "node": "output:O3",
+          "pin": null
+        }
+      ]
+    },
+    {
+      "id": "net:B4_1",
+      "name": "B4_1",
+      "source": "gate:G69",
+      "targets": [
+        {
+          "node": "gate:G70",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B4_2",
+      "name": "B4_2",
+      "source": "gate:G70",
+      "targets": [
+        {
+          "node": "gate:G71",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B4_3",
+      "name": "B4_3",
+      "source": "gate:G71",
+      "targets": [
+        {
+          "node": "gate:G72",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B4_4",
+      "name": "B4_4",
+      "source": "gate:G72",
+      "targets": [
+        {
+          "node": "gate:G73",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B4_5",
+      "name": "B4_5",
+      "source": "gate:G73",
+      "targets": [
+        {
+          "node": "gate:G74",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B4_6",
+      "name": "B4_6",
+      "source": "gate:G74",
+      "targets": [
+        {
+          "node": "gate:G75",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B4_7",
+      "name": "B4_7",
+      "source": "gate:G75",
+      "targets": [
+        {
+          "node": "gate:G76",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B4_8",
+      "name": "B4_8",
+      "source": "gate:G76",
+      "targets": [
+        {
+          "node": "gate:G77",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B4_9",
+      "name": "B4_9",
+      "source": "gate:G77",
+      "targets": [
+        {
+          "node": "gate:G78",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:O4",
+      "name": "O4",
+      "source": "gate:G78",
+      "targets": [
+        {
+          "node": "output:O4",
+          "pin": null
+        }
+      ]
+    },
+    {
+      "id": "net:B5_1",
+      "name": "B5_1",
+      "source": "gate:G79",
+      "targets": [
+        {
+          "node": "gate:G80",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B5_2",
+      "name": "B5_2",
+      "source": "gate:G80",
+      "targets": [
+        {
+          "node": "gate:G81",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B5_3",
+      "name": "B5_3",
+      "source": "gate:G81",
+      "targets": [
+        {
+          "node": "gate:G82",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B5_4",
+      "name": "B5_4",
+      "source": "gate:G82",
+      "targets": [
+        {
+          "node": "gate:G83",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B5_5",
+      "name": "B5_5",
+      "source": "gate:G83",
+      "targets": [
+        {
+          "node": "gate:G84",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B5_6",
+      "name": "B5_6",
+      "source": "gate:G84",
+      "targets": [
+        {
+          "node": "gate:G85",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B5_7",
+      "name": "B5_7",
+      "source": "gate:G85",
+      "targets": [
+        {
+          "node": "gate:G86",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B5_8",
+      "name": "B5_8",
+      "source": "gate:G86",
+      "targets": [
+        {
+          "node": "gate:G87",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B5_9",
+      "name": "B5_9",
+      "source": "gate:G87",
+      "targets": [
+        {
+          "node": "gate:G88",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:O5",
+      "name": "O5",
+      "source": "gate:G88",
+      "targets": [
+        {
+          "node": "output:O5",
+          "pin": null
+        }
+      ]
+    },
+    {
+      "id": "net:B6_1",
+      "name": "B6_1",
+      "source": "gate:G89",
+      "targets": [
+        {
+          "node": "gate:G90",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B6_2",
+      "name": "B6_2",
+      "source": "gate:G90",
+      "targets": [
+        {
+          "node": "gate:G91",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B6_3",
+      "name": "B6_3",
+      "source": "gate:G91",
+      "targets": [
+        {
+          "node": "gate:G92",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B6_4",
+      "name": "B6_4",
+      "source": "gate:G92",
+      "targets": [
+        {
+          "node": "gate:G93",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B6_5",
+      "name": "B6_5",
+      "source": "gate:G93",
+      "targets": [
+        {
+          "node": "gate:G94",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B6_6",
+      "name": "B6_6",
+      "source": "gate:G94",
+      "targets": [
+        {
+          "node": "gate:G95",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B6_7",
+      "name": "B6_7",
+      "source": "gate:G95",
+      "targets": [
+        {
+          "node": "gate:G96",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B6_8",
+      "name": "B6_8",
+      "source": "gate:G96",
+      "targets": [
+        {
+          "node": "gate:G97",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B6_9",
+      "name": "B6_9",
+      "source": "gate:G97",
+      "targets": [
+        {
+          "node": "gate:G98",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:O6",
+      "name": "O6",
+      "source": "gate:G98",
+      "targets": [
+        {
+          "node": "output:O6",
+          "pin": null
+        }
+      ]
+    },
+    {
+      "id": "net:B7_1",
+      "name": "B7_1",
+      "source": "gate:G99",
+      "targets": [
+        {
+          "node": "gate:G100",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B7_2",
+      "name": "B7_2",
+      "source": "gate:G100",
+      "targets": [
+        {
+          "node": "gate:G101",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B7_3",
+      "name": "B7_3",
+      "source": "gate:G101",
+      "targets": [
+        {
+          "node": "gate:G102",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B7_4",
+      "name": "B7_4",
+      "source": "gate:G102",
+      "targets": [
+        {
+          "node": "gate:G103",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B7_5",
+      "name": "B7_5",
+      "source": "gate:G103",
+      "targets": [
+        {
+          "node": "gate:G104",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B7_6",
+      "name": "B7_6",
+      "source": "gate:G104",
+      "targets": [
+        {
+          "node": "gate:G105",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B7_7",
+      "name": "B7_7",
+      "source": "gate:G105",
+      "targets": [
+        {
+          "node": "gate:G106",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B7_8",
+      "name": "B7_8",
+      "source": "gate:G106",
+      "targets": [
+        {
+          "node": "gate:G107",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B7_9",
+      "name": "B7_9",
+      "source": "gate:G107",
+      "targets": [
+        {
+          "node": "gate:G108",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:O7",
+      "name": "O7",
+      "source": "gate:G108",
+      "targets": [
+        {
+          "node": "output:O7",
+          "pin": null
+        }
+      ]
+    },
+    {
+      "id": "net:B8_1",
+      "name": "B8_1",
+      "source": "gate:G109",
+      "targets": [
+        {
+          "node": "gate:G110",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B8_2",
+      "name": "B8_2",
+      "source": "gate:G110",
+      "targets": [
+        {
+          "node": "gate:G111",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B8_3",
+      "name": "B8_3",
+      "source": "gate:G111",
+      "targets": [
+        {
+          "node": "gate:G112",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B8_4",
+      "name": "B8_4",
+      "source": "gate:G112",
+      "targets": [
+        {
+          "node": "gate:G113",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B8_5",
+      "name": "B8_5",
+      "source": "gate:G113",
+      "targets": [
+        {
+          "node": "gate:G114",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B8_6",
+      "name": "B8_6",
+      "source": "gate:G114",
+      "targets": [
+        {
+          "node": "gate:G115",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B8_7",
+      "name": "B8_7",
+      "source": "gate:G115",
+      "targets": [
+        {
+          "node": "gate:G116",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B8_8",
+      "name": "B8_8",
+      "source": "gate:G116",
+      "targets": [
+        {
+          "node": "gate:G117",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:B8_9",
+      "name": "B8_9",
+      "source": "gate:G117",
+      "targets": [
+        {
+          "node": "gate:G118",
+          "pin": 0
+        }
+      ]
+    },
+    {
+      "id": "net:O8",
+      "name": "O8",
+      "source": "gate:G118",
+      "targets": [
+        {
+          "node": "output:O8",
+          "pin": null
+        }
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "id": "input:A",
+      "kind": "input",
+      "level": 0,
+      "name": "A"
+    },
+    {
+      "id": "input:B",
+      "kind": "input",
+      "level": 0,
+      "name": "B"
+    },
+    {
+      "id": "input:C",
+      "kind": "input",
+      "level": 0,
+      "name": "C"
+    },
+    {
+      "id": "input:D",
+      "kind": "input",
+      "level": 0,
+      "name": "D"
+    },
+    {
+      "id": "input:E",
+      "kind": "input",
+      "level": 0,
+      "name": "E"
+    },
+    {
+      "id": "input:F",
+      "kind": "input",
+      "level": 0,
+      "name": "F"
+    },
+    {
+      "id": "input:G",
+      "kind": "input",
+      "level": 0,
+      "name": "G"
+    },
+    {
+      "id": "input:H",
+      "kind": "input",
+      "level": 0,
+      "name": "H"
+    },
+    {
+      "id": "input:I",
+      "kind": "input",
+      "level": 0,
+      "name": "I"
+    },
+    {
+      "id": "input:J",
+      "kind": "input",
+      "level": 0,
+      "name": "J"
+    },
+    {
+      "id": "input:K",
+      "kind": "input",
+      "level": 0,
+      "name": "K"
+    },
+    {
+      "id": "input:L",
+      "kind": "input",
+      "level": 0,
+      "name": "L"
+    },
+    {
+      "id": "input:M",
+      "kind": "input",
+      "level": 0,
+      "name": "M"
+    },
+    {
+      "id": "input:N",
+      "kind": "input",
+      "level": 0,
+      "name": "N"
+    },
+    {
+      "id": "input:O",
+      "kind": "input",
+      "level": 0,
+      "name": "O"
+    },
+    {
+      "id": "input:P",
+      "kind": "input",
+      "level": 0,
+      "name": "P"
+    },
+    {
+      "id": "input:Q",
+      "kind": "input",
+      "level": 0,
+      "name": "Q"
+    },
+    {
+      "id": "input:R",
+      "kind": "input",
+      "level": 0,
+      "name": "R"
+    },
+    {
+      "gate_type": "INV",
+      "id": "gate:G1",
+      "kind": "gate",
+      "level": 1,
+      "name": "G1"
+    },
+    {
+      "gate_type": "BUF",
+      "id": "gate:G2",
+      "kind": "gate",
+      "level": 1,
+      "name": "G2"
+    },
+    {
+      "gate_type": "NAND2",
+      "id": "gate:G3",
+      "kind": "gate",
+      "level": 1,
+      "name": "G3"
+    },
+    {
+      "gate_type": "NOR2",
+      "id": "gate:G4",
+      "kind": "gate",
+      "level": 1,
+      "name": "G4"
+    },
+    {
+      "gate_type": "AND2",
+      "id": "gate:G5",
+      "kind": "gate",
+      "level": 1,
+      "name": "G5"
+    },
+    {
+      "gate_type": "OR2",
+      "id": "gate:G6",
+      "kind": "gate",
+      "level": 1,
+      "name": "G6"
+    },
+    {
+      "gate_type": "XOR2",
+      "id": "gate:G7",
+      "kind": "gate",
+      "level": 1,
+      "name": "G7"
+    },
+    {
+      "gate_type": "XNOR2",
+      "id": "gate:G8",
+      "kind": "gate",
+      "level": 1,
+      "name": "G8"
+    },
+    {
+      "gate_type": "NAND3",
+      "id": "gate:G9",
+      "kind": "gate",
+      "level": 1,
+      "name": "G9"
+    },
+    {
+      "gate_type": "NOR3",
+      "id": "gate:G10",
+      "kind": "gate",
+      "level": 1,
+      "name": "G10"
+    },
+    {
+      "gate_type": "AND3",
+      "id": "gate:G11",
+      "kind": "gate",
+      "level": 1,
+      "name": "G11"
+    },
+    {
+      "gate_type": "OR3",
+      "id": "gate:G12",
+      "kind": "gate",
+      "level": 1,
+      "name": "G12"
+    },
+    {
+      "gate_type": "INV",
+      "id": "gate:G13",
+      "kind": "gate",
+      "level": 1,
+      "name": "G13"
+    },
+    {
+      "gate_type": "BUF",
+      "id": "gate:G14",
+      "kind": "gate",
+      "level": 1,
+      "name": "G14"
+    },
+    {
+      "gate_type": "NAND2",
+      "id": "gate:G15",
+      "kind": "gate",
+      "level": 1,
+      "name": "G15"
+    },
+    {
+      "gate_type": "NOR2",
+      "id": "gate:G16",
+      "kind": "gate",
+      "level": 1,
+      "name": "G16"
+    },
+    {
+      "gate_type": "AND2",
+      "id": "gate:G17",
+      "kind": "gate",
+      "level": 1,
+      "name": "G17"
+    },
+    {
+      "gate_type": "OR2",
+      "id": "gate:G18",
+      "kind": "gate",
+      "level": 1,
+      "name": "G18"
+    },
+    {
+      "gate_type": "NOR2",
+      "id": "gate:G19",
+      "kind": "gate",
+      "level": 2,
+      "name": "G19"
+    },
+    {
+      "gate_type": "AND2",
+      "id": "gate:G20",
+      "kind": "gate",
+      "level": 2,
+      "name": "G20"
+    },
+    {
+      "gate_type": "OR2",
+      "id": "gate:G21",
+      "kind": "gate",
+      "level": 2,
+      "name": "G21"
+    },
+    {
+      "gate_type": "XOR2",
+      "id": "gate:G22",
+      "kind": "gate",
+      "level": 2,
+      "name": "G22"
+    },
+    {
+      "gate_type": "XNOR2",
+      "id": "gate:G23",
+      "kind": "gate",
+      "level": 2,
+      "name": "G23"
+    },
+    {
+      "gate_type": "NAND2",
+      "id": "gate:G24",
+      "kind": "gate",
+      "level": 2,
+      "name": "G24"
+    },
+    {
+      "gate_type": "NOR2",
+      "id": "gate:G25",
+      "kind": "gate",
+      "level": 2,
+      "name": "G25"
+    },
+    {
+      "gate_type": "AND2",
+      "id": "gate:G26",
+      "kind": "gate",
+      "level": 2,
+      "name": "G26"
+    },
+    {
+      "gate_type": "OR2",
+      "id": "gate:G27",
+      "kind": "gate",
+      "level": 2,
+      "name": "G27"
+    },
+    {
+      "gate_type": "AND2",
+      "id": "gate:G28",
+      "kind": "gate",
+      "level": 3,
+      "name": "G28"
+    },
+    {
+      "gate_type": "OR2",
+      "id": "gate:G29",
+      "kind": "gate",
+      "level": 3,
+      "name": "G29"
+    },
+    {
+      "gate_type": "XOR2",
+      "id": "gate:G30",
+      "kind": "gate",
+      "level": 3,
+      "name": "G30"
+    },
+    {
+      "gate_type": "XNOR2",
+      "id": "gate:G31",
+      "kind": "gate",
+      "level": 3,
+      "name": "G31"
+    },
+    {
+      "gate_type": "BUF",
+      "id": "gate:G32",
+      "kind": "gate",
+      "level": 3,
+      "name": "G32"
+    },
+    {
+      "gate_type": "OR2",
+      "id": "gate:G33",
+      "kind": "gate",
+      "level": 4,
+      "name": "G33"
+    },
+    {
+      "gate_type": "XOR2",
+      "id": "gate:G34",
+      "kind": "gate",
+      "level": 4,
+      "name": "G34"
+    },
+    {
+      "gate_type": "BUF",
+      "id": "gate:G35",
+      "kind": "gate",
+      "level": 4,
+      "name": "G35"
+    },
+    {
+      "gate_type": "XOR2",
+      "id": "gate:G36",
+      "kind": "gate",
+      "level": 5,
+      "name": "G36"
+    },
+    {
+      "gate_type": "BUF",
+      "id": "gate:G37",
+      "kind": "gate",
+      "level": 5,
+      "name": "G37"
+    },
+    {
+      "gate_type": "XNOR2",
+      "id": "gate:G38",
+      "kind": "gate",
+      "level": 6,
+      "name": "G38"
+    },
+    {
+      "gate_type": "NAND2",
+      "id": "gate:G39",
+      "kind": "gate",
+      "level": 7,
+      "name": "G39"
+    },
+    {
+      "gate_type": "NOR2",
+      "id": "gate:G40",
+      "kind": "gate",
+      "level": 8,
+      "name": "G40"
+    },
+    {
+      "gate_type": "XOR2",
+      "id": "gate:G41",
+      "kind": "gate",
+      "level": 9,
+      "name": "G41"
+    },
+    {
+      "gate_type": "AND2",
+      "id": "gate:G42",
+      "kind": "gate",
+      "level": 10,
+      "name": "G42"
+    },
+    {
+      "gate_type": "OR2",
+      "id": "gate:G43",
+      "kind": "gate",
+      "level": 11,
+      "name": "G43"
+    },
+    {
+      "gate_type": "XNOR2",
+      "id": "gate:G44",
+      "kind": "gate",
+      "level": 12,
+      "name": "G44"
+    },
+    {
+      "gate_type": "NAND3",
+      "id": "gate:G45",
+      "kind": "gate",
+      "level": 13,
+      "name": "G45"
+    },
+    {
+      "gate_type": "NOR3",
+      "id": "gate:G46",
+      "kind": "gate",
+      "level": 14,
+      "name": "G46"
+    },
+    {
+      "gate_type": "AND3",
+      "id": "gate:G47",
+      "kind": "gate",
+      "level": 15,
+      "name": "G47"
+    },
+    {
+      "gate_type": "OR3",
+      "id": "gate:G48",
+      "kind": "gate",
+      "level": 16,
+      "name": "G48"
+    },
+    {
+      "gate_type": "XOR2",
+      "id": "gate:G49",
+      "kind": "gate",
+      "level": 7,
+      "name": "G49"
+    },
+    {
+      "gate_type": "AND2",
+      "id": "gate:G50",
+      "kind": "gate",
+      "level": 8,
+      "name": "G50"
+    },
+    {
+      "gate_type": "OR2",
+      "id": "gate:G51",
+      "kind": "gate",
+      "level": 9,
+      "name": "G51"
+    },
+    {
+      "gate_type": "XNOR2",
+      "id": "gate:G52",
+      "kind": "gate",
+      "level": 10,
+      "name": "G52"
+    },
+    {
+      "gate_type": "NAND3",
+      "id": "gate:G53",
+      "kind": "gate",
+      "level": 11,
+      "name": "G53"
+    },
+    {
+      "gate_type": "NOR3",
+      "id": "gate:G54",
+      "kind": "gate",
+      "level": 12,
+      "name": "G54"
+    },
+    {
+      "gate_type": "AND3",
+      "id": "gate:G55",
+      "kind": "gate",
+      "level": 13,
+      "name": "G55"
+    },
+    {
+      "gate_type": "OR3",
+      "id": "gate:G56",
+      "kind": "gate",
+      "level": 14,
+      "name": "G56"
+    },
+    {
+      "gate_type": "NAND2",
+      "id": "gate:G57",
+      "kind": "gate",
+      "level": 15,
+      "name": "G57"
+    },
+    {
+      "gate_type": "NOR2",
+      "id": "gate:G58",
+      "kind": "gate",
+      "level": 16,
+      "name": "G58"
+    },
+    {
+      "gate_type": "OR2",
+      "id": "gate:G59",
+      "kind": "gate",
+      "level": 7,
+      "name": "G59"
+    },
+    {
+      "gate_type": "XNOR2",
+      "id": "gate:G60",
+      "kind": "gate",
+      "level": 8,
+      "name": "G60"
+    },
+    {
+      "gate_type": "NAND3",
+      "id": "gate:G61",
+      "kind": "gate",
+      "level": 9,
+      "name": "G61"
+    },
+    {
+      "gate_type": "NOR3",
+      "id": "gate:G62",
+      "kind": "gate",
+      "level": 10,
+      "name": "G62"
+    },
+    {
+      "gate_type": "AND3",
+      "id": "gate:G63",
+      "kind": "gate",
+      "level": 11,
+      "name": "G63"
+    },
+    {
+      "gate_type": "OR3",
+      "id": "gate:G64",
+      "kind": "gate",
+      "level": 12,
+      "name": "G64"
+    },
+    {
+      "gate_type": "NAND2",
+      "id": "gate:G65",
+      "kind": "gate",
+      "level": 13,
+      "name": "G65"
+    },
+    {
+      "gate_type": "NOR2",
+      "id": "gate:G66",
+      "kind": "gate",
+      "level": 14,
+      "name": "G66"
+    },
+    {
+      "gate_type": "XOR2",
+      "id": "gate:G67",
+      "kind": "gate",
+      "level": 15,
+      "name": "G67"
+    },
+    {
+      "gate_type": "AND2",
+      "id": "gate:G68",
+      "kind": "gate",
+      "level": 16,
+      "name": "G68"
+    },
+    {
+      "gate_type": "NAND3",
+      "id": "gate:G69",
+      "kind": "gate",
+      "level": 7,
+      "name": "G69"
+    },
+    {
+      "gate_type": "NOR3",
+      "id": "gate:G70",
+      "kind": "gate",
+      "level": 8,
+      "name": "G70"
+    },
+    {
+      "gate_type": "AND3",
+      "id": "gate:G71",
+      "kind": "gate",
+      "level": 9,
+      "name": "G71"
+    },
+    {
+      "gate_type": "OR3",
+      "id": "gate:G72",
+      "kind": "gate",
+      "level": 10,
+      "name": "G72"
+    },
+    {
+      "gate_type": "NAND2",
+      "id": "gate:G73",
+      "kind": "gate",
+      "level": 11,
+      "name": "G73"
+    },
+    {
+      "gate_type": "NOR2",
+      "id": "gate:G74",
+      "kind": "gate",
+      "level": 12,
+      "name": "G74"
+    },
+    {
+      "gate_type": "XOR2",
+      "id": "gate:G75",
+      "kind": "gate",
+      "level": 13,
+      "name": "G75"
+    },
+    {
+      "gate_type": "AND2",
+      "id": "gate:G76",
+      "kind": "gate",
+      "level": 14,
+      "name": "G76"
+    },
+    {
+      "gate_type": "OR2",
+      "id": "gate:G77",
+      "kind": "gate",
+      "level": 15,
+      "name": "G77"
+    },
+    {
+      "gate_type": "XNOR2",
+      "id": "gate:G78",
+      "kind": "gate",
+      "level": 16,
+      "name": "G78"
+    },
+    {
+      "gate_type": "AND3",
+      "id": "gate:G79",
+      "kind": "gate",
+      "level": 7,
+      "name": "G79"
+    },
+    {
+      "gate_type": "OR3",
+      "id": "gate:G80",
+      "kind": "gate",
+      "level": 8,
+      "name": "G80"
+    },
+    {
+      "gate_type": "NAND2",
+      "id": "gate:G81",
+      "kind": "gate",
+      "level": 9,
+      "name": "G81"
+    },
+    {
+      "gate_type": "NOR2",
+      "id": "gate:G82",
+      "kind": "gate",
+      "level": 10,
+      "name": "G82"
+    },
+    {
+      "gate_type": "XOR2",
+      "id": "gate:G83",
+      "kind": "gate",
+      "level": 11,
+      "name": "G83"
+    },
+    {
+      "gate_type": "AND2",
+      "id": "gate:G84",
+      "kind": "gate",
+      "level": 12,
+      "name": "G84"
+    },
+    {
+      "gate_type": "OR2",
+      "id": "gate:G85",
+      "kind": "gate",
+      "level": 13,
+      "name": "G85"
+    },
+    {
+      "gate_type": "XNOR2",
+      "id": "gate:G86",
+      "kind": "gate",
+      "level": 14,
+      "name": "G86"
+    },
+    {
+      "gate_type": "NAND3",
+      "id": "gate:G87",
+      "kind": "gate",
+      "level": 15,
+      "name": "G87"
+    },
+    {
+      "gate_type": "NOR3",
+      "id": "gate:G88",
+      "kind": "gate",
+      "level": 16,
+      "name": "G88"
+    },
+    {
+      "gate_type": "NAND2",
+      "id": "gate:G89",
+      "kind": "gate",
+      "level": 7,
+      "name": "G89"
+    },
+    {
+      "gate_type": "NOR2",
+      "id": "gate:G90",
+      "kind": "gate",
+      "level": 8,
+      "name": "G90"
+    },
+    {
+      "gate_type": "XOR2",
+      "id": "gate:G91",
+      "kind": "gate",
+      "level": 9,
+      "name": "G91"
+    },
+    {
+      "gate_type": "AND2",
+      "id": "gate:G92",
+      "kind": "gate",
+      "level": 10,
+      "name": "G92"
+    },
+    {
+      "gate_type": "OR2",
+      "id": "gate:G93",
+      "kind": "gate",
+      "level": 11,
+      "name": "G93"
+    },
+    {
+      "gate_type": "XNOR2",
+      "id": "gate:G94",
+      "kind": "gate",
+      "level": 12,
+      "name": "G94"
+    },
+    {
+      "gate_type": "NAND3",
+      "id": "gate:G95",
+      "kind": "gate",
+      "level": 13,
+      "name": "G95"
+    },
+    {
+      "gate_type": "NOR3",
+      "id": "gate:G96",
+      "kind": "gate",
+      "level": 14,
+      "name": "G96"
+    },
+    {
+      "gate_type": "AND3",
+      "id": "gate:G97",
+      "kind": "gate",
+      "level": 15,
+      "name": "G97"
+    },
+    {
+      "gate_type": "OR3",
+      "id": "gate:G98",
+      "kind": "gate",
+      "level": 16,
+      "name": "G98"
+    },
+    {
+      "gate_type": "XOR2",
+      "id": "gate:G99",
+      "kind": "gate",
+      "level": 7,
+      "name": "G99"
+    },
+    {
+      "gate_type": "AND2",
+      "id": "gate:G100",
+      "kind": "gate",
+      "level": 8,
+      "name": "G100"
+    },
+    {
+      "gate_type": "OR2",
+      "id": "gate:G101",
+      "kind": "gate",
+      "level": 9,
+      "name": "G101"
+    },
+    {
+      "gate_type": "XNOR2",
+      "id": "gate:G102",
+      "kind": "gate",
+      "level": 10,
+      "name": "G102"
+    },
+    {
+      "gate_type": "NAND3",
+      "id": "gate:G103",
+      "kind": "gate",
+      "level": 11,
+      "name": "G103"
+    },
+    {
+      "gate_type": "NOR3",
+      "id": "gate:G104",
+      "kind": "gate",
+      "level": 12,
+      "name": "G104"
+    },
+    {
+      "gate_type": "AND3",
+      "id": "gate:G105",
+      "kind": "gate",
+      "level": 13,
+      "name": "G105"
+    },
+    {
+      "gate_type": "OR3",
+      "id": "gate:G106",
+      "kind": "gate",
+      "level": 14,
+      "name": "G106"
+    },
+    {
+      "gate_type": "NAND2",
+      "id": "gate:G107",
+      "kind": "gate",
+      "level": 15,
+      "name": "G107"
+    },
+    {
+      "gate_type": "NOR2",
+      "id": "gate:G108",
+      "kind": "gate",
+      "level": 16,
+      "name": "G108"
+    },
+    {
+      "gate_type": "OR2",
+      "id": "gate:G109",
+      "kind": "gate",
+      "level": 7,
+      "name": "G109"
+    },
+    {
+      "gate_type": "XNOR2",
+      "id": "gate:G110",
+      "kind": "gate",
+      "level": 8,
+      "name": "G110"
+    },
+    {
+      "gate_type": "NAND3",
+      "id": "gate:G111",
+      "kind": "gate",
+      "level": 9,
+      "name": "G111"
+    },
+    {
+      "gate_type": "NOR3",
+      "id": "gate:G112",
+      "kind": "gate",
+      "level": 10,
+      "name": "G112"
+    },
+    {
+      "gate_type": "AND3",
+      "id": "gate:G113",
+      "kind": "gate",
+      "level": 11,
+      "name": "G113"
+    },
+    {
+      "gate_type": "OR3",
+      "id": "gate:G114",
+      "kind": "gate",
+      "level": 12,
+      "name": "G114"
+    },
+    {
+      "gate_type": "NAND2",
+      "id": "gate:G115",
+      "kind": "gate",
+      "level": 13,
+      "name": "G115"
+    },
+    {
+      "gate_type": "NOR2",
+      "id": "gate:G116",
+      "kind": "gate",
+      "level": 14,
+      "name": "G116"
+    },
+    {
+      "gate_type": "XOR2",
+      "id": "gate:G117",
+      "kind": "gate",
+      "level": 15,
+      "name": "G117"
+    },
+    {
+      "gate_type": "AND2",
+      "id": "gate:G118",
+      "kind": "gate",
+      "level": 16,
+      "name": "G118"
+    },
+    {
+      "id": "output:O1",
+      "kind": "output",
+      "level": 17,
+      "name": "O1"
+    },
+    {
+      "id": "output:O2",
+      "kind": "output",
+      "level": 17,
+      "name": "O2"
+    },
+    {
+      "id": "output:O3",
+      "kind": "output",
+      "level": 17,
+      "name": "O3"
+    },
+    {
+      "id": "output:O4",
+      "kind": "output",
+      "level": 17,
+      "name": "O4"
+    },
+    {
+      "id": "output:O5",
+      "kind": "output",
+      "level": 17,
+      "name": "O5"
+    },
+    {
+      "id": "output:O6",
+      "kind": "output",
+      "level": 17,
+      "name": "O6"
+    },
+    {
+      "id": "output:O7",
+      "kind": "output",
+      "level": 17,
+      "name": "O7"
+    },
+    {
+      "id": "output:O8",
+      "kind": "output",
+      "level": 17,
+      "name": "O8"
+    }
+  ],
+  "schema_version": 2,
+  "states": {
+    "optimized": {
+      "critical_paths": [
+        {
+          "gates": [
+            "G10",
+            "G23",
+            "G30",
+            "G34",
+            "G36",
+            "G38",
+            "G39",
+            "G40",
+            "G41",
+            "G42",
+            "G43",
+            "G44",
+            "G45",
+            "G46",
+            "G47",
+            "G48"
+          ],
+          "input": "J",
+          "nets": [
+            "J",
+            "P10",
+            "R1_5",
+            "R2_3",
+            "R3_2",
+            "R4_1",
+            "R5_1",
+            "B1_1",
+            "B1_2",
+            "B1_3",
+            "B1_4",
+            "B1_5",
+            "B1_6",
+            "B1_7",
+            "B1_8",
+            "B1_9",
+            "O1"
+          ],
+          "output": "O1",
+          "rank": 1,
+          "slack": -0.07401774999999966
+        },
+        {
+          "gates": [
+            "G10",
+            "G23",
+            "G30",
+            "G34",
+            "G36",
+            "G38",
+            "G39",
+            "G40",
+            "G41",
+            "G42",
+            "G43",
+            "G44",
+            "G45",
+            "G46",
+            "G47",
+            "G48"
+          ],
+          "input": "O",
+          "nets": [
+            "O",
+            "P10",
+            "R1_5",
+            "R2_3",
+            "R3_2",
+            "R4_1",
+            "R5_1",
+            "B1_1",
+            "B1_2",
+            "B1_3",
+            "B1_4",
+            "B1_5",
+            "B1_6",
+            "B1_7",
+            "B1_8",
+            "B1_9",
+            "O1"
+          ],
+          "output": "O1",
+          "rank": 2,
+          "slack": -0.07401774999999966
+        },
+        {
+          "gates": [
+            "G10",
+            "G23",
+            "G30",
+            "G34",
+            "G36",
+            "G38",
+            "G39",
+            "G40",
+            "G41",
+            "G42",
+            "G43",
+            "G44",
+            "G45",
+            "G46",
+            "G47",
+            "G48"
+          ],
+          "input": "C",
+          "nets": [
+            "C",
+            "P10",
+            "R1_5",
+            "R2_3",
+            "R3_2",
+            "R4_1",
+            "R5_1",
+            "B1_1",
+            "B1_2",
+            "B1_3",
+            "B1_4",
+            "B1_5",
+            "B1_6",
+            "B1_7",
+            "B1_8",
+            "B1_9",
+            "O1"
+          ],
+          "output": "O1",
+          "rank": 3,
+          "slack": -0.07401774999999966
+        },
+        {
+          "gates": [
+            "G10",
+            "G23",
+            "G30",
+            "G34",
+            "G36",
+            "G38",
+            "G49",
+            "G50",
+            "G51",
+            "G52",
+            "G53",
+            "G54",
+            "G55",
+            "G56",
+            "G57",
+            "G58"
+          ],
+          "input": "J",
+          "nets": [
+            "J",
+            "P10",
+            "R1_5",
+            "R2_3",
+            "R3_2",
+            "R4_1",
+            "R5_1",
+            "B2_1",
+            "B2_2",
+            "B2_3",
+            "B2_4",
+            "B2_5",
+            "B2_6",
+            "B2_7",
+            "B2_8",
+            "B2_9",
+            "O2"
+          ],
+          "output": "O2",
+          "rank": 4,
+          "slack": -0.0725232499999997
+        },
+        {
+          "gates": [
+            "G10",
+            "G23",
+            "G30",
+            "G34",
+            "G36",
+            "G38",
+            "G49",
+            "G50",
+            "G51",
+            "G52",
+            "G53",
+            "G54",
+            "G55",
+            "G56",
+            "G57",
+            "G58"
+          ],
+          "input": "O",
+          "nets": [
+            "O",
+            "P10",
+            "R1_5",
+            "R2_3",
+            "R3_2",
+            "R4_1",
+            "R5_1",
+            "B2_1",
+            "B2_2",
+            "B2_3",
+            "B2_4",
+            "B2_5",
+            "B2_6",
+            "B2_7",
+            "B2_8",
+            "B2_9",
+            "O2"
+          ],
+          "output": "O2",
+          "rank": 5,
+          "slack": -0.0725232499999997
+        }
+      ],
+      "gates": {
+        "G1": {
+          "cell": "INV_X1",
+          "delay_fall": 0.0835,
+          "delay_rise": 0.114,
+          "load_capacitance": 11.0,
+          "size": "X1"
+        },
+        "G10": {
+          "cell": "NOR3_X1",
+          "delay_fall": 0.160008,
+          "delay_rise": 0.32501800000000003,
+          "load_capacitance": 15.001,
+          "size": "X1"
+        },
+        "G100": {
+          "cell": "AND2_X1",
+          "delay_fall": 0.0588355,
+          "delay_rise": 0.063336,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G101": {
+          "cell": "OR2_X1",
+          "delay_fall": 0.063,
+          "delay_rise": 0.07500000000000001,
+          "load_capacitance": 2.0,
+          "size": "X1"
+        },
+        "G102": {
+          "cell": "XNOR2_X1",
+          "delay_fall": 0.0861695,
+          "delay_rise": 0.0935035,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G103": {
+          "cell": "NAND3_X1",
+          "delay_fall": 0.072329,
+          "delay_rise": 0.070663,
+          "load_capacitance": 2.333,
+          "size": "X1"
+        },
+        "G104": {
+          "cell": "NOR3_X1",
+          "delay_fall": 0.053336,
+          "delay_rise": 0.085006,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G105": {
+          "cell": "AND3_X1",
+          "delay_fall": 0.079331,
+          "delay_rise": 0.0858305,
+          "load_capacitance": 2.333,
+          "size": "X1"
+        },
+        "G106": {
+          "cell": "OR3_X1",
+          "delay_fall": 0.07633100000000001,
+          "delay_rise": 0.089997,
+          "load_capacitance": 1.333,
+          "size": "X1"
+        },
+        "G107": {
+          "cell": "NAND2_X1",
+          "delay_fall": 0.058006,
+          "delay_rise": 0.06500700000000001,
+          "load_capacitance": 3.334,
+          "size": "X1"
+        },
+        "G108": {
+          "cell": "NOR2_X2",
+          "delay_fall": 0.11249999999999999,
+          "delay_rise": 0.192,
+          "load_capacitance": 22.0,
+          "size": "X2"
+        },
+        "G109": {
+          "cell": "OR2_X1",
+          "delay_fall": 0.063,
+          "delay_rise": 0.07500000000000001,
+          "load_capacitance": 2.0,
+          "size": "X1"
+        },
+        "G11": {
+          "cell": "AND3_X1",
+          "delay_fall": 0.193669,
+          "delay_rise": 0.22466950000000002,
+          "load_capacitance": 18.667,
+          "size": "X1"
+        },
+        "G110": {
+          "cell": "XNOR2_X1",
+          "delay_fall": 0.0861695,
+          "delay_rise": 0.0935035,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G111": {
+          "cell": "NAND3_X1",
+          "delay_fall": 0.072329,
+          "delay_rise": 0.070663,
+          "load_capacitance": 2.333,
+          "size": "X1"
+        },
+        "G112": {
+          "cell": "NOR3_X1",
+          "delay_fall": 0.053336,
+          "delay_rise": 0.085006,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G113": {
+          "cell": "AND3_X1",
+          "delay_fall": 0.079331,
+          "delay_rise": 0.0858305,
+          "load_capacitance": 2.333,
+          "size": "X1"
+        },
+        "G114": {
+          "cell": "OR3_X1",
+          "delay_fall": 0.07633100000000001,
+          "delay_rise": 0.089997,
+          "load_capacitance": 1.333,
+          "size": "X1"
+        },
+        "G115": {
+          "cell": "NAND2_X1",
+          "delay_fall": 0.043003,
+          "delay_rise": 0.047503500000000004,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G116": {
+          "cell": "NOR2_X1",
+          "delay_fall": 0.045,
+          "delay_rise": 0.066,
+          "load_capacitance": 2.0,
+          "size": "X1"
+        },
+        "G117": {
+          "cell": "XOR2_X1",
+          "delay_fall": 0.089328,
+          "delay_rise": 0.09866,
+          "load_capacitance": 2.666,
+          "size": "X1"
+        },
+        "G118": {
+          "cell": "AND2_X2",
+          "delay_fall": 0.126,
+          "delay_rise": 0.14600000000000002,
+          "load_capacitance": 24.0,
+          "size": "X2"
+        },
+        "G12": {
+          "cell": "OR3_X1",
+          "delay_fall": 0.158,
+          "delay_rise": 0.195,
+          "load_capacitance": 13.0,
+          "size": "X1"
+        },
+        "G13": {
+          "cell": "INV_X1",
+          "delay_fall": 0.116,
+          "delay_rise": 0.15900000000000003,
+          "load_capacitance": 16.0,
+          "size": "X1"
+        },
+        "G14": {
+          "cell": "BUF_X1",
+          "delay_fall": 0.139663,
+          "delay_rise": 0.17466200000000004,
+          "load_capacitance": 20.666000000000004,
+          "size": "X1"
+        },
+        "G15": {
+          "cell": "NAND2_X1",
+          "delay_fall": 0.13299400000000003,
+          "delay_rise": 0.152493,
+          "load_capacitance": 11.666,
+          "size": "X1"
+        },
+        "G16": {
+          "cell": "NOR2_X1",
+          "delay_fall": 0.15249000000000001,
+          "delay_rise": 0.266648,
+          "load_capacitance": 16.332,
+          "size": "X1"
+        },
+        "G17": {
+          "cell": "AND2_X1",
+          "delay_fall": 0.143329,
+          "delay_rise": 0.167328,
+          "load_capacitance": 14.666,
+          "size": "X1"
+        },
+        "G18": {
+          "cell": "OR2_X1",
+          "delay_fall": 0.115,
+          "delay_rise": 0.14300000000000002,
+          "load_capacitance": 10.0,
+          "size": "X1"
+        },
+        "G19": {
+          "cell": "NOR2_X1",
+          "delay_fall": 0.0399975,
+          "delay_rise": 0.056662000000000004,
+          "load_capacitance": 1.333,
+          "size": "X1"
+        },
+        "G2": {
+          "cell": "BUF_X1",
+          "delay_fall": 0.1433315,
+          "delay_rise": 0.17933100000000002,
+          "load_capacitance": 21.333000000000002,
+          "size": "X1"
+        },
+        "G20": {
+          "cell": "AND2_X1",
+          "delay_fall": 0.0566645,
+          "delay_rise": 0.060664,
+          "load_capacitance": 1.333,
+          "size": "X1"
+        },
+        "G21": {
+          "cell": "OR2_X1",
+          "delay_fall": 0.0608355,
+          "delay_rise": 0.0721695,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G22": {
+          "cell": "XOR2_X1",
+          "delay_fall": 0.081336,
+          "delay_rise": 0.08867,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G23": {
+          "cell": "XNOR2_X1",
+          "delay_fall": 0.089,
+          "delay_rise": 0.097,
+          "load_capacitance": 2.0,
+          "size": "X1"
+        },
+        "G24": {
+          "cell": "NAND2_X1",
+          "delay_fall": 0.046,
+          "delay_rise": 0.051000000000000004,
+          "load_capacitance": 2.0,
+          "size": "X1"
+        },
+        "G25": {
+          "cell": "NOR2_X1",
+          "delay_fall": 0.045,
+          "delay_rise": 0.066,
+          "load_capacitance": 2.0,
+          "size": "X1"
+        },
+        "G26": {
+          "cell": "AND2_X1",
+          "delay_fall": 0.061,
+          "delay_rise": 0.066,
+          "load_capacitance": 2.0,
+          "size": "X1"
+        },
+        "G27": {
+          "cell": "OR2_X1",
+          "delay_fall": 0.0565,
+          "delay_rise": 0.0665,
+          "load_capacitance": 1.0,
+          "size": "X1"
+        },
+        "G28": {
+          "cell": "AND2_X1",
+          "delay_fall": 0.0588355,
+          "delay_rise": 0.063336,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G29": {
+          "cell": "OR2_X1",
+          "delay_fall": 0.0608355,
+          "delay_rise": 0.0721695,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G3": {
+          "cell": "NAND2_X1",
+          "delay_fall": 0.15999400000000003,
+          "delay_rise": 0.18399300000000002,
+          "load_capacitance": 14.666,
+          "size": "X1"
+        },
+        "G30": {
+          "cell": "XOR2_X1",
+          "delay_fall": 0.084,
+          "delay_rise": 0.092,
+          "load_capacitance": 2.0,
+          "size": "X1"
+        },
+        "G31": {
+          "cell": "XNOR2_X1",
+          "delay_fall": 0.089,
+          "delay_rise": 0.097,
+          "load_capacitance": 2.0,
+          "size": "X1"
+        },
+        "G32": {
+          "cell": "BUF_X1",
+          "delay_fall": 0.0315,
+          "delay_rise": 0.037,
+          "load_capacitance": 1.0,
+          "size": "X1"
+        },
+        "G33": {
+          "cell": "OR2_X1",
+          "delay_fall": 0.063,
+          "delay_rise": 0.07500000000000001,
+          "load_capacitance": 2.0,
+          "size": "X1"
+        },
+        "G34": {
+          "cell": "XOR2_X1",
+          "delay_fall": 0.084,
+          "delay_rise": 0.092,
+          "load_capacitance": 2.0,
+          "size": "X1"
+        },
+        "G35": {
+          "cell": "BUF_X1",
+          "delay_fall": 0.0315,
+          "delay_rise": 0.037,
+          "load_capacitance": 1.0,
+          "size": "X1"
+        },
+        "G36": {
+          "cell": "XOR2_X1",
+          "delay_fall": 0.1,
+          "delay_rise": 0.11199999999999999,
+          "load_capacitance": 4.0,
+          "size": "X1"
+        },
+        "G37": {
+          "cell": "BUF_X1",
+          "delay_fall": 0.048,
+          "delay_rise": 0.057999999999999996,
+          "load_capacitance": 4.0,
+          "size": "X1"
+        },
+        "G38": {
+          "cell": "XNOR2_X2",
+          "delay_fall": 0.13433475,
+          "delay_rise": 0.15300175,
+          "load_capacitance": 14.667,
+          "size": "X2"
+        },
+        "G39": {
+          "cell": "NAND2_X2",
+          "delay_fall": 0.035501500000000005,
+          "delay_rise": 0.03875175,
+          "load_capacitance": 1.667,
+          "size": "X2"
+        },
+        "G4": {
+          "cell": "NOR2_X1",
+          "delay_fall": 0.1025025,
+          "delay_rise": 0.17333800000000002,
+          "load_capacitance": 9.667,
+          "size": "X1"
+        },
+        "G40": {
+          "cell": "NOR2_X1",
+          "delay_fall": 0.045,
+          "delay_rise": 0.066,
+          "load_capacitance": 2.0,
+          "size": "X1"
+        },
+        "G41": {
+          "cell": "XOR2_X1",
+          "delay_fall": 0.07866400000000001,
+          "delay_rise": 0.08532999999999999,
+          "load_capacitance": 1.333,
+          "size": "X1"
+        },
+        "G42": {
+          "cell": "AND2_X1",
+          "delay_fall": 0.0588355,
+          "delay_rise": 0.063336,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G43": {
+          "cell": "OR2_X1",
+          "delay_fall": 0.063,
+          "delay_rise": 0.07500000000000001,
+          "load_capacitance": 2.0,
+          "size": "X1"
+        },
+        "G44": {
+          "cell": "XNOR2_X1",
+          "delay_fall": 0.0861695,
+          "delay_rise": 0.0935035,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G45": {
+          "cell": "NAND3_X1",
+          "delay_fall": 0.072329,
+          "delay_rise": 0.070663,
+          "load_capacitance": 2.333,
+          "size": "X1"
+        },
+        "G46": {
+          "cell": "NOR3_X1",
+          "delay_fall": 0.053336,
+          "delay_rise": 0.085006,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G47": {
+          "cell": "AND3_X1",
+          "delay_fall": 0.095662,
+          "delay_rise": 0.105661,
+          "load_capacitance": 4.666,
+          "size": "X1"
+        },
+        "G48": {
+          "cell": "OR3_X2",
+          "delay_fall": 0.10200000000000001,
+          "delay_rise": 0.123,
+          "load_capacitance": 10.0,
+          "size": "X2"
+        },
+        "G49": {
+          "cell": "XOR2_X1",
+          "delay_fall": 0.07866400000000001,
+          "delay_rise": 0.08532999999999999,
+          "load_capacitance": 1.333,
+          "size": "X1"
+        },
+        "G5": {
+          "cell": "AND2_X1",
+          "delay_fall": 0.16933550000000003,
+          "delay_rise": 0.199336,
+          "load_capacitance": 18.667,
+          "size": "X1"
+        },
+        "G50": {
+          "cell": "AND2_X1",
+          "delay_fall": 0.0588355,
+          "delay_rise": 0.063336,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G51": {
+          "cell": "OR2_X1",
+          "delay_fall": 0.063,
+          "delay_rise": 0.07500000000000001,
+          "load_capacitance": 2.0,
+          "size": "X1"
+        },
+        "G52": {
+          "cell": "XNOR2_X1",
+          "delay_fall": 0.0861695,
+          "delay_rise": 0.0935035,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G53": {
+          "cell": "NAND3_X1",
+          "delay_fall": 0.072329,
+          "delay_rise": 0.070663,
+          "load_capacitance": 2.333,
+          "size": "X1"
+        },
+        "G54": {
+          "cell": "NOR3_X1",
+          "delay_fall": 0.053336,
+          "delay_rise": 0.085006,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G55": {
+          "cell": "AND3_X1",
+          "delay_fall": 0.079331,
+          "delay_rise": 0.0858305,
+          "load_capacitance": 2.333,
+          "size": "X1"
+        },
+        "G56": {
+          "cell": "OR3_X1",
+          "delay_fall": 0.07633100000000001,
+          "delay_rise": 0.089997,
+          "load_capacitance": 1.333,
+          "size": "X1"
+        },
+        "G57": {
+          "cell": "NAND2_X1",
+          "delay_fall": 0.058006,
+          "delay_rise": 0.06500700000000001,
+          "load_capacitance": 3.334,
+          "size": "X1"
+        },
+        "G58": {
+          "cell": "NOR2_X2",
+          "delay_fall": 0.075,
+          "delay_rise": 0.122,
+          "load_capacitance": 12.0,
+          "size": "X2"
+        },
+        "G59": {
+          "cell": "OR2_X1",
+          "delay_fall": 0.063,
+          "delay_rise": 0.07500000000000001,
+          "load_capacitance": 2.0,
+          "size": "X1"
+        },
+        "G6": {
+          "cell": "OR2_X1",
+          "delay_fall": 0.12150000000000001,
+          "delay_rise": 0.1515,
+          "load_capacitance": 11.0,
+          "size": "X1"
+        },
+        "G60": {
+          "cell": "XNOR2_X1",
+          "delay_fall": 0.0861695,
+          "delay_rise": 0.0935035,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G61": {
+          "cell": "NAND3_X1",
+          "delay_fall": 0.072329,
+          "delay_rise": 0.070663,
+          "load_capacitance": 2.333,
+          "size": "X1"
+        },
+        "G62": {
+          "cell": "NOR3_X1",
+          "delay_fall": 0.053336,
+          "delay_rise": 0.085006,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G63": {
+          "cell": "AND3_X1",
+          "delay_fall": 0.079331,
+          "delay_rise": 0.0858305,
+          "load_capacitance": 2.333,
+          "size": "X1"
+        },
+        "G64": {
+          "cell": "OR3_X1",
+          "delay_fall": 0.07633100000000001,
+          "delay_rise": 0.089997,
+          "load_capacitance": 1.333,
+          "size": "X1"
+        },
+        "G65": {
+          "cell": "NAND2_X1",
+          "delay_fall": 0.043003,
+          "delay_rise": 0.047503500000000004,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G66": {
+          "cell": "NOR2_X1",
+          "delay_fall": 0.045,
+          "delay_rise": 0.066,
+          "load_capacitance": 2.0,
+          "size": "X1"
+        },
+        "G67": {
+          "cell": "XOR2_X1",
+          "delay_fall": 0.089328,
+          "delay_rise": 0.09866,
+          "load_capacitance": 2.666,
+          "size": "X1"
+        },
+        "G68": {
+          "cell": "AND2_X2",
+          "delay_fall": 0.0935,
+          "delay_rise": 0.10600000000000001,
+          "load_capacitance": 14.0,
+          "size": "X2"
+        },
+        "G69": {
+          "cell": "NAND3_X1",
+          "delay_fall": 0.072329,
+          "delay_rise": 0.070663,
+          "load_capacitance": 2.333,
+          "size": "X1"
+        },
+        "G7": {
+          "cell": "XOR2_X1",
+          "delay_fall": 0.166664,
+          "delay_rise": 0.19533,
+          "load_capacitance": 12.333,
+          "size": "X1"
+        },
+        "G70": {
+          "cell": "NOR3_X1",
+          "delay_fall": 0.053336,
+          "delay_rise": 0.085006,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G71": {
+          "cell": "AND3_X1",
+          "delay_fall": 0.079331,
+          "delay_rise": 0.0858305,
+          "load_capacitance": 2.333,
+          "size": "X1"
+        },
+        "G72": {
+          "cell": "OR3_X1",
+          "delay_fall": 0.07633100000000001,
+          "delay_rise": 0.089997,
+          "load_capacitance": 1.333,
+          "size": "X1"
+        },
+        "G73": {
+          "cell": "NAND2_X1",
+          "delay_fall": 0.043003,
+          "delay_rise": 0.047503500000000004,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G74": {
+          "cell": "NOR2_X1",
+          "delay_fall": 0.045,
+          "delay_rise": 0.066,
+          "load_capacitance": 2.0,
+          "size": "X1"
+        },
+        "G75": {
+          "cell": "XOR2_X1",
+          "delay_fall": 0.07866400000000001,
+          "delay_rise": 0.08532999999999999,
+          "load_capacitance": 1.333,
+          "size": "X1"
+        },
+        "G76": {
+          "cell": "AND2_X1",
+          "delay_fall": 0.0588355,
+          "delay_rise": 0.063336,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G77": {
+          "cell": "OR2_X1",
+          "delay_fall": 0.07600000000000001,
+          "delay_rise": 0.092,
+          "load_capacitance": 4.0,
+          "size": "X1"
+        },
+        "G78": {
+          "cell": "XNOR2_X2",
+          "delay_fall": 0.14,
+          "delay_rise": 0.16,
+          "load_capacitance": 16.0,
+          "size": "X2"
+        },
+        "G79": {
+          "cell": "AND3_X1",
+          "delay_fall": 0.079331,
+          "delay_rise": 0.0858305,
+          "load_capacitance": 2.333,
+          "size": "X1"
+        },
+        "G8": {
+          "cell": "XNOR2_X1",
+          "delay_fall": 0.20233050000000002,
+          "delay_rise": 0.2369965,
+          "load_capacitance": 15.333,
+          "size": "X1"
+        },
+        "G80": {
+          "cell": "OR3_X1",
+          "delay_fall": 0.07633100000000001,
+          "delay_rise": 0.089997,
+          "load_capacitance": 1.333,
+          "size": "X1"
+        },
+        "G81": {
+          "cell": "NAND2_X1",
+          "delay_fall": 0.043003,
+          "delay_rise": 0.047503500000000004,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G82": {
+          "cell": "NOR2_X1",
+          "delay_fall": 0.045,
+          "delay_rise": 0.066,
+          "load_capacitance": 2.0,
+          "size": "X1"
+        },
+        "G83": {
+          "cell": "XOR2_X1",
+          "delay_fall": 0.07866400000000001,
+          "delay_rise": 0.08532999999999999,
+          "load_capacitance": 1.333,
+          "size": "X1"
+        },
+        "G84": {
+          "cell": "AND2_X1",
+          "delay_fall": 0.0588355,
+          "delay_rise": 0.063336,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G85": {
+          "cell": "OR2_X1",
+          "delay_fall": 0.063,
+          "delay_rise": 0.07500000000000001,
+          "load_capacitance": 2.0,
+          "size": "X1"
+        },
+        "G86": {
+          "cell": "XNOR2_X1",
+          "delay_fall": 0.0861695,
+          "delay_rise": 0.0935035,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G87": {
+          "cell": "NAND3_X1",
+          "delay_fall": 0.10265800000000001,
+          "delay_rise": 0.096326,
+          "load_capacitance": 4.666,
+          "size": "X1"
+        },
+        "G88": {
+          "cell": "NOR3_X2",
+          "delay_fall": 0.11200000000000002,
+          "delay_rise": 0.21700000000000003,
+          "load_capacitance": 18.0,
+          "size": "X2"
+        },
+        "G89": {
+          "cell": "NAND2_X1",
+          "delay_fall": 0.043003,
+          "delay_rise": 0.047503500000000004,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G9": {
+          "cell": "NAND3_X1",
+          "delay_fall": 0.180684,
+          "delay_rise": 0.162348,
+          "load_capacitance": 10.668,
+          "size": "X1"
+        },
+        "G90": {
+          "cell": "NOR2_X1",
+          "delay_fall": 0.045,
+          "delay_rise": 0.066,
+          "load_capacitance": 2.0,
+          "size": "X1"
+        },
+        "G91": {
+          "cell": "XOR2_X1",
+          "delay_fall": 0.07866400000000001,
+          "delay_rise": 0.08532999999999999,
+          "load_capacitance": 1.333,
+          "size": "X1"
+        },
+        "G92": {
+          "cell": "AND2_X1",
+          "delay_fall": 0.0588355,
+          "delay_rise": 0.063336,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G93": {
+          "cell": "OR2_X1",
+          "delay_fall": 0.063,
+          "delay_rise": 0.07500000000000001,
+          "load_capacitance": 2.0,
+          "size": "X1"
+        },
+        "G94": {
+          "cell": "XNOR2_X1",
+          "delay_fall": 0.0861695,
+          "delay_rise": 0.0935035,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G95": {
+          "cell": "NAND3_X1",
+          "delay_fall": 0.072329,
+          "delay_rise": 0.070663,
+          "load_capacitance": 2.333,
+          "size": "X1"
+        },
+        "G96": {
+          "cell": "NOR3_X1",
+          "delay_fall": 0.053336,
+          "delay_rise": 0.085006,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G97": {
+          "cell": "AND3_X1",
+          "delay_fall": 0.095662,
+          "delay_rise": 0.105661,
+          "load_capacitance": 4.666,
+          "size": "X1"
+        },
+        "G98": {
+          "cell": "OR3_X2",
+          "delay_fall": 0.137,
+          "delay_rise": 0.168,
+          "load_capacitance": 20.0,
+          "size": "X2"
+        },
+        "G99": {
+          "cell": "XOR2_X1",
+          "delay_fall": 0.07866400000000001,
+          "delay_rise": 0.08532999999999999,
+          "load_capacitance": 1.333,
+          "size": "X1"
+        }
+      }
+    },
+    "original": {
+      "critical_paths": [
+        {
+          "gates": [
+            "G10",
+            "G23",
+            "G30",
+            "G34",
+            "G36",
+            "G38",
+            "G99",
+            "G100",
+            "G101",
+            "G102",
+            "G103",
+            "G104",
+            "G105",
+            "G106",
+            "G107",
+            "G108"
+          ],
+          "input": "J",
+          "nets": [
+            "J",
+            "P10",
+            "R1_5",
+            "R2_3",
+            "R3_2",
+            "R4_1",
+            "R5_1",
+            "B7_1",
+            "B7_2",
+            "B7_3",
+            "B7_4",
+            "B7_5",
+            "B7_6",
+            "B7_7",
+            "B7_8",
+            "B7_9",
+            "O7"
+          ],
+          "output": "O7",
+          "rank": 1,
+          "slack": -0.1473599999999995
+        },
+        {
+          "gates": [
+            "G10",
+            "G23",
+            "G30",
+            "G34",
+            "G36",
+            "G38",
+            "G99",
+            "G100",
+            "G101",
+            "G102",
+            "G103",
+            "G104",
+            "G105",
+            "G106",
+            "G107",
+            "G108"
+          ],
+          "input": "O",
+          "nets": [
+            "O",
+            "P10",
+            "R1_5",
+            "R2_3",
+            "R3_2",
+            "R4_1",
+            "R5_1",
+            "B7_1",
+            "B7_2",
+            "B7_3",
+            "B7_4",
+            "B7_5",
+            "B7_6",
+            "B7_7",
+            "B7_8",
+            "B7_9",
+            "O7"
+          ],
+          "output": "O7",
+          "rank": 2,
+          "slack": -0.1473599999999995
+        },
+        {
+          "gates": [
+            "G10",
+            "G23",
+            "G30",
+            "G34",
+            "G36",
+            "G38",
+            "G99",
+            "G100",
+            "G101",
+            "G102",
+            "G103",
+            "G104",
+            "G105",
+            "G106",
+            "G107",
+            "G108"
+          ],
+          "input": "C",
+          "nets": [
+            "C",
+            "P10",
+            "R1_5",
+            "R2_3",
+            "R3_2",
+            "R4_1",
+            "R5_1",
+            "B7_1",
+            "B7_2",
+            "B7_3",
+            "B7_4",
+            "B7_5",
+            "B7_6",
+            "B7_7",
+            "B7_8",
+            "B7_9",
+            "O7"
+          ],
+          "output": "O7",
+          "rank": 3,
+          "slack": -0.1473599999999995
+        },
+        {
+          "gates": [
+            "G10",
+            "G23",
+            "G30",
+            "G34",
+            "G36",
+            "G38",
+            "G79",
+            "G80",
+            "G81",
+            "G82",
+            "G83",
+            "G84",
+            "G85",
+            "G86",
+            "G87",
+            "G88"
+          ],
+          "input": "J",
+          "nets": [
+            "J",
+            "P10",
+            "R1_5",
+            "R2_3",
+            "R3_2",
+            "R4_1",
+            "R5_1",
+            "B5_1",
+            "B5_2",
+            "B5_3",
+            "B5_4",
+            "B5_5",
+            "B5_6",
+            "B5_7",
+            "B5_8",
+            "B5_9",
+            "O5"
+          ],
+          "output": "O5",
+          "rank": 4,
+          "slack": -0.14735399999999976
+        },
+        {
+          "gates": [
+            "G10",
+            "G23",
+            "G30",
+            "G34",
+            "G36",
+            "G38",
+            "G79",
+            "G80",
+            "G81",
+            "G82",
+            "G83",
+            "G84",
+            "G85",
+            "G86",
+            "G87",
+            "G88"
+          ],
+          "input": "O",
+          "nets": [
+            "O",
+            "P10",
+            "R1_5",
+            "R2_3",
+            "R3_2",
+            "R4_1",
+            "R5_1",
+            "B5_1",
+            "B5_2",
+            "B5_3",
+            "B5_4",
+            "B5_5",
+            "B5_6",
+            "B5_7",
+            "B5_8",
+            "B5_9",
+            "O5"
+          ],
+          "output": "O5",
+          "rank": 5,
+          "slack": -0.14735399999999976
+        }
+      ],
+      "gates": {
+        "G1": {
+          "cell": "INV_X1",
+          "delay_fall": 0.0835,
+          "delay_rise": 0.114,
+          "load_capacitance": 11.0,
+          "size": "X1"
+        },
+        "G10": {
+          "cell": "NOR3_X1",
+          "delay_fall": 0.160008,
+          "delay_rise": 0.32501800000000003,
+          "load_capacitance": 15.001,
+          "size": "X1"
+        },
+        "G100": {
+          "cell": "AND2_X1",
+          "delay_fall": 0.0588355,
+          "delay_rise": 0.063336,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G101": {
+          "cell": "OR2_X1",
+          "delay_fall": 0.063,
+          "delay_rise": 0.07500000000000001,
+          "load_capacitance": 2.0,
+          "size": "X1"
+        },
+        "G102": {
+          "cell": "XNOR2_X1",
+          "delay_fall": 0.0861695,
+          "delay_rise": 0.0935035,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G103": {
+          "cell": "NAND3_X1",
+          "delay_fall": 0.072329,
+          "delay_rise": 0.070663,
+          "load_capacitance": 2.333,
+          "size": "X1"
+        },
+        "G104": {
+          "cell": "NOR3_X1",
+          "delay_fall": 0.053336,
+          "delay_rise": 0.085006,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G105": {
+          "cell": "AND3_X1",
+          "delay_fall": 0.079331,
+          "delay_rise": 0.0858305,
+          "load_capacitance": 2.333,
+          "size": "X1"
+        },
+        "G106": {
+          "cell": "OR3_X1",
+          "delay_fall": 0.07633100000000001,
+          "delay_rise": 0.089997,
+          "load_capacitance": 1.333,
+          "size": "X1"
+        },
+        "G107": {
+          "cell": "NAND2_X1",
+          "delay_fall": 0.043003,
+          "delay_rise": 0.047503500000000004,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G108": {
+          "cell": "NOR2_X1",
+          "delay_fall": 0.19499999999999998,
+          "delay_rise": 0.346,
+          "load_capacitance": 22.0,
+          "size": "X1"
+        },
+        "G109": {
+          "cell": "OR2_X1",
+          "delay_fall": 0.063,
+          "delay_rise": 0.07500000000000001,
+          "load_capacitance": 2.0,
+          "size": "X1"
+        },
+        "G11": {
+          "cell": "AND3_X1",
+          "delay_fall": 0.17966900000000002,
+          "delay_rise": 0.20766950000000003,
+          "load_capacitance": 16.667,
+          "size": "X1"
+        },
+        "G110": {
+          "cell": "XNOR2_X1",
+          "delay_fall": 0.0861695,
+          "delay_rise": 0.0935035,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G111": {
+          "cell": "NAND3_X1",
+          "delay_fall": 0.072329,
+          "delay_rise": 0.070663,
+          "load_capacitance": 2.333,
+          "size": "X1"
+        },
+        "G112": {
+          "cell": "NOR3_X1",
+          "delay_fall": 0.053336,
+          "delay_rise": 0.085006,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G113": {
+          "cell": "AND3_X1",
+          "delay_fall": 0.079331,
+          "delay_rise": 0.0858305,
+          "load_capacitance": 2.333,
+          "size": "X1"
+        },
+        "G114": {
+          "cell": "OR3_X1",
+          "delay_fall": 0.07633100000000001,
+          "delay_rise": 0.089997,
+          "load_capacitance": 1.333,
+          "size": "X1"
+        },
+        "G115": {
+          "cell": "NAND2_X1",
+          "delay_fall": 0.043003,
+          "delay_rise": 0.047503500000000004,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G116": {
+          "cell": "NOR2_X1",
+          "delay_fall": 0.045,
+          "delay_rise": 0.066,
+          "load_capacitance": 2.0,
+          "size": "X1"
+        },
+        "G117": {
+          "cell": "XOR2_X1",
+          "delay_fall": 0.07866400000000001,
+          "delay_rise": 0.08532999999999999,
+          "load_capacitance": 1.333,
+          "size": "X1"
+        },
+        "G118": {
+          "cell": "AND2_X1",
+          "delay_fall": 0.20400000000000001,
+          "delay_rise": 0.242,
+          "load_capacitance": 24.0,
+          "size": "X1"
+        },
+        "G12": {
+          "cell": "OR3_X1",
+          "delay_fall": 0.158,
+          "delay_rise": 0.195,
+          "load_capacitance": 13.0,
+          "size": "X1"
+        },
+        "G13": {
+          "cell": "INV_X1",
+          "delay_fall": 0.116,
+          "delay_rise": 0.15900000000000003,
+          "load_capacitance": 16.0,
+          "size": "X1"
+        },
+        "G14": {
+          "cell": "BUF_X1",
+          "delay_fall": 0.11399999999999999,
+          "delay_rise": 0.14200000000000002,
+          "load_capacitance": 16.0,
+          "size": "X1"
+        },
+        "G15": {
+          "cell": "NAND2_X1",
+          "delay_fall": 0.13299400000000003,
+          "delay_rise": 0.152493,
+          "load_capacitance": 11.666,
+          "size": "X1"
+        },
+        "G16": {
+          "cell": "NOR2_X1",
+          "delay_fall": 0.13499250000000002,
+          "delay_rise": 0.23398600000000003,
+          "load_capacitance": 13.999,
+          "size": "X1"
+        },
+        "G17": {
+          "cell": "AND2_X1",
+          "delay_fall": 0.12816450000000001,
+          "delay_rise": 0.14866400000000002,
+          "load_capacitance": 12.333,
+          "size": "X1"
+        },
+        "G18": {
+          "cell": "OR2_X1",
+          "delay_fall": 0.115,
+          "delay_rise": 0.14300000000000002,
+          "load_capacitance": 10.0,
+          "size": "X1"
+        },
+        "G19": {
+          "cell": "NOR2_X1",
+          "delay_fall": 0.0399975,
+          "delay_rise": 0.056662000000000004,
+          "load_capacitance": 1.333,
+          "size": "X1"
+        },
+        "G2": {
+          "cell": "BUF_X1",
+          "delay_fall": 0.11399999999999999,
+          "delay_rise": 0.14200000000000002,
+          "load_capacitance": 16.0,
+          "size": "X1"
+        },
+        "G20": {
+          "cell": "AND2_X1",
+          "delay_fall": 0.0566645,
+          "delay_rise": 0.060664,
+          "load_capacitance": 1.333,
+          "size": "X1"
+        },
+        "G21": {
+          "cell": "OR2_X1",
+          "delay_fall": 0.0608355,
+          "delay_rise": 0.0721695,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G22": {
+          "cell": "XOR2_X1",
+          "delay_fall": 0.081336,
+          "delay_rise": 0.08867,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G23": {
+          "cell": "XNOR2_X1",
+          "delay_fall": 0.089,
+          "delay_rise": 0.097,
+          "load_capacitance": 2.0,
+          "size": "X1"
+        },
+        "G24": {
+          "cell": "NAND2_X1",
+          "delay_fall": 0.046,
+          "delay_rise": 0.051000000000000004,
+          "load_capacitance": 2.0,
+          "size": "X1"
+        },
+        "G25": {
+          "cell": "NOR2_X1",
+          "delay_fall": 0.045,
+          "delay_rise": 0.066,
+          "load_capacitance": 2.0,
+          "size": "X1"
+        },
+        "G26": {
+          "cell": "AND2_X1",
+          "delay_fall": 0.061,
+          "delay_rise": 0.066,
+          "load_capacitance": 2.0,
+          "size": "X1"
+        },
+        "G27": {
+          "cell": "OR2_X1",
+          "delay_fall": 0.0565,
+          "delay_rise": 0.0665,
+          "load_capacitance": 1.0,
+          "size": "X1"
+        },
+        "G28": {
+          "cell": "AND2_X1",
+          "delay_fall": 0.0588355,
+          "delay_rise": 0.063336,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G29": {
+          "cell": "OR2_X1",
+          "delay_fall": 0.0608355,
+          "delay_rise": 0.0721695,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G3": {
+          "cell": "NAND2_X1",
+          "delay_fall": 0.138997,
+          "delay_rise": 0.1594965,
+          "load_capacitance": 12.333,
+          "size": "X1"
+        },
+        "G30": {
+          "cell": "XOR2_X1",
+          "delay_fall": 0.084,
+          "delay_rise": 0.092,
+          "load_capacitance": 2.0,
+          "size": "X1"
+        },
+        "G31": {
+          "cell": "XNOR2_X1",
+          "delay_fall": 0.089,
+          "delay_rise": 0.097,
+          "load_capacitance": 2.0,
+          "size": "X1"
+        },
+        "G32": {
+          "cell": "BUF_X1",
+          "delay_fall": 0.0315,
+          "delay_rise": 0.037,
+          "load_capacitance": 1.0,
+          "size": "X1"
+        },
+        "G33": {
+          "cell": "OR2_X1",
+          "delay_fall": 0.063,
+          "delay_rise": 0.07500000000000001,
+          "load_capacitance": 2.0,
+          "size": "X1"
+        },
+        "G34": {
+          "cell": "XOR2_X1",
+          "delay_fall": 0.084,
+          "delay_rise": 0.092,
+          "load_capacitance": 2.0,
+          "size": "X1"
+        },
+        "G35": {
+          "cell": "BUF_X1",
+          "delay_fall": 0.0315,
+          "delay_rise": 0.037,
+          "load_capacitance": 1.0,
+          "size": "X1"
+        },
+        "G36": {
+          "cell": "XOR2_X1",
+          "delay_fall": 0.084,
+          "delay_rise": 0.092,
+          "load_capacitance": 2.0,
+          "size": "X1"
+        },
+        "G37": {
+          "cell": "BUF_X1",
+          "delay_fall": 0.037,
+          "delay_rise": 0.044,
+          "load_capacitance": 2.0,
+          "size": "X1"
+        },
+        "G38": {
+          "cell": "XNOR2_X1",
+          "delay_fall": 0.185339,
+          "delay_rise": 0.216007,
+          "load_capacitance": 13.334,
+          "size": "X1"
+        },
+        "G39": {
+          "cell": "NAND2_X1",
+          "delay_fall": 0.043003,
+          "delay_rise": 0.047503500000000004,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G4": {
+          "cell": "NOR2_X1",
+          "delay_fall": 0.1025025,
+          "delay_rise": 0.17333800000000002,
+          "load_capacitance": 9.667,
+          "size": "X1"
+        },
+        "G40": {
+          "cell": "NOR2_X1",
+          "delay_fall": 0.045,
+          "delay_rise": 0.066,
+          "load_capacitance": 2.0,
+          "size": "X1"
+        },
+        "G41": {
+          "cell": "XOR2_X1",
+          "delay_fall": 0.07866400000000001,
+          "delay_rise": 0.08532999999999999,
+          "load_capacitance": 1.333,
+          "size": "X1"
+        },
+        "G42": {
+          "cell": "AND2_X1",
+          "delay_fall": 0.0588355,
+          "delay_rise": 0.063336,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G43": {
+          "cell": "OR2_X1",
+          "delay_fall": 0.063,
+          "delay_rise": 0.07500000000000001,
+          "load_capacitance": 2.0,
+          "size": "X1"
+        },
+        "G44": {
+          "cell": "XNOR2_X1",
+          "delay_fall": 0.0861695,
+          "delay_rise": 0.0935035,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G45": {
+          "cell": "NAND3_X1",
+          "delay_fall": 0.072329,
+          "delay_rise": 0.070663,
+          "load_capacitance": 2.333,
+          "size": "X1"
+        },
+        "G46": {
+          "cell": "NOR3_X1",
+          "delay_fall": 0.053336,
+          "delay_rise": 0.085006,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G47": {
+          "cell": "AND3_X1",
+          "delay_fall": 0.079331,
+          "delay_rise": 0.0858305,
+          "load_capacitance": 2.333,
+          "size": "X1"
+        },
+        "G48": {
+          "cell": "OR3_X1",
+          "delay_fall": 0.137,
+          "delay_rise": 0.168,
+          "load_capacitance": 10.0,
+          "size": "X1"
+        },
+        "G49": {
+          "cell": "XOR2_X1",
+          "delay_fall": 0.07866400000000001,
+          "delay_rise": 0.08532999999999999,
+          "load_capacitance": 1.333,
+          "size": "X1"
+        },
+        "G5": {
+          "cell": "AND2_X1",
+          "delay_fall": 0.1498355,
+          "delay_rise": 0.175336,
+          "load_capacitance": 15.667,
+          "size": "X1"
+        },
+        "G50": {
+          "cell": "AND2_X1",
+          "delay_fall": 0.0588355,
+          "delay_rise": 0.063336,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G51": {
+          "cell": "OR2_X1",
+          "delay_fall": 0.063,
+          "delay_rise": 0.07500000000000001,
+          "load_capacitance": 2.0,
+          "size": "X1"
+        },
+        "G52": {
+          "cell": "XNOR2_X1",
+          "delay_fall": 0.0861695,
+          "delay_rise": 0.0935035,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G53": {
+          "cell": "NAND3_X1",
+          "delay_fall": 0.072329,
+          "delay_rise": 0.070663,
+          "load_capacitance": 2.333,
+          "size": "X1"
+        },
+        "G54": {
+          "cell": "NOR3_X1",
+          "delay_fall": 0.053336,
+          "delay_rise": 0.085006,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G55": {
+          "cell": "AND3_X1",
+          "delay_fall": 0.079331,
+          "delay_rise": 0.0858305,
+          "load_capacitance": 2.333,
+          "size": "X1"
+        },
+        "G56": {
+          "cell": "OR3_X1",
+          "delay_fall": 0.07633100000000001,
+          "delay_rise": 0.089997,
+          "load_capacitance": 1.333,
+          "size": "X1"
+        },
+        "G57": {
+          "cell": "NAND2_X1",
+          "delay_fall": 0.043003,
+          "delay_rise": 0.047503500000000004,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G58": {
+          "cell": "NOR2_X1",
+          "delay_fall": 0.12,
+          "delay_rise": 0.20600000000000002,
+          "load_capacitance": 12.0,
+          "size": "X1"
+        },
+        "G59": {
+          "cell": "OR2_X1",
+          "delay_fall": 0.063,
+          "delay_rise": 0.07500000000000001,
+          "load_capacitance": 2.0,
+          "size": "X1"
+        },
+        "G6": {
+          "cell": "OR2_X1",
+          "delay_fall": 0.12150000000000001,
+          "delay_rise": 0.1515,
+          "load_capacitance": 11.0,
+          "size": "X1"
+        },
+        "G60": {
+          "cell": "XNOR2_X1",
+          "delay_fall": 0.0861695,
+          "delay_rise": 0.0935035,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G61": {
+          "cell": "NAND3_X1",
+          "delay_fall": 0.072329,
+          "delay_rise": 0.070663,
+          "load_capacitance": 2.333,
+          "size": "X1"
+        },
+        "G62": {
+          "cell": "NOR3_X1",
+          "delay_fall": 0.053336,
+          "delay_rise": 0.085006,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G63": {
+          "cell": "AND3_X1",
+          "delay_fall": 0.079331,
+          "delay_rise": 0.0858305,
+          "load_capacitance": 2.333,
+          "size": "X1"
+        },
+        "G64": {
+          "cell": "OR3_X1",
+          "delay_fall": 0.07633100000000001,
+          "delay_rise": 0.089997,
+          "load_capacitance": 1.333,
+          "size": "X1"
+        },
+        "G65": {
+          "cell": "NAND2_X1",
+          "delay_fall": 0.043003,
+          "delay_rise": 0.047503500000000004,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G66": {
+          "cell": "NOR2_X1",
+          "delay_fall": 0.045,
+          "delay_rise": 0.066,
+          "load_capacitance": 2.0,
+          "size": "X1"
+        },
+        "G67": {
+          "cell": "XOR2_X1",
+          "delay_fall": 0.07866400000000001,
+          "delay_rise": 0.08532999999999999,
+          "load_capacitance": 1.333,
+          "size": "X1"
+        },
+        "G68": {
+          "cell": "AND2_X1",
+          "delay_fall": 0.139,
+          "delay_rise": 0.162,
+          "load_capacitance": 14.0,
+          "size": "X1"
+        },
+        "G69": {
+          "cell": "NAND3_X1",
+          "delay_fall": 0.072329,
+          "delay_rise": 0.070663,
+          "load_capacitance": 2.333,
+          "size": "X1"
+        },
+        "G7": {
+          "cell": "XOR2_X1",
+          "delay_fall": 0.166664,
+          "delay_rise": 0.19533,
+          "load_capacitance": 12.333,
+          "size": "X1"
+        },
+        "G70": {
+          "cell": "NOR3_X1",
+          "delay_fall": 0.053336,
+          "delay_rise": 0.085006,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G71": {
+          "cell": "AND3_X1",
+          "delay_fall": 0.079331,
+          "delay_rise": 0.0858305,
+          "load_capacitance": 2.333,
+          "size": "X1"
+        },
+        "G72": {
+          "cell": "OR3_X1",
+          "delay_fall": 0.07633100000000001,
+          "delay_rise": 0.089997,
+          "load_capacitance": 1.333,
+          "size": "X1"
+        },
+        "G73": {
+          "cell": "NAND2_X1",
+          "delay_fall": 0.043003,
+          "delay_rise": 0.047503500000000004,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G74": {
+          "cell": "NOR2_X1",
+          "delay_fall": 0.045,
+          "delay_rise": 0.066,
+          "load_capacitance": 2.0,
+          "size": "X1"
+        },
+        "G75": {
+          "cell": "XOR2_X1",
+          "delay_fall": 0.07866400000000001,
+          "delay_rise": 0.08532999999999999,
+          "load_capacitance": 1.333,
+          "size": "X1"
+        },
+        "G76": {
+          "cell": "AND2_X1",
+          "delay_fall": 0.0588355,
+          "delay_rise": 0.063336,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G77": {
+          "cell": "OR2_X1",
+          "delay_fall": 0.063,
+          "delay_rise": 0.07500000000000001,
+          "load_capacitance": 2.0,
+          "size": "X1"
+        },
+        "G78": {
+          "cell": "XNOR2_X1",
+          "delay_fall": 0.20800000000000002,
+          "delay_rise": 0.244,
+          "load_capacitance": 16.0,
+          "size": "X1"
+        },
+        "G79": {
+          "cell": "AND3_X1",
+          "delay_fall": 0.079331,
+          "delay_rise": 0.0858305,
+          "load_capacitance": 2.333,
+          "size": "X1"
+        },
+        "G8": {
+          "cell": "XNOR2_X1",
+          "delay_fall": 0.191,
+          "delay_rise": 0.22300000000000003,
+          "load_capacitance": 14.0,
+          "size": "X1"
+        },
+        "G80": {
+          "cell": "OR3_X1",
+          "delay_fall": 0.07633100000000001,
+          "delay_rise": 0.089997,
+          "load_capacitance": 1.333,
+          "size": "X1"
+        },
+        "G81": {
+          "cell": "NAND2_X1",
+          "delay_fall": 0.043003,
+          "delay_rise": 0.047503500000000004,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G82": {
+          "cell": "NOR2_X1",
+          "delay_fall": 0.045,
+          "delay_rise": 0.066,
+          "load_capacitance": 2.0,
+          "size": "X1"
+        },
+        "G83": {
+          "cell": "XOR2_X1",
+          "delay_fall": 0.07866400000000001,
+          "delay_rise": 0.08532999999999999,
+          "load_capacitance": 1.333,
+          "size": "X1"
+        },
+        "G84": {
+          "cell": "AND2_X1",
+          "delay_fall": 0.0588355,
+          "delay_rise": 0.063336,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G85": {
+          "cell": "OR2_X1",
+          "delay_fall": 0.063,
+          "delay_rise": 0.07500000000000001,
+          "load_capacitance": 2.0,
+          "size": "X1"
+        },
+        "G86": {
+          "cell": "XNOR2_X1",
+          "delay_fall": 0.0861695,
+          "delay_rise": 0.0935035,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G87": {
+          "cell": "NAND3_X1",
+          "delay_fall": 0.072329,
+          "delay_rise": 0.070663,
+          "load_capacitance": 2.333,
+          "size": "X1"
+        },
+        "G88": {
+          "cell": "NOR3_X1",
+          "delay_fall": 0.18400000000000002,
+          "delay_rise": 0.37900000000000006,
+          "load_capacitance": 18.0,
+          "size": "X1"
+        },
+        "G89": {
+          "cell": "NAND2_X1",
+          "delay_fall": 0.043003,
+          "delay_rise": 0.047503500000000004,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G9": {
+          "cell": "NAND3_X1",
+          "delay_fall": 0.180684,
+          "delay_rise": 0.162348,
+          "load_capacitance": 10.668,
+          "size": "X1"
+        },
+        "G90": {
+          "cell": "NOR2_X1",
+          "delay_fall": 0.045,
+          "delay_rise": 0.066,
+          "load_capacitance": 2.0,
+          "size": "X1"
+        },
+        "G91": {
+          "cell": "XOR2_X1",
+          "delay_fall": 0.07866400000000001,
+          "delay_rise": 0.08532999999999999,
+          "load_capacitance": 1.333,
+          "size": "X1"
+        },
+        "G92": {
+          "cell": "AND2_X1",
+          "delay_fall": 0.0588355,
+          "delay_rise": 0.063336,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G93": {
+          "cell": "OR2_X1",
+          "delay_fall": 0.063,
+          "delay_rise": 0.07500000000000001,
+          "load_capacitance": 2.0,
+          "size": "X1"
+        },
+        "G94": {
+          "cell": "XNOR2_X1",
+          "delay_fall": 0.0861695,
+          "delay_rise": 0.0935035,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G95": {
+          "cell": "NAND3_X1",
+          "delay_fall": 0.072329,
+          "delay_rise": 0.070663,
+          "load_capacitance": 2.333,
+          "size": "X1"
+        },
+        "G96": {
+          "cell": "NOR3_X1",
+          "delay_fall": 0.053336,
+          "delay_rise": 0.085006,
+          "load_capacitance": 1.667,
+          "size": "X1"
+        },
+        "G97": {
+          "cell": "AND3_X1",
+          "delay_fall": 0.079331,
+          "delay_rise": 0.0858305,
+          "load_capacitance": 2.333,
+          "size": "X1"
+        },
+        "G98": {
+          "cell": "OR3_X1",
+          "delay_fall": 0.20700000000000002,
+          "delay_rise": 0.258,
+          "load_capacitance": 20.0,
+          "size": "X1"
+        },
+        "G99": {
+          "cell": "XOR2_X1",
+          "delay_fall": 0.07866400000000001,
+          "delay_rise": 0.08532999999999999,
+          "load_capacitance": 1.333,
+          "size": "X1"
+        }
+      }
+    }
+  },
+  "units": {
+    "capacitance": "fF",
+    "time": "ns"
+  }
+}

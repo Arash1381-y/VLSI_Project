@@ -1,0 +1,202 @@
+{
+  "artifacts": {
+    "circuit_graph_post_optimization.png": "circuit_graph_post_optimization.png",
+    "circuit_graph_pre_optimization.png": "circuit_graph_pre_optimization.png",
+    "critical_paths.csv": "critical_paths.csv",
+    "fanout_capacitances.json": "fanout_capacitances.json",
+    "gate_delays.json": "gate_delays.json",
+    "logical_effort_analysis.json": "logical_effort_analysis.json",
+    "monte_carlo_critical_paths.csv": "monte_carlo_critical_paths.csv",
+    "monte_carlo_gate_criticality.csv": "monte_carlo_gate_criticality.csv",
+    "monte_carlo_samples.csv": "monte_carlo_samples.csv",
+    "monte_carlo_statistics.csv": "monte_carlo_statistics.csv",
+    "monte_carlo_summary.json": "monte_carlo_summary.json",
+    "monte_carlo_variations.csv": "monte_carlo_variations.csv",
+    "optimization_comparison.json": "optimization_comparison.json",
+    "optimization_random_greedy.csv": "optimization_random_greedy.csv",
+    "optimization_slack_weighted_capacitance.csv": "optimization_slack_weighted_capacitance.csv",
+    "optimization_summary.csv": "optimization_summary.csv",
+    "run.log": "run.log",
+    "summary.json": "summary.json",
+    "timing_analysis.csv": "timing_analysis.csv",
+    "timing_analysis.json": "timing_analysis.json",
+    "validation_report.json": "validation_report.json"
+  },
+  "canonical_method": "slack_weighted_capacitance",
+  "circuit": {
+    "cell_library_file": "/home/halfblood/common/uni/master/VLSI/project/impl/Input_Files/cell_library.json",
+    "config_file": "/home/halfblood/common/uni/master/VLSI/project/impl/Input_Files/circuits/valid/c14_layered_reconvergent_fabric/config.json",
+    "gate_count": 104,
+    "name": "c14_layered_reconvergent_fabric",
+    "net_count": 120,
+    "netlist_file": "/home/halfblood/common/uni/master/VLSI/project/impl/Input_Files/circuits/valid/c14_layered_reconvergent_fabric/netlist.txt",
+    "primary_input_count": 16,
+    "primary_output_count": 8,
+    "units": {
+      "area": "normalized_unit",
+      "capacitance": "fF",
+      "leakage_power": "uW",
+      "resistance": "kOhm",
+      "time": "ns"
+    }
+  },
+  "compliance": {
+    "all_constraints_compliant": true,
+    "area_compliant": true,
+    "power_compliant": true,
+    "timing_compliant": true
+  },
+  "constraints": {
+    "maximum_area": 350.0,
+    "maximum_power_uW": 24.5,
+    "timing_requirement": "WNS >= 0 ns"
+  },
+  "critical_paths": {
+    "configured_top_k": 5,
+    "reported_count": 5,
+    "worst": {
+      "gate_count": 7,
+      "gates": "G6 -> G32 -> G41 -> G57 -> G73 -> G95 -> G104",
+      "input_net": "F",
+      "input_pins": "0 -> 1 -> 1 -> 0 -> 0 -> 1 -> 0",
+      "input_transition": "rise",
+      "output_net": "O8",
+      "output_transition": "rise",
+      "rank": 1,
+      "slack_ns": -0.02132500000000015,
+      "transitions": "rise -> rise -> fall -> rise -> rise -> rise -> rise -> rise"
+    }
+  },
+  "initial": {
+    "area": 306.8000000000001,
+    "circuit_delay_ns": 0.9893250000000001,
+    "compliance": {
+      "area_compliant": true,
+      "power_compliant": true,
+      "timing_compliant": false
+    },
+    "cost": 1.5077755034998617,
+    "dynamic_power_uW": 6.074509999999999,
+    "leakage_power_uW": 15.340000000000002,
+    "power_uW": 21.41451,
+    "tns_ns": -0.15963450000000035,
+    "wns_ns": -0.02132500000000015
+  },
+  "logical_effort_worst_path": {
+    "B": 93.30267239892022,
+    "F": 116139.84718270344,
+    "G": 103.730368592,
+    "H": 12.0,
+    "P": 27.0,
+    "minimum_theoretical_delay_ns": 0.9605946423007462,
+    "optimal_stage_effort": 5.291377545721392
+  },
+  "monte_carlo": {
+    "configuration": {
+      "enabled": false,
+      "random_seed": 1405,
+      "samples": 3000
+    },
+    "reason": "disabled_by_configuration",
+    "status": "skipped"
+  },
+  "optimizer_comparison": {
+    "area": -5.199999999999989,
+    "circuit_delay_ns": 0.0,
+    "power_uW": -0.3230000000000004,
+    "runtime_seconds": -0.09404701401945204,
+    "sta_calls": -30,
+    "tns_ns": 0,
+    "wns_ns": 0.0
+  },
+  "optimizers": {
+    "greedy_baseline": {
+      "accepted_iterations": 6,
+      "final": {
+        "area": 331.0000000000001,
+        "circuit_delay_ns": 0.8893335,
+        "compliance": {
+          "area_compliant": true,
+          "power_compliant": true,
+          "timing_compliant": true
+        },
+        "cost": 1.3294072235884853,
+        "dynamic_power_uW": 6.4386800000000015,
+        "leakage_power_uW": 16.55,
+        "power_uW": 22.988680000000002,
+        "tns_ns": 0,
+        "wns_ns": 0.003001749999999914
+      },
+      "heuristic": "random_greedy",
+      "maximum_iterations": 100,
+      "method": "random_greedy",
+      "random_seed": 0,
+      "runtime_seconds": 0.08441931998822838,
+      "sta_calls": 21,
+      "termination": "no_feasible_change",
+      "total_iterations": 21
+    },
+    "logical_effort_guided": {
+      "accepted_iterations": 7,
+      "final": {
+        "area": 336.2000000000001,
+        "circuit_delay_ns": 0.8893335,
+        "compliance": {
+          "area_compliant": true,
+          "power_compliant": true,
+          "timing_compliant": true
+        },
+        "cost": 1.3358137002868562,
+        "dynamic_power_uW": 6.50168,
+        "leakage_power_uW": 16.810000000000002,
+        "power_uW": 23.311680000000003,
+        "tns_ns": 0,
+        "wns_ns": 0.003001749999999914
+      },
+      "heuristic": "slack_weighted_capacitance",
+      "maximum_iterations": 100,
+      "method": "slack_weighted_capacitance",
+      "random_seed": null,
+      "runtime_seconds": 0.17846633400768042,
+      "sta_calls": 51,
+      "termination": "timing_met_no_cost_improvement",
+      "total_iterations": 8
+    }
+  },
+  "post_optimization": {
+    "area": 336.2000000000001,
+    "circuit_delay_ns": 0.8893335,
+    "compliance": {
+      "area_compliant": true,
+      "power_compliant": true,
+      "timing_compliant": true
+    },
+    "cost": 1.3358137002868562,
+    "dynamic_power_uW": 6.50168,
+    "leakage_power_uW": 16.810000000000002,
+    "power_uW": 23.311680000000003,
+    "tns_ns": 0,
+    "wns_ns": 0.003001749999999914
+  },
+  "validation": {
+    "circuit_name": "c14_layered_reconvergent_fabric",
+    "counts": {
+      "gates": 104,
+      "nets": 120,
+      "primary_inputs": 16,
+      "primary_outputs": 8
+    },
+    "errors": [],
+    "inputs": {
+      "config": "/home/halfblood/common/uni/master/VLSI/project/impl/Input_Files/circuits/valid/c14_layered_reconvergent_fabric/config.json",
+      "netlist": "/home/halfblood/common/uni/master/VLSI/project/impl/Input_Files/circuits/valid/c14_layered_reconvergent_fabric/netlist.txt"
+    },
+    "stages": {
+      "cell_library": "passed",
+      "configuration": "passed",
+      "dag": "passed",
+      "netlist": "passed"
+    },
+    "valid": true
+  }
+}

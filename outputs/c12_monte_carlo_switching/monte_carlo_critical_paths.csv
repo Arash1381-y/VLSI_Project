@@ -1,0 +1,5 @@
+circuit_state,rank,path_id,path,count,probability
+pre_optimization,1,D:rise|G4[0]|G5[0]|G6[0]|G7[1]|OUT:rise,D -> G4 -> G5 -> G6 -> G7,1819,0.6063333333333333
+pre_optimization,2,A:rise|G1[0]|G2[0]|G3[0]|G7[0]|OUT:rise,A -> G1 -> G2 -> G3 -> G7,1181,0.39366666666666666
+post_optimization,1,A:rise|G1[0]|G2[0]|G3[0]|G7[0]|OUT:rise,A -> G1 -> G2 -> G3 -> G7,1885,0.6283333333333333
+post_optimization,2,D:rise|G4[0]|G5[0]|G6[0]|G7[1]|OUT:rise,D -> G4 -> G5 -> G6 -> G7,1115,0.37166666666666665

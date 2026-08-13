@@ -1,0 +1,70 @@
+{
+  "circuit_delay_ns": 0.9893250000000001,
+  "critical_paths": [
+    {
+      "gate_count": 7,
+      "gates": "G6 -> G32 -> G41 -> G57 -> G73 -> G95 -> G104",
+      "input_net": "F",
+      "input_pins": "0 -> 1 -> 1 -> 0 -> 0 -> 1 -> 0",
+      "input_transition": "rise",
+      "output_net": "O8",
+      "output_transition": "rise",
+      "rank": 1,
+      "slack_ns": -0.02132500000000015,
+      "transitions": "rise -> rise -> fall -> rise -> rise -> rise -> rise -> rise"
+    },
+    {
+      "gate_count": 7,
+      "gates": "G6 -> G32 -> G41 -> G57 -> G73 -> G95 -> G104",
+      "input_net": "F",
+      "input_pins": "0 -> 1 -> 1 -> 0 -> 0 -> 1 -> 0",
+      "input_transition": "fall",
+      "output_net": "O8",
+      "output_transition": "rise",
+      "rank": 2,
+      "slack_ns": -0.02132500000000015,
+      "transitions": "fall -> rise -> fall -> rise -> rise -> rise -> rise -> rise"
+    },
+    {
+      "gate_count": 7,
+      "gates": "G6 -> G32 -> G41 -> G57 -> G73 -> G95 -> G104",
+      "input_net": "K",
+      "input_pins": "1 -> 1 -> 1 -> 0 -> 0 -> 1 -> 0",
+      "input_transition": "rise",
+      "output_net": "O8",
+      "output_transition": "rise",
+      "rank": 3,
+      "slack_ns": -0.02132500000000015,
+      "transitions": "rise -> rise -> fall -> rise -> rise -> rise -> rise -> rise"
+    },
+    {
+      "gate_count": 7,
+      "gates": "G6 -> G32 -> G41 -> G57 -> G73 -> G95 -> G104",
+      "input_net": "K",
+      "input_pins": "1 -> 1 -> 1 -> 0 -> 0 -> 1 -> 0",
+      "input_transition": "fall",
+      "output_net": "O8",
+      "output_transition": "rise",
+      "rank": 4,
+      "slack_ns": -0.02132500000000015,
+      "transitions": "fall -> rise -> fall -> rise -> rise -> rise -> rise -> rise"
+    },
+    {
+      "gate_count": 7,
+      "gates": "G6 -> G32 -> G41 -> G57 -> G73 -> G95 -> G104",
+      "input_net": "F",
+      "input_pins": "0 -> 1 -> 1 -> 0 -> 0 -> 1 -> 0",
+      "input_transition": "rise",
+      "output_net": "O8",
+      "output_transition": "fall",
+      "rank": 5,
+      "slack_ns": -0.019659000000000093,
+      "transitions": "rise -> rise -> fall -> rise -> rise -> rise -> fall -> fall"
+    }
+  ],
+  "elapsed_seconds": 0.0023739460157230496,
+  "timing_met": false,
+  "tns_ns": -0.15963450000000035,
+  "top_k_paths": 5,
+  "wns_ns": -0.02132500000000015
+}

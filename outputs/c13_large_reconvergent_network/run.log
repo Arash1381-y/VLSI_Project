@@ -1,0 +1,234 @@
+2026-08-13 17:53:45,168 [INFO] __main__: Configuration validation passed: /home/halfblood/common/uni/master/VLSI/project/impl/Input_Files/circuits/valid/c13_large_reconvergent_network/config.json
+2026-08-13 17:53:45,169 [INFO] __main__: Loading circuit c13_large_reconvergent_network
+2026-08-13 17:53:45,170 [INFO] __main__: Cell-library validation passed: /home/halfblood/common/uni/master/VLSI/project/impl/Input_Files/cell_library.json
+2026-08-13 17:53:45,170 [INFO] __main__: Netlist parsing and driver validation passed: /home/halfblood/common/uni/master/VLSI/project/impl/Input_Files/circuits/valid/c13_large_reconvergent_network/netlist.txt
+2026-08-13 17:53:45,170 [INFO] src.circuit: Preparing circuit c13_large_reconvergent_network (74 gates, 86 nets)
+2026-08-13 17:53:45,170 [INFO] src.circuit: Building the gate topological order
+2026-08-13 17:53:45,171 [INFO] src.circuit: Computing gate fanout capacitances
+2026-08-13 17:53:45,171 [INFO] src.circuit: Computing gate rise/fall delays
+2026-08-13 17:53:45,171 [INFO] src.circuit: Computing circuit power
+2026-08-13 17:53:45,171 [INFO] __main__: DAG validation passed
+2026-08-13 17:53:45,171 [INFO] src.experiments: Running experiment: fanout_capacitances
+2026-08-13 17:53:45,172 [INFO] src.experiments: Running experiment: gate_delays
+2026-08-13 17:53:45,172 [INFO] src.experiments: Running experiment: timing_analysis
+2026-08-13 17:53:45,172 [INFO] src.sta: Running static timing analysis
+2026-08-13 17:53:45,174 [INFO] src.sta: Timing FAILED: WNS=-0.029341 ns, TNS=-0.213303 ns
+2026-08-13 17:53:45,175 [INFO] src.experiments: Running experiment: logical_effort_analysis
+2026-08-13 17:53:45,177 [INFO] src.experiments: Running experiment: optimization
+2026-08-13 17:53:45,177 [INFO] src.experiments: Running slack_weighted_capacitance optimization
+2026-08-13 17:53:45,177 [INFO] src.sta: Running static timing analysis
+2026-08-13 17:53:45,178 [INFO] src.sta: Timing FAILED: WNS=-0.029341 ns, TNS=-0.213303 ns
+2026-08-13 17:53:45,179 [INFO] src.optimizer: Starting circuit optimization with initial cost 1.5452
+2026-08-13 17:53:45,179 [INFO] src.optimizer: Optimization attempt 1/100
+2026-08-13 17:53:45,180 [INFO] src.circuit: Preparing circuit c13_large_reconvergent_network (74 gates, 86 nets)
+2026-08-13 17:53:45,180 [INFO] src.circuit: Building the gate topological order
+2026-08-13 17:53:45,180 [INFO] src.circuit: Computing gate fanout capacitances
+2026-08-13 17:53:45,180 [INFO] src.circuit: Computing gate rise/fall delays
+2026-08-13 17:53:45,180 [INFO] src.circuit: Computing circuit power
+2026-08-13 17:53:45,180 [INFO] src.sta: Running static timing analysis
+2026-08-13 17:53:45,182 [INFO] src.sta: Timing FAILED: WNS=-0.0370165 ns, TNS=-0.240327 ns
+2026-08-13 17:53:45,182 [INFO] src.circuit: Preparing circuit c13_large_reconvergent_network (74 gates, 86 nets)
+2026-08-13 17:53:45,182 [INFO] src.circuit: Building the gate topological order
+2026-08-13 17:53:45,182 [INFO] src.circuit: Computing gate fanout capacitances
+2026-08-13 17:53:45,182 [INFO] src.circuit: Computing gate rise/fall delays
+2026-08-13 17:53:45,182 [INFO] src.circuit: Computing circuit power
+2026-08-13 17:53:45,182 [INFO] src.sta: Running static timing analysis
+2026-08-13 17:53:45,184 [INFO] src.sta: Timing FAILED: WNS=-0.046341 ns, TNS=-0.201779 ns
+2026-08-13 17:53:45,184 [INFO] src.circuit: Preparing circuit c13_large_reconvergent_network (74 gates, 86 nets)
+2026-08-13 17:53:45,184 [INFO] src.circuit: Building the gate topological order
+2026-08-13 17:53:45,184 [INFO] src.circuit: Computing gate fanout capacitances
+2026-08-13 17:53:45,184 [INFO] src.circuit: Computing gate rise/fall delays
+2026-08-13 17:53:45,184 [INFO] src.circuit: Computing circuit power
+2026-08-13 17:53:45,185 [INFO] src.circuit: Preparing circuit c13_large_reconvergent_network (74 gates, 86 nets)
+2026-08-13 17:53:45,185 [INFO] src.circuit: Building the gate topological order
+2026-08-13 17:53:45,185 [INFO] src.circuit: Computing gate fanout capacitances
+2026-08-13 17:53:45,185 [INFO] src.circuit: Computing gate rise/fall delays
+2026-08-13 17:53:45,185 [INFO] src.circuit: Computing circuit power
+2026-08-13 17:53:45,185 [INFO] src.sta: Running static timing analysis
+2026-08-13 17:53:45,187 [INFO] src.sta: Timing FAILED: WNS=-0.0465095 ns, TNS=-0.369614 ns
+2026-08-13 17:53:45,187 [INFO] src.circuit: Preparing circuit c13_large_reconvergent_network (74 gates, 86 nets)
+2026-08-13 17:53:45,187 [INFO] src.circuit: Building the gate topological order
+2026-08-13 17:53:45,187 [INFO] src.circuit: Computing gate fanout capacitances
+2026-08-13 17:53:45,187 [INFO] src.circuit: Computing gate rise/fall delays
+2026-08-13 17:53:45,187 [INFO] src.circuit: Computing circuit power
+2026-08-13 17:53:45,188 [INFO] src.sta: Running static timing analysis
+2026-08-13 17:53:45,189 [INFO] src.sta: Timing FAILED: WNS=-0.053335 ns, TNS=-0.230601 ns
+2026-08-13 17:53:45,189 [INFO] src.circuit: Preparing circuit c13_large_reconvergent_network (74 gates, 86 nets)
+2026-08-13 17:53:45,189 [INFO] src.circuit: Building the gate topological order
+2026-08-13 17:53:45,190 [INFO] src.circuit: Computing gate fanout capacitances
+2026-08-13 17:53:45,190 [INFO] src.circuit: Computing gate rise/fall delays
+2026-08-13 17:53:45,190 [INFO] src.circuit: Computing circuit power
+2026-08-13 17:53:45,190 [INFO] src.circuit: Preparing circuit c13_large_reconvergent_network (74 gates, 86 nets)
+2026-08-13 17:53:45,190 [INFO] src.circuit: Building the gate topological order
+2026-08-13 17:53:45,190 [INFO] src.circuit: Computing gate fanout capacitances
+2026-08-13 17:53:45,190 [INFO] src.circuit: Computing gate rise/fall delays
+2026-08-13 17:53:45,190 [INFO] src.circuit: Computing circuit power
+2026-08-13 17:53:45,190 [INFO] src.sta: Running static timing analysis
+2026-08-13 17:53:45,192 [INFO] src.sta: Timing FAILED: WNS=-0.032345 ns, TNS=-0.247164 ns
+2026-08-13 17:53:45,192 [INFO] src.optimizer: Optimization stopped: no candidate improves WNS or tied-WNS TNS
+2026-08-13 17:53:45,192 [INFO] src.experiments: slack_weighted_capacitance optimization completed in 0.014782 s
+2026-08-13 17:53:45,192 [INFO] src.experiments: Running random_greedy optimization
+2026-08-13 17:53:45,192 [INFO] src.sta: Running static timing analysis
+2026-08-13 17:53:45,193 [INFO] src.sta: Timing FAILED: WNS=-0.029341 ns, TNS=-0.213303 ns
+2026-08-13 17:53:45,193 [INFO] src.optimizer: Starting circuit optimization with initial cost 1.5452
+2026-08-13 17:53:45,194 [INFO] src.optimizer: Optimization attempt 1/100
+2026-08-13 17:53:45,194 [INFO] src.circuit: Preparing circuit c13_large_reconvergent_network (74 gates, 86 nets)
+2026-08-13 17:53:45,194 [INFO] src.circuit: Building the gate topological order
+2026-08-13 17:53:45,194 [INFO] src.circuit: Computing gate fanout capacitances
+2026-08-13 17:53:45,194 [INFO] src.circuit: Computing gate rise/fall delays
+2026-08-13 17:53:45,194 [INFO] src.circuit: Computing circuit power
+2026-08-13 17:53:45,194 [INFO] src.sta: Running static timing analysis
+2026-08-13 17:53:45,196 [INFO] src.sta: Timing FAILED: WNS=-0.0468445 ns, TNS=-0.411877 ns
+2026-08-13 17:53:45,196 [INFO] src.optimizer: Optimization attempt 2/100
+2026-08-13 17:53:45,196 [INFO] src.circuit: Preparing circuit c13_large_reconvergent_network (74 gates, 86 nets)
+2026-08-13 17:53:45,196 [INFO] src.circuit: Building the gate topological order
+2026-08-13 17:53:45,196 [INFO] src.circuit: Computing gate fanout capacitances
+2026-08-13 17:53:45,196 [INFO] src.circuit: Computing gate rise/fall delays
+2026-08-13 17:53:45,197 [INFO] src.circuit: Computing circuit power
+2026-08-13 17:53:45,197 [INFO] src.sta: Running static timing analysis
+2026-08-13 17:53:45,198 [INFO] src.sta: Timing FAILED: WNS=-0.0314955 ns, TNS=-0.226309 ns
+2026-08-13 17:53:45,198 [INFO] src.optimizer: Optimization attempt 3/100
+2026-08-13 17:53:45,198 [INFO] src.circuit: Preparing circuit c13_large_reconvergent_network (74 gates, 86 nets)
+2026-08-13 17:53:45,199 [INFO] src.circuit: Building the gate topological order
+2026-08-13 17:53:45,199 [INFO] src.circuit: Computing gate fanout capacitances
+2026-08-13 17:53:45,199 [INFO] src.circuit: Computing gate rise/fall delays
+2026-08-13 17:53:45,199 [INFO] src.circuit: Computing circuit power
+2026-08-13 17:53:45,199 [INFO] src.optimizer: Optimization attempt 4/100
+2026-08-13 17:53:45,200 [INFO] src.circuit: Preparing circuit c13_large_reconvergent_network (74 gates, 86 nets)
+2026-08-13 17:53:45,200 [INFO] src.circuit: Building the gate topological order
+2026-08-13 17:53:45,200 [INFO] src.circuit: Computing gate fanout capacitances
+2026-08-13 17:53:45,200 [INFO] src.circuit: Computing gate rise/fall delays
+2026-08-13 17:53:45,200 [INFO] src.circuit: Computing circuit power
+2026-08-13 17:53:45,200 [INFO] src.optimizer: Optimization attempt 5/100
+2026-08-13 17:53:45,201 [INFO] src.circuit: Preparing circuit c13_large_reconvergent_network (74 gates, 86 nets)
+2026-08-13 17:53:45,201 [INFO] src.circuit: Building the gate topological order
+2026-08-13 17:53:45,201 [INFO] src.circuit: Computing gate fanout capacitances
+2026-08-13 17:53:45,201 [INFO] src.circuit: Computing gate rise/fall delays
+2026-08-13 17:53:45,201 [INFO] src.circuit: Computing circuit power
+2026-08-13 17:53:45,201 [INFO] src.sta: Running static timing analysis
+2026-08-13 17:53:45,203 [INFO] src.sta: Timing FAILED: WNS=-0.029341 ns, TNS=-0.171688 ns
+2026-08-13 17:53:45,203 [INFO] src.optimizer: Accepted timing repair: WNS -0.029341 -> -0.029341 ns, TNS -0.213303 -> -0.171688 ns
+2026-08-13 17:53:45,203 [INFO] src.optimizer: Optimization attempt 6/100
+2026-08-13 17:53:45,204 [INFO] src.circuit: Preparing circuit c13_large_reconvergent_network (74 gates, 86 nets)
+2026-08-13 17:53:45,204 [INFO] src.circuit: Building the gate topological order
+2026-08-13 17:53:45,204 [INFO] src.circuit: Computing gate fanout capacitances
+2026-08-13 17:53:45,204 [INFO] src.circuit: Computing gate rise/fall delays
+2026-08-13 17:53:45,204 [INFO] src.circuit: Computing circuit power
+2026-08-13 17:53:45,204 [INFO] src.optimizer: Optimization attempt 7/100
+2026-08-13 17:53:45,205 [INFO] src.circuit: Preparing circuit c13_large_reconvergent_network (74 gates, 86 nets)
+2026-08-13 17:53:45,205 [INFO] src.circuit: Building the gate topological order
+2026-08-13 17:53:45,205 [INFO] src.circuit: Computing gate fanout capacitances
+2026-08-13 17:53:45,205 [INFO] src.circuit: Computing gate rise/fall delays
+2026-08-13 17:53:45,205 [INFO] src.circuit: Computing circuit power
+2026-08-13 17:53:45,205 [INFO] src.optimizer: Optimization attempt 8/100
+2026-08-13 17:53:45,206 [INFO] src.circuit: Preparing circuit c13_large_reconvergent_network (74 gates, 86 nets)
+2026-08-13 17:53:45,206 [INFO] src.circuit: Building the gate topological order
+2026-08-13 17:53:45,206 [INFO] src.circuit: Computing gate fanout capacitances
+2026-08-13 17:53:45,206 [INFO] src.circuit: Computing gate rise/fall delays
+2026-08-13 17:53:45,206 [INFO] src.circuit: Computing circuit power
+2026-08-13 17:53:45,206 [INFO] src.optimizer: Optimization attempt 9/100
+2026-08-13 17:53:45,206 [INFO] src.circuit: Preparing circuit c13_large_reconvergent_network (74 gates, 86 nets)
+2026-08-13 17:53:45,207 [INFO] src.circuit: Building the gate topological order
+2026-08-13 17:53:45,207 [INFO] src.circuit: Computing gate fanout capacitances
+2026-08-13 17:53:45,207 [INFO] src.circuit: Computing gate rise/fall delays
+2026-08-13 17:53:45,207 [INFO] src.circuit: Computing circuit power
+2026-08-13 17:53:45,207 [INFO] src.optimizer: Optimization attempt 10/100
+2026-08-13 17:53:45,208 [INFO] src.circuit: Preparing circuit c13_large_reconvergent_network (74 gates, 86 nets)
+2026-08-13 17:53:45,208 [INFO] src.circuit: Building the gate topological order
+2026-08-13 17:53:45,208 [INFO] src.circuit: Computing gate fanout capacitances
+2026-08-13 17:53:45,208 [INFO] src.circuit: Computing gate rise/fall delays
+2026-08-13 17:53:45,208 [INFO] src.circuit: Computing circuit power
+2026-08-13 17:53:45,208 [INFO] src.optimizer: Optimization attempt 11/100
+2026-08-13 17:53:45,208 [INFO] src.circuit: Preparing circuit c13_large_reconvergent_network (74 gates, 86 nets)
+2026-08-13 17:53:45,209 [INFO] src.circuit: Building the gate topological order
+2026-08-13 17:53:45,209 [INFO] src.circuit: Computing gate fanout capacitances
+2026-08-13 17:53:45,209 [INFO] src.circuit: Computing gate rise/fall delays
+2026-08-13 17:53:45,209 [INFO] src.circuit: Computing circuit power
+2026-08-13 17:53:45,209 [INFO] src.optimizer: Optimization attempt 12/100
+2026-08-13 17:53:45,209 [INFO] src.circuit: Preparing circuit c13_large_reconvergent_network (74 gates, 86 nets)
+2026-08-13 17:53:45,209 [INFO] src.circuit: Building the gate topological order
+2026-08-13 17:53:45,209 [INFO] src.circuit: Computing gate fanout capacitances
+2026-08-13 17:53:45,210 [INFO] src.circuit: Computing gate rise/fall delays
+2026-08-13 17:53:45,210 [INFO] src.circuit: Computing circuit power
+2026-08-13 17:53:45,210 [INFO] src.optimizer: Optimization attempt 13/100
+2026-08-13 17:53:45,210 [INFO] src.circuit: Preparing circuit c13_large_reconvergent_network (74 gates, 86 nets)
+2026-08-13 17:53:45,210 [INFO] src.circuit: Building the gate topological order
+2026-08-13 17:53:45,210 [INFO] src.circuit: Computing gate fanout capacitances
+2026-08-13 17:53:45,210 [INFO] src.circuit: Computing gate rise/fall delays
+2026-08-13 17:53:45,210 [INFO] src.circuit: Computing circuit power
+2026-08-13 17:53:45,211 [INFO] src.optimizer: Optimization attempt 14/100
+2026-08-13 17:53:45,211 [INFO] src.circuit: Preparing circuit c13_large_reconvergent_network (74 gates, 86 nets)
+2026-08-13 17:53:45,211 [INFO] src.circuit: Building the gate topological order
+2026-08-13 17:53:45,211 [INFO] src.circuit: Computing gate fanout capacitances
+2026-08-13 17:53:45,211 [INFO] src.circuit: Computing gate rise/fall delays
+2026-08-13 17:53:45,211 [INFO] src.circuit: Computing circuit power
+2026-08-13 17:53:45,211 [INFO] src.optimizer: Optimization attempt 15/100
+2026-08-13 17:53:45,212 [INFO] src.circuit: Preparing circuit c13_large_reconvergent_network (74 gates, 86 nets)
+2026-08-13 17:53:45,212 [INFO] src.circuit: Building the gate topological order
+2026-08-13 17:53:45,212 [INFO] src.circuit: Computing gate fanout capacitances
+2026-08-13 17:53:45,212 [INFO] src.circuit: Computing gate rise/fall delays
+2026-08-13 17:53:45,212 [INFO] src.circuit: Computing circuit power
+2026-08-13 17:53:45,212 [INFO] src.optimizer: Optimization attempt 16/100
+2026-08-13 17:53:45,212 [INFO] src.circuit: Preparing circuit c13_large_reconvergent_network (74 gates, 86 nets)
+2026-08-13 17:53:45,212 [INFO] src.circuit: Building the gate topological order
+2026-08-13 17:53:45,213 [INFO] src.circuit: Computing gate fanout capacitances
+2026-08-13 17:53:45,213 [INFO] src.circuit: Computing gate rise/fall delays
+2026-08-13 17:53:45,213 [INFO] src.circuit: Computing circuit power
+2026-08-13 17:53:45,213 [INFO] src.sta: Running static timing analysis
+2026-08-13 17:53:45,214 [INFO] src.sta: Timing FAILED: WNS=-0.0370165 ns, TNS=-0.201228 ns
+2026-08-13 17:53:45,214 [INFO] src.optimizer: Optimization attempt 17/100
+2026-08-13 17:53:45,214 [INFO] src.circuit: Preparing circuit c13_large_reconvergent_network (74 gates, 86 nets)
+2026-08-13 17:53:45,214 [INFO] src.circuit: Building the gate topological order
+2026-08-13 17:53:45,215 [INFO] src.circuit: Computing gate fanout capacitances
+2026-08-13 17:53:45,215 [INFO] src.circuit: Computing gate rise/fall delays
+2026-08-13 17:53:45,215 [INFO] src.circuit: Computing circuit power
+2026-08-13 17:53:45,215 [INFO] src.optimizer: Optimization attempt 18/100
+2026-08-13 17:53:45,215 [INFO] src.circuit: Preparing circuit c13_large_reconvergent_network (74 gates, 86 nets)
+2026-08-13 17:53:45,215 [INFO] src.circuit: Building the gate topological order
+2026-08-13 17:53:45,215 [INFO] src.circuit: Computing gate fanout capacitances
+2026-08-13 17:53:45,216 [INFO] src.circuit: Computing gate rise/fall delays
+2026-08-13 17:53:45,216 [INFO] src.circuit: Computing circuit power
+2026-08-13 17:53:45,216 [INFO] src.optimizer: Optimization attempt 19/100
+2026-08-13 17:53:45,216 [INFO] src.circuit: Preparing circuit c13_large_reconvergent_network (74 gates, 86 nets)
+2026-08-13 17:53:45,216 [INFO] src.circuit: Building the gate topological order
+2026-08-13 17:53:45,216 [INFO] src.circuit: Computing gate fanout capacitances
+2026-08-13 17:53:45,216 [INFO] src.circuit: Computing gate rise/fall delays
+2026-08-13 17:53:45,217 [INFO] src.circuit: Computing circuit power
+2026-08-13 17:53:45,217 [INFO] src.optimizer: Optimization attempt 20/100
+2026-08-13 17:53:45,217 [INFO] src.circuit: Preparing circuit c13_large_reconvergent_network (74 gates, 86 nets)
+2026-08-13 17:53:45,217 [INFO] src.circuit: Building the gate topological order
+2026-08-13 17:53:45,218 [INFO] src.circuit: Computing gate fanout capacitances
+2026-08-13 17:53:45,218 [INFO] src.circuit: Computing gate rise/fall delays
+2026-08-13 17:53:45,218 [INFO] src.circuit: Computing circuit power
+2026-08-13 17:53:45,218 [INFO] src.optimizer: Optimization attempt 21/100
+2026-08-13 17:53:45,219 [INFO] src.circuit: Preparing circuit c13_large_reconvergent_network (74 gates, 86 nets)
+2026-08-13 17:53:45,219 [INFO] src.circuit: Building the gate topological order
+2026-08-13 17:53:45,219 [INFO] src.circuit: Computing gate fanout capacitances
+2026-08-13 17:53:45,219 [INFO] src.circuit: Computing gate rise/fall delays
+2026-08-13 17:53:45,219 [INFO] src.circuit: Computing circuit power
+2026-08-13 17:53:45,219 [INFO] src.optimizer: Optimization attempt 22/100
+2026-08-13 17:53:45,220 [INFO] src.circuit: Preparing circuit c13_large_reconvergent_network (74 gates, 86 nets)
+2026-08-13 17:53:45,220 [INFO] src.circuit: Building the gate topological order
+2026-08-13 17:53:45,220 [INFO] src.circuit: Computing gate fanout capacitances
+2026-08-13 17:53:45,220 [INFO] src.circuit: Computing gate rise/fall delays
+2026-08-13 17:53:45,220 [INFO] src.circuit: Computing circuit power
+2026-08-13 17:53:45,221 [INFO] src.optimizer: Optimization attempt 23/100
+2026-08-13 17:53:45,221 [INFO] src.circuit: Preparing circuit c13_large_reconvergent_network (74 gates, 86 nets)
+2026-08-13 17:53:45,221 [INFO] src.circuit: Building the gate topological order
+2026-08-13 17:53:45,221 [INFO] src.circuit: Computing gate fanout capacitances
+2026-08-13 17:53:45,221 [INFO] src.circuit: Computing gate rise/fall delays
+2026-08-13 17:53:45,222 [INFO] src.circuit: Computing circuit power
+2026-08-13 17:53:45,222 [INFO] src.optimizer: Optimization attempt 24/100
+2026-08-13 17:53:45,222 [INFO] src.circuit: Preparing circuit c13_large_reconvergent_network (74 gates, 86 nets)
+2026-08-13 17:53:45,222 [INFO] src.circuit: Building the gate topological order
+2026-08-13 17:53:45,223 [INFO] src.circuit: Computing gate fanout capacitances
+2026-08-13 17:53:45,223 [INFO] src.circuit: Computing gate rise/fall delays
+2026-08-13 17:53:45,223 [INFO] src.circuit: Computing circuit power
+2026-08-13 17:53:45,223 [INFO] src.optimizer: Optimization attempt 25/100
+2026-08-13 17:53:45,223 [INFO] src.optimizer: Optimization stopped: all one-step critical-path upsizes were exhausted
+2026-08-13 17:53:45,224 [INFO] src.experiments: random_greedy optimization completed in 0.031453 s
+2026-08-13 17:53:45,225 [INFO] src.experiments: Running experiment: visualization
+2026-08-13 17:53:49,362 [INFO] src.experiments: Running experiment: monte_carlo
+2026-08-13 17:53:49,362 [INFO] src.experiments: Monte Carlo experiment is disabled by configuration
+2026-08-13 17:53:49,362 [INFO] src.experiments: Running experiment: summary
+2026-08-13 17:53:49,363 [INFO] src.experiments: Circuit experiments completed; results are in /home/halfblood/common/uni/master/VLSI/project/impl/outputs/c13_large_reconvergent_network

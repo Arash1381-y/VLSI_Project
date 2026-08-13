@@ -1,0 +1,144 @@
+{
+  "circuit_name": "c13_large_reconvergent_network",
+  "cell_library": "../../../cell_library.json",
+  "input_arrival_times": {
+    "A": {
+      "rise": 0.0,
+      "fall": 0.006
+    },
+    "B": {
+      "rise": 0.004,
+      "fall": 0.0
+    },
+    "C": {
+      "rise": 0.009,
+      "fall": 0.003
+    },
+    "D": {
+      "rise": 0.002,
+      "fall": 0.011
+    },
+    "E": {
+      "rise": 0.013,
+      "fall": 0.005
+    },
+    "F": {
+      "rise": 0.006,
+      "fall": 0.014
+    },
+    "G": {
+      "rise": 0.01,
+      "fall": 0.004
+    },
+    "H": {
+      "rise": 0.003,
+      "fall": 0.012
+    },
+    "I": {
+      "rise": 0.015,
+      "fall": 0.007
+    },
+    "J": {
+      "rise": 0.005,
+      "fall": 0.016
+    },
+    "K": {
+      "rise": 0.012,
+      "fall": 0.002
+    },
+    "L": {
+      "rise": 0.008,
+      "fall": 0.01
+    }
+  },
+  "output_required_times": {
+    "O1": {
+      "rise": 0.982,
+      "fall": 0.975
+    },
+    "O2": {
+      "rise": 0.921,
+      "fall": 0.845
+    },
+    "O3": {
+      "rise": 0.91,
+      "fall": 0.905
+    },
+    "O4": {
+      "rise": 0.845,
+      "fall": 0.835
+    },
+    "O5": {
+      "rise": 0.935,
+      "fall": 0.89
+    },
+    "O6": {
+      "rise": 0.97,
+      "fall": 0.96
+    }
+  },
+  "output_loads": {
+    "O1": 12.0,
+    "O2": 10.0,
+    "O3": 8.0,
+    "O4": 11.0,
+    "O5": 9.0,
+    "O6": 15.0
+  },
+  "timing_analysis": {
+    "top_k_paths": 5,
+    "separate_rise_fall": true
+  },
+  "operating_conditions": {
+    "supply_voltage": 1.0,
+    "frequency_hz": 100000000,
+    "temperature_c": 25.0,
+    "default_activity_factor": 0.1,
+    "node_activity_factors": {
+      "N1": 0.18,
+      "N13": 0.16,
+      "N29": 0.2,
+      "N37": 0.17,
+      "N41": 0.19,
+      "N49": 0.16,
+      "N53": 0.18,
+      "N67": 0.15,
+      "N68": 0.14,
+      "O1": 0.12,
+      "O2": 0.1,
+      "O3": 0.11,
+      "O4": 0.09,
+      "O5": 0.1,
+      "O6": 0.08
+    }
+  },
+  "design_constraints": {
+    "maximum_area": 221.0,
+    "maximum_power_uW": 15.37
+  },
+  "optimization": {
+    "enabled": true,
+    "allowed_sizes": [
+      "X1",
+      "X2",
+      "X4"
+    ],
+    "maximum_iterations": 100,
+    "minimum_cost_improvement": 1e-06,
+    "normalization_reference": "initial_design",
+    "weights": {
+      "delay": 1.0,
+      "power": 0.2,
+      "area": 0.2,
+      "timing_violation": 5.0
+    }
+  },
+  "monte_carlo": {
+    "enabled": false,
+    "samples": 3000,
+    "global_sigma": 0.03,
+    "local_sigma": 0.05,
+    "random_seed": 1405,
+    "negative_delay_policy": "resample"
+  }
+}

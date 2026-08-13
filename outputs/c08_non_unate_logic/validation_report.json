@@ -1,0 +1,21 @@
+{
+  "circuit_name": "c08_non_unate_logic",
+  "counts": {
+    "gates": 4,
+    "nets": 8,
+    "primary_inputs": 4,
+    "primary_outputs": 1
+  },
+  "errors": [],
+  "inputs": {
+    "config": "/home/halfblood/common/uni/master/VLSI/project/impl/Input_Files/circuits/valid/c08_non_unate_logic/config.json",
+    "netlist": "/home/halfblood/common/uni/master/VLSI/project/impl/Input_Files/circuits/valid/c08_non_unate_logic/netlist.txt"
+  },
+  "stages": {
+    "cell_library": "passed",
+    "configuration": "passed",
+    "dag": "passed",
+    "netlist": "passed"
+  },
+  "valid": true
+}

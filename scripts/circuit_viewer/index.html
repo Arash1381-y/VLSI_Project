@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light">
+    <title>Circuit Topology Viewer</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#graph">Skip to circuit graph</a>
+    <main class="app-shell">
+      <header class="topbar">
+        <div class="brand-lockup">
+          <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+          <div>
+            <p class="eyebrow">Netlist workbench</p>
+            <h1 id="circuit-title">Loading topology…</h1>
+          </div>
+        </div>
+
+        <fieldset class="state-filters" aria-label="Visible analysis states">
+          <legend>Compare states</legend>
+          <label class="original-filter">
+            <input id="show-original" type="checkbox" checked>
+            <span></span>Original
+          </label>
+          <label class="optimized-filter">
+            <input id="show-optimized" type="checkbox" checked>
+            <span></span>Optimized
+          </label>
+        </fieldset>
+
+        <dl class="counts" aria-label="Circuit topology counts">
+          <div><dt>Gates</dt><dd id="gate-count">—</dd></div>
+          <div><dt>Nets</dt><dd id="net-count">—</dd></div>
+          <div><dt>Inputs</dt><dd id="input-count">—</dd></div>
+          <div><dt>Outputs</dt><dd id="output-count">—</dd></div>
+        </dl>
+      </header>
+
+      <section class="workspace" aria-label="Topology workspace">
+        <aside class="tool-rail" aria-label="Graph controls">
+          <button id="zoom-in" type="button" title="Zoom in" aria-label="Zoom in">+</button>
+          <button id="zoom-out" type="button" title="Zoom out" aria-label="Zoom out">−</button>
+          <button id="fit-view" class="fit-button" type="button" title="Fit graph" aria-label="Fit graph">Fit</button>
+          <span class="rail-rule" aria-hidden="true"></span>
+          <label class="net-label-toggle" title="Show net names">
+            <input id="show-net-labels" type="checkbox">
+            <span aria-hidden="true">N</span>
+            <em>Net labels</em>
+          </label>
+        </aside>
+
+        <section id="graph" class="graph-panel" tabindex="0" aria-label="Interactive circuit topology">
+          <canvas id="graph-canvas" aria-label="Circuit nodes and connecting nets"></canvas>
+          <div class="graph-hint" id="graph-hint">
+            <span>Drag to pan</span><span>Scroll to zoom</span><span>Click to inspect</span>
+          </div>
+          <div class="zoom-readout" id="zoom-readout" aria-live="polite">100%</div>
+          <div class="loading-state" id="loading-state" role="status">
+            <span class="loader" aria-hidden="true"></span>
+            Reading circuit topology
+          </div>
+        </section>
+
+        <aside class="inspector" aria-labelledby="inspector-title">
+          <div class="inspector-heading">
+            <p class="eyebrow">Selection</p>
+            <h2 id="inspector-title">Topology inspector</h2>
+          </div>
+          <div id="empty-selection" class="empty-selection">
+            <span class="empty-glyph" aria-hidden="true"></span>
+            <p>Select a node to isolate its connected nets and neighboring nodes.</p>
+          </div>
+          <div id="selection-details" class="selection-details" hidden>
+            <p class="selection-kind" id="selection-kind"></p>
+            <h3 id="selection-name"></h3>
+            <p class="gate-type" id="selection-type"></p>
+            <div id="gate-analysis" class="gate-analysis" hidden>
+              <article id="original-analysis" class="analysis-card original-card">
+                <header><i></i><h4>Original</h4></header>
+                <dl>
+                  <div><dt>Cell</dt><dd data-field="cell"></dd></div>
+                  <div><dt>Size</dt><dd data-field="size"></dd></div>
+                  <div><dt>Load cap</dt><dd data-field="load"></dd></div>
+                  <div><dt>Rise delay</dt><dd data-field="rise"></dd></div>
+                  <div><dt>Fall delay</dt><dd data-field="fall"></dd></div>
+                  <div><dt>Critical paths</dt><dd data-field="paths"></dd></div>
+                </dl>
+              </article>
+              <article id="optimized-analysis" class="analysis-card optimized-card">
+                <header><i></i><h4>Optimized</h4></header>
+                <dl>
+                  <div><dt>Cell</dt><dd data-field="cell"></dd></div>
+                  <div><dt>Size</dt><dd data-field="size"></dd></div>
+                  <div><dt>Load cap</dt><dd data-field="load"></dd></div>
+                  <div><dt>Rise delay</dt><dd data-field="rise"></dd></div>
+                  <div><dt>Fall delay</dt><dd data-field="fall"></dd></div>
+                  <div><dt>Critical paths</dt><dd data-field="paths"></dd></div>
+                </dl>
+              </article>
+            </div>
+            <section>
+              <h4>Incoming nets</h4>
+              <ul id="incoming-nets"></ul>
+            </section>
+            <section>
+              <h4>Outgoing nets</h4>
+              <ul id="outgoing-nets"></ul>
+            </section>
+          </div>
+          <footer class="legend" aria-label="Node legend">
+            <span><i class="input-dot"></i>Primary input</span>
+            <span><i class="gate-dot"></i>Gate</span>
+            <span><i class="output-dot"></i>Primary output</span>
+            <span><i class="original-path-line"></i>Original critical path</span>
+            <span><i class="optimized-path-line"></i>Optimized critical path</span>
+            <span><i class="resized-x2-mark"></i>Resized to X2</span>
+            <span><i class="resized-x4-mark"></i>Resized to X4</span>
+          </footer>
+        </aside>
+      </section>
+    </main>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

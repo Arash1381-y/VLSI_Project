@@ -1,0 +1,70 @@
+{
+  "circuit_delay_ns": 0.2010035,
+  "critical_paths": [
+    {
+      "gate_count": 2,
+      "gates": "G1 -> G3",
+      "input_net": "A",
+      "input_pins": "0 -> 0",
+      "input_transition": "rise",
+      "output_net": "O2",
+      "output_transition": "rise",
+      "rank": 1,
+      "slack_ns": -0.006003000000000008,
+      "transitions": "rise -> fall -> rise"
+    },
+    {
+      "gate_count": 2,
+      "gates": "G1 -> G3",
+      "input_net": "B",
+      "input_pins": "1 -> 0",
+      "input_transition": "rise",
+      "output_net": "O2",
+      "output_transition": "rise",
+      "rank": 2,
+      "slack_ns": -0.006003000000000008,
+      "transitions": "rise -> fall -> rise"
+    },
+    {
+      "gate_count": 2,
+      "gates": "G1 -> G4",
+      "input_net": "A",
+      "input_pins": "0 -> 0",
+      "input_transition": "fall",
+      "output_net": "O3",
+      "output_transition": "rise",
+      "rank": 3,
+      "slack_ns": 0.003996499999999986,
+      "transitions": "fall -> rise -> rise"
+    },
+    {
+      "gate_count": 2,
+      "gates": "G1 -> G4",
+      "input_net": "B",
+      "input_pins": "1 -> 0",
+      "input_transition": "fall",
+      "output_net": "O3",
+      "output_transition": "rise",
+      "rank": 4,
+      "slack_ns": 0.003996499999999986,
+      "transitions": "fall -> rise -> rise"
+    },
+    {
+      "gate_count": 2,
+      "gates": "G1 -> G2",
+      "input_net": "A",
+      "input_pins": "0 -> 0",
+      "input_transition": "rise",
+      "output_net": "O1",
+      "output_transition": "rise",
+      "rank": 5,
+      "slack_ns": 0.007996999999999976,
+      "transitions": "rise -> fall -> rise"
+    }
+  ],
+  "elapsed_seconds": 0.00025872798869386315,
+  "timing_met": false,
+  "tns_ns": -0.006003000000000008,
+  "top_k_paths": 5,
+  "wns_ns": -0.006003000000000008
+}

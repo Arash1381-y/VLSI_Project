@@ -1,0 +1,202 @@
+{
+  "artifacts": {
+    "circuit_graph_post_optimization.png": "circuit_graph_post_optimization.png",
+    "circuit_graph_pre_optimization.png": "circuit_graph_pre_optimization.png",
+    "critical_paths.csv": "critical_paths.csv",
+    "fanout_capacitances.json": "fanout_capacitances.json",
+    "gate_delays.json": "gate_delays.json",
+    "logical_effort_analysis.json": "logical_effort_analysis.json",
+    "monte_carlo_critical_paths.csv": "monte_carlo_critical_paths.csv",
+    "monte_carlo_gate_criticality.csv": "monte_carlo_gate_criticality.csv",
+    "monte_carlo_samples.csv": "monte_carlo_samples.csv",
+    "monte_carlo_statistics.csv": "monte_carlo_statistics.csv",
+    "monte_carlo_summary.json": "monte_carlo_summary.json",
+    "monte_carlo_variations.csv": "monte_carlo_variations.csv",
+    "optimization_comparison.json": "optimization_comparison.json",
+    "optimization_random_greedy.csv": "optimization_random_greedy.csv",
+    "optimization_slack_weighted_capacitance.csv": "optimization_slack_weighted_capacitance.csv",
+    "optimization_summary.csv": "optimization_summary.csv",
+    "run.log": "run.log",
+    "summary.json": "summary.json",
+    "timing_analysis.csv": "timing_analysis.csv",
+    "timing_analysis.json": "timing_analysis.json",
+    "validation_report.json": "validation_report.json"
+  },
+  "canonical_method": "slack_weighted_capacitance",
+  "circuit": {
+    "cell_library_file": "/home/halfblood/common/uni/master/VLSI/project/impl/Input_Files/cell_library.json",
+    "config_file": "/home/halfblood/common/uni/master/VLSI/project/impl/Input_Files/circuits/valid/c09_high_fanout/config.json",
+    "gate_count": 6,
+    "name": "c09_high_fanout",
+    "net_count": 12,
+    "netlist_file": "/home/halfblood/common/uni/master/VLSI/project/impl/Input_Files/circuits/valid/c09_high_fanout/netlist.txt",
+    "primary_input_count": 6,
+    "primary_output_count": 5,
+    "units": {
+      "area": "normalized_unit",
+      "capacitance": "fF",
+      "leakage_power": "uW",
+      "resistance": "kOhm",
+      "time": "ns"
+    }
+  },
+  "compliance": {
+    "all_constraints_compliant": false,
+    "area_compliant": true,
+    "power_compliant": true,
+    "timing_compliant": false
+  },
+  "constraints": {
+    "maximum_area": 19.0,
+    "maximum_power_uW": 1.5,
+    "timing_requirement": "WNS >= 0 ns"
+  },
+  "critical_paths": {
+    "configured_top_k": 5,
+    "reported_count": 5,
+    "worst": {
+      "gate_count": 2,
+      "gates": "G1 -> G4",
+      "input_net": "A",
+      "input_pins": "0 -> 0",
+      "input_transition": "fall",
+      "output_net": "O3",
+      "output_transition": "rise",
+      "rank": 1,
+      "slack_ns": -0.0040000000000000036,
+      "transitions": "fall -> rise -> rise"
+    }
+  },
+  "initial": {
+    "area": 15.6,
+    "circuit_delay_ns": 0.20900000000000002,
+    "compliance": {
+      "area_compliant": true,
+      "power_compliant": true,
+      "timing_compliant": false
+    },
+    "cost": 1.4956937799043062,
+    "dynamic_power_uW": 0.5189,
+    "leakage_power_uW": 0.78,
+    "power_uW": 1.2989000000000002,
+    "tns_ns": -0.007250000000000034,
+    "wns_ns": -0.0040000000000000036
+  },
+  "logical_effort_worst_path": {
+    "B": 6.001500375093774,
+    "F": 32.0,
+    "G": 1.333,
+    "H": 4.0,
+    "P": 4.0,
+    "minimum_theoretical_delay_ns": 0.2297056274847714,
+    "optimal_stage_effort": 5.656854249492381
+  },
+  "monte_carlo": {
+    "configuration": {
+      "enabled": false,
+      "random_seed": 1405,
+      "samples": 3000
+    },
+    "reason": "disabled_by_configuration",
+    "status": "skipped"
+  },
+  "optimizer_comparison": {
+    "area": 0.0,
+    "circuit_delay_ns": 0.0,
+    "power_uW": 0.0,
+    "runtime_seconds": -0.00043603393714874983,
+    "sta_calls": 0,
+    "tns_ns": 0.0,
+    "wns_ns": 0.0
+  },
+  "optimizers": {
+    "greedy_baseline": {
+      "accepted_iterations": 0,
+      "final": {
+        "area": 15.6,
+        "circuit_delay_ns": 0.20900000000000002,
+        "compliance": {
+          "area_compliant": true,
+          "power_compliant": true,
+          "timing_compliant": false
+        },
+        "cost": 1.4956937799043062,
+        "dynamic_power_uW": 0.5189,
+        "leakage_power_uW": 0.78,
+        "power_uW": 1.2989000000000002,
+        "tns_ns": -0.007250000000000034,
+        "wns_ns": -0.0040000000000000036
+      },
+      "heuristic": "random_greedy",
+      "maximum_iterations": 100,
+      "method": "random_greedy",
+      "random_seed": 0,
+      "runtime_seconds": 0.0004098190111108124,
+      "sta_calls": 1,
+      "termination": "no_feasible_change",
+      "total_iterations": 1
+    },
+    "logical_effort_guided": {
+      "accepted_iterations": 0,
+      "final": {
+        "area": 15.6,
+        "circuit_delay_ns": 0.20900000000000002,
+        "compliance": {
+          "area_compliant": true,
+          "power_compliant": true,
+          "timing_compliant": false
+        },
+        "cost": 1.4956937799043062,
+        "dynamic_power_uW": 0.5189,
+        "leakage_power_uW": 0.78,
+        "power_uW": 1.2989000000000002,
+        "tns_ns": -0.007250000000000034,
+        "wns_ns": -0.0040000000000000036
+      },
+      "heuristic": "slack_weighted_capacitance",
+      "maximum_iterations": 100,
+      "method": "slack_weighted_capacitance",
+      "random_seed": null,
+      "runtime_seconds": 0.0008458529482595623,
+      "sta_calls": 1,
+      "termination": "no_feasible_change",
+      "total_iterations": 1
+    }
+  },
+  "post_optimization": {
+    "area": 15.6,
+    "circuit_delay_ns": 0.20900000000000002,
+    "compliance": {
+      "area_compliant": true,
+      "power_compliant": true,
+      "timing_compliant": false
+    },
+    "cost": 1.4956937799043062,
+    "dynamic_power_uW": 0.5189,
+    "leakage_power_uW": 0.78,
+    "power_uW": 1.2989000000000002,
+    "tns_ns": -0.007250000000000034,
+    "wns_ns": -0.0040000000000000036
+  },
+  "validation": {
+    "circuit_name": "c09_high_fanout",
+    "counts": {
+      "gates": 6,
+      "nets": 12,
+      "primary_inputs": 6,
+      "primary_outputs": 5
+    },
+    "errors": [],
+    "inputs": {
+      "config": "/home/halfblood/common/uni/master/VLSI/project/impl/Input_Files/circuits/valid/c09_high_fanout/config.json",
+      "netlist": "/home/halfblood/common/uni/master/VLSI/project/impl/Input_Files/circuits/valid/c09_high_fanout/netlist.txt"
+    },
+    "stages": {
+      "cell_library": "passed",
+      "configuration": "passed",
+      "dag": "passed",
+      "netlist": "passed"
+    },
+    "valid": true
+  }
+}

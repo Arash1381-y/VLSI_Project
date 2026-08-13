@@ -1,0 +1,21 @@
+{
+  "circuit_name": "c14_layered_reconvergent_fabric",
+  "counts": {
+    "gates": 104,
+    "nets": 120,
+    "primary_inputs": 16,
+    "primary_outputs": 8
+  },
+  "errors": [],
+  "inputs": {
+    "config": "/home/halfblood/common/uni/master/VLSI/project/impl/Input_Files/circuits/valid/c14_layered_reconvergent_fabric/config.json",
+    "netlist": "/home/halfblood/common/uni/master/VLSI/project/impl/Input_Files/circuits/valid/c14_layered_reconvergent_fabric/netlist.txt"
+  },
+  "stages": {
+    "cell_library": "passed",
+    "configuration": "passed",
+    "dag": "passed",
+    "netlist": "passed"
+  },
+  "valid": true
+}

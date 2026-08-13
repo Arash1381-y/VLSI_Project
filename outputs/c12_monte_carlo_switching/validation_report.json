@@ -1,0 +1,21 @@
+{
+  "circuit_name": "c12_monte_carlo_switching",
+  "counts": {
+    "gates": 7,
+    "nets": 12,
+    "primary_inputs": 5,
+    "primary_outputs": 1
+  },
+  "errors": [],
+  "inputs": {
+    "config": "/home/halfblood/common/uni/master/VLSI/project/impl/Input_Files/circuits/valid/c12_monte_carlo_switching/config.json",
+    "netlist": "/home/halfblood/common/uni/master/VLSI/project/impl/Input_Files/circuits/valid/c12_monte_carlo_switching/netlist.txt"
+  },
+  "stages": {
+    "cell_library": "passed",
+    "configuration": "passed",
+    "dag": "passed",
+    "netlist": "passed"
+  },
+  "valid": true
+}

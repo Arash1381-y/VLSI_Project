@@ -1,0 +1,47 @@
+2026-08-13 17:53:35,641 [INFO] __main__: Configuration validation passed: /home/halfblood/common/uni/master/VLSI/project/impl/Input_Files/circuits/valid/c08_non_unate_logic/config.json
+2026-08-13 17:53:35,641 [INFO] __main__: Loading circuit c08_non_unate_logic
+2026-08-13 17:53:35,642 [INFO] __main__: Cell-library validation passed: /home/halfblood/common/uni/master/VLSI/project/impl/Input_Files/cell_library.json
+2026-08-13 17:53:35,643 [INFO] __main__: Netlist parsing and driver validation passed: /home/halfblood/common/uni/master/VLSI/project/impl/Input_Files/circuits/valid/c08_non_unate_logic/netlist.txt
+2026-08-13 17:53:35,643 [INFO] src.circuit: Preparing circuit c08_non_unate_logic (4 gates, 8 nets)
+2026-08-13 17:53:35,643 [INFO] src.circuit: Building the gate topological order
+2026-08-13 17:53:35,643 [INFO] src.circuit: Computing gate fanout capacitances
+2026-08-13 17:53:35,643 [INFO] src.circuit: Computing gate rise/fall delays
+2026-08-13 17:53:35,643 [INFO] src.circuit: Computing circuit power
+2026-08-13 17:53:35,643 [INFO] __main__: DAG validation passed
+2026-08-13 17:53:35,643 [INFO] src.experiments: Running experiment: fanout_capacitances
+2026-08-13 17:53:35,643 [INFO] src.experiments: Running experiment: gate_delays
+2026-08-13 17:53:35,643 [INFO] src.experiments: Running experiment: timing_analysis
+2026-08-13 17:53:35,644 [INFO] src.sta: Running static timing analysis
+2026-08-13 17:53:35,644 [INFO] src.sta: Timing FAILED: WNS=-0.008664 ns, TNS=-0.012994 ns
+2026-08-13 17:53:35,644 [INFO] src.experiments: Running experiment: logical_effort_analysis
+2026-08-13 17:53:35,645 [INFO] src.experiments: Running experiment: optimization
+2026-08-13 17:53:35,645 [INFO] src.experiments: Running slack_weighted_capacitance optimization
+2026-08-13 17:53:35,645 [INFO] src.sta: Running static timing analysis
+2026-08-13 17:53:35,645 [INFO] src.sta: Timing FAILED: WNS=-0.008664 ns, TNS=-0.012994 ns
+2026-08-13 17:53:35,645 [INFO] src.optimizer: Starting circuit optimization with initial cost 1.56124
+2026-08-13 17:53:35,646 [INFO] src.optimizer: Optimization attempt 1/100
+2026-08-13 17:53:35,646 [INFO] src.circuit: Preparing circuit c08_non_unate_logic (4 gates, 8 nets)
+2026-08-13 17:53:35,646 [INFO] src.circuit: Building the gate topological order
+2026-08-13 17:53:35,646 [INFO] src.circuit: Computing gate fanout capacitances
+2026-08-13 17:53:35,646 [INFO] src.circuit: Computing gate rise/fall delays
+2026-08-13 17:53:35,646 [INFO] src.circuit: Computing circuit power
+2026-08-13 17:53:35,646 [INFO] src.optimizer: Optimization stopped: no selected sizing change is available within area and power constraints
+2026-08-13 17:53:35,646 [INFO] src.experiments: slack_weighted_capacitance optimization completed in 0.001196 s
+2026-08-13 17:53:35,646 [INFO] src.experiments: Running random_greedy optimization
+2026-08-13 17:53:35,646 [INFO] src.sta: Running static timing analysis
+2026-08-13 17:53:35,647 [INFO] src.sta: Timing FAILED: WNS=-0.008664 ns, TNS=-0.012994 ns
+2026-08-13 17:53:35,647 [INFO] src.optimizer: Starting circuit optimization with initial cost 1.56124
+2026-08-13 17:53:35,647 [INFO] src.optimizer: Optimization attempt 1/100
+2026-08-13 17:53:35,647 [INFO] src.circuit: Preparing circuit c08_non_unate_logic (4 gates, 8 nets)
+2026-08-13 17:53:35,647 [INFO] src.circuit: Building the gate topological order
+2026-08-13 17:53:35,647 [INFO] src.circuit: Computing gate fanout capacitances
+2026-08-13 17:53:35,647 [INFO] src.circuit: Computing gate rise/fall delays
+2026-08-13 17:53:35,647 [INFO] src.circuit: Computing circuit power
+2026-08-13 17:53:35,647 [INFO] src.optimizer: Optimization attempt 2/100
+2026-08-13 17:53:35,647 [INFO] src.optimizer: Optimization stopped: all one-step critical-path upsizes were exhausted
+2026-08-13 17:53:35,647 [INFO] src.experiments: random_greedy optimization completed in 0.000664 s
+2026-08-13 17:53:35,648 [INFO] src.experiments: Running experiment: visualization
+2026-08-13 17:53:36,646 [INFO] src.experiments: Running experiment: monte_carlo
+2026-08-13 17:53:36,646 [INFO] src.experiments: Monte Carlo experiment is disabled by configuration
+2026-08-13 17:53:36,646 [INFO] src.experiments: Running experiment: summary
+2026-08-13 17:53:36,647 [INFO] src.experiments: Circuit experiments completed; results are in /home/halfblood/common/uni/master/VLSI/project/impl/outputs/c08_non_unate_logic
