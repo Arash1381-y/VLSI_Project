@@ -19,13 +19,18 @@ from matplotlib.ticker import MaxNLocator
 
 HISTORY_PREFIX = "optimization_"
 SUMMARY_FILENAME = "optimization_summary.csv"
+HEURISTIC_COLOR_INDEX = {
+    "slack_weighted_capacitance": 0,
+    "criticality_effort_gap": 1,
+    "random_greedy": 2,
+}
 METRICS = (
-    ("cost", "Normalized cost"),
-    ("wns_ns", "WNS (ns)"),
-    ("tns_ns", "TNS (ns)"),
-    ("circuit_delay_ns", "Circuit delay (ns)"),
-    ("area", "Area"),
-    ("power_uW", "Power (µW)"),
+    ("cost", "after_cost", "Normalized cost"),
+    ("wns_ns", "after_wns_ns", "WNS (ns)"),
+    ("tns_ns", "after_tns_ns", "TNS (ns)"),
+    ("circuit_delay_ns", "after_delay_ns", "Circuit delay (ns)"),
+    ("area", "after_area", "Area"),
+    ("power_uW", "after_power_uW", "Power (µW)"),
 )
 
 
@@ -51,6 +56,10 @@ class OptimizationSummary:
 
 def _display_name(name: str) -> str:
     return name.replace("_", " ").title()
+
+
+def _heuristic_color(name: str) -> object:
+    return plt.get_cmap("tab10")(HEURISTIC_COLOR_INDEX.get(name, 7))
 
 
 def _read_rows(path: Path) -> list[dict[str, str]]:
@@ -94,8 +103,10 @@ def load_histories(directory: Path) -> tuple[OptimizationHistory, ...]:
                     _integer(row, "iteration", path) for row in rows
                 ),
                 values={
-                    field: tuple(_number(row, field, path) for row in rows)
-                    for field, _ in METRICS
+                    metric: tuple(
+                        _number(row, csv_field, path) for row in rows
+                    )
+                    for metric, csv_field, _ in METRICS
                 },
             )
         )
@@ -127,19 +138,19 @@ def plot_convergence(
     output_path: Path,
     dpi: int,
 ) -> None:
-    """Plot six optimization metrics against accepted iteration number."""
+    """Plot six optimization metrics against total attempted iterations."""
 
     figure, axes_grid = plt.subplots(3, 2, figsize=(12, 12), constrained_layout=True)
     axes = tuple(axis for row in axes_grid for axis in row)
-    colors = plt.get_cmap("tab10")
-
-    for metric_index, ((field, label), axis) in enumerate(zip(METRICS, axes)):
-        for heuristic_index, history in enumerate(histories):
+    for metric_index, ((field, _, label), axis) in enumerate(
+        zip(METRICS, axes)
+    ):
+        for history in histories:
             axis.plot(
                 history.iterations,
                 history.values[field],
                 label=_display_name(history.heuristic),
-                color=colors(heuristic_index),
+                color=_heuristic_color(history.heuristic),
                 marker="o",
                 markersize=4,
                 linewidth=1.8,
@@ -167,7 +178,7 @@ def plot_outcomes(
     """Compare runtime, total iterations, and final WNS."""
 
     labels = [_display_name(summary.heuristic) for summary in summaries]
-    colors = [plt.get_cmap("tab10")(index) for index in range(len(summaries))]
+    colors = [_heuristic_color(summary.heuristic) for summary in summaries]
     figure, axes = plt.subplots(1, 3, figsize=(15, 4.8), constrained_layout=True)
     data = (
         ([summary.elapsed_seconds for summary in summaries], "Runtime (s)"),

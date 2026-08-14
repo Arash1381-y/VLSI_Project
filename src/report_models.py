@@ -10,6 +10,7 @@ from .sta import CriticalPath, TimingAnalysisResult
 
 
 CANONICAL_OPTIMIZATION = "slack_weighted_capacitance"
+EFFORT_GAP_OPTIMIZATION = "criticality_effort_gap"
 GREEDY_OPTIMIZATION = "random_greedy"
 
 
@@ -73,11 +74,11 @@ def circuit_specification(
 
 
 def optimization_role(name: str) -> str:
-    return (
-        "logical_effort_guided"
-        if name == CANONICAL_OPTIMIZATION
-        else "greedy_baseline"
-    )
+    return {
+        CANONICAL_OPTIMIZATION: "logical_effort_guided",
+        EFFORT_GAP_OPTIMIZATION: "criticality_effort_gap",
+        GREEDY_OPTIMIZATION: "greedy_baseline",
+    }[name]
 
 
 def optimization_record(run: TimedOptimization) -> dict[str, object]:
@@ -114,4 +115,3 @@ def optimization_differences(
         "runtime_seconds": greedy.elapsed_seconds - logical.elapsed_seconds,
         "sta_calls": greedy_result.sta_calls - logical_result.sta_calls,
     }
-

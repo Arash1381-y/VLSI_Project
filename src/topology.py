@@ -5,6 +5,7 @@ from __future__ import annotations
 from .circuit import Circuit
 from .experiment_artifacts import ArtifactWriter
 from .netlist import Gate, Net, NetType, NetlistError
+from .report_models import circuit_compliance
 from .sta import CriticalPath, TimingAnalysisResult
 
 
@@ -64,6 +65,8 @@ def circuit_analysis_graph(
     topology["units"] = {
         "capacitance": original.cell_library.units.get("capacitance", "fF"),
         "time": original.cell_library.units.get("time", "ns"),
+        "area": original.cell_library.units.get("area", "normalized_unit"),
+        "power": original.cell_library.units.get("leakage_power", "uW"),
     }
     topology["states"] = {
         "original": _analysis_state(original, original_timing),
@@ -97,6 +100,7 @@ def _analysis_state(
     timing: TimingAnalysisResult,
 ) -> dict[str, object]:
     return {
+        "summary": _analysis_summary(circuit, timing),
         "gates": {
             gate_name: {
                 "cell": circuit.gates[gate_name].cell.name,
@@ -111,6 +115,27 @@ def _analysis_state(
             _critical_path(rank, critical_path)
             for rank, critical_path in enumerate(timing.critical_paths, start=1)
         ],
+    }
+
+
+def _analysis_summary(
+    circuit: Circuit,
+    timing: TimingAnalysisResult,
+) -> dict[str, object]:
+    compliance = circuit_compliance(circuit, timing)
+    constraints = circuit.config.design_constraints
+    return {
+        "wns": timing.wns,
+        "tns": timing.tns,
+        "circuit_delay": timing.circuit_delay,
+        "area": circuit.area,
+        "power": circuit.power,
+        "leakage_power": circuit.leakage_power,
+        "dynamic_power": circuit.dynamic_power,
+        "maximum_area": constraints.maximum_area,
+        "maximum_power": constraints.maximum_power_uW,
+        **compliance,
+        "all_constraints_compliant": all(compliance.values()),
     }
 
 

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+from collections.abc import Iterator
 from dataclasses import dataclass
 from enum import Enum
 from random import Random
@@ -10,17 +11,17 @@ from random import Random
 from .cell import Cell
 from .circuit import Circuit, replace_gate_cell
 from .logical_effort import OptimizationChoice, get_optimization_candidates
-from .netlist import Gate, NetType
+from .netlist import Gate
 from .optimization_heuristics import (
     OptimizationHeuristic,
-    select_optimization_choices,
+    iter_criticality_effort_gap_choices,
+    iter_ranked_optimization_choices,
 )
 from .sta import TimingAnalysisResult, analyze_timing
 
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_HEURISTIC_GATE_LIMIT = 5
 TIMING_EPSILON_NS = 1.0e-12
 
 
@@ -65,7 +66,6 @@ class OptimizationResult:
     accepted_iterations: int
     termination: OptimizationTermination
     heuristic: OptimizationHeuristic
-    gate_limit: int | None
     random_seed: int | None
     sta_calls: int
     history: tuple[OptimizationIteration, ...]
@@ -114,6 +114,7 @@ class _RejectedChange:
 
 
 _OptimizationDecision = _AcceptedChange | _RejectedChange | _StopDecision
+_SizingChoice = tuple[Gate, Cell]
 
 
 class CircuitOptimizer:
@@ -123,16 +124,11 @@ class CircuitOptimizer:
         self,
         circuit: Circuit,
         heuristic: OptimizationHeuristic = OptimizationHeuristic.BRUTE_FORCE,
-        heuristic_gate_limit: int = DEFAULT_HEURISTIC_GATE_LIMIT,
         random_seed: int | None = None,
     ) -> None:
-        if heuristic_gate_limit <= 0:
-            raise ValueError("heuristic_gate_limit must be positive")
-
         self.initial_circuit = circuit
         self.config = circuit.config
         self.heuristic = heuristic
-        self.heuristic_gate_limit = heuristic_gate_limit
         self.random_seed = random_seed
         self._sta_calls = 0
 
@@ -141,7 +137,7 @@ class CircuitOptimizer:
 
         current, reference, history = self._initial_state()
         random_generator = Random(self.random_seed)
-        rejected_random_choices: set[tuple[str, str]] = set()
+        choice_iterator: Iterator[_SizingChoice] | None = None
         optimization = self.config.optimization
         if not optimization.enabled:
             logger.info("Circuit optimization is disabled")
@@ -157,22 +153,35 @@ class CircuitOptimizer:
                 attempt,
                 optimization.maximum_iterations,
             )
+            if choice_iterator is None:
+                choice_iterator = self._choice_iterator(
+                    current,
+                    random_generator,
+                )
             decision = self._choose_next_change(
                 current,
                 reference,
-                random_generator,
-                rejected_random_choices,
+                choice_iterator,
             )
             if isinstance(decision, _RejectedChange):
                 self._record_rejection(history, current, attempt, decision)
-                rejected_random_choices.add((decision.gate_name, decision.cell_name))
                 continue
             if isinstance(decision, _StopDecision):
-                return self._stop(current, history, attempt, decision)
+                stop_iteration = (
+                    attempt
+                    if self.heuristic is OptimizationHeuristic.BRUTE_FORCE
+                    else attempt - 1
+                )
+                return self._stop(
+                    current,
+                    history,
+                    stop_iteration,
+                    decision,
+                )
 
             self._log_accepted_change(current, decision)
             current = self._accept_change(current, decision, history, attempt)
-            rejected_random_choices.clear()
+            choice_iterator = None
 
         logger.info(
             "Optimization stopped after reaching the maximum of %d iterations",
@@ -211,18 +220,63 @@ class CircuitOptimizer:
         self,
         current: _Evaluation,
         reference: _NormalizationReference,
-        random_generator: Random,
-        rejected_random_choices: set[tuple[str, str]],
+        choice_iterator: Iterator[_SizingChoice],
     ) -> _OptimizationDecision:
-        if self.heuristic is OptimizationHeuristic.RANDOM_GREEDY:
-            return self._random_greedy_change(
+        if self.heuristic is OptimizationHeuristic.BRUTE_FORCE:
+            choices = tuple(choice_iterator)
+            candidates = self._candidate_evaluations(
                 current,
                 reference,
-                random_generator,
-                rejected_random_choices,
+                choices,
             )
-        candidates = self._candidate_evaluations(current, reference)
-        return self._select_next_change(current, candidates)
+            return self._select_next_change(current, candidates)
+
+        try:
+            gate, candidate_cell = next(choice_iterator)
+        except StopIteration:
+            return _StopDecision(
+                OptimizationTermination.NO_FEASIBLE_CHANGE,
+                "all critical-path sizing choices were exhausted",
+            )
+        return self._evaluate_single_choice(
+            current,
+            reference,
+            gate,
+            candidate_cell,
+        )
+
+    def _choice_iterator(
+        self,
+        current: _Evaluation,
+        random_generator: Random,
+    ) -> Iterator[_SizingChoice]:
+        if self.heuristic is OptimizationHeuristic.RANDOM_GREEDY:
+            choices = self._critical_path_one_step_choices(current)
+            random_generator.shuffle(choices)
+            return iter(choices)
+
+        if self.heuristic is OptimizationHeuristic.CRITICALITY_EFFORT_GAP:
+            return iter_criticality_effort_gap_choices(
+                current.circuit,
+                current.timing.critical_paths,
+                self._critical_path_one_step_choices(current),
+            )
+
+        eligible = self._eligible_choices(
+            current,
+            set(self.config.optimization.allowed_sizes),
+        )
+        if self.heuristic is OptimizationHeuristic.BRUTE_FORCE:
+            return (
+                (gate, cell)
+                for gate, candidate_cells in eligible
+                for cell in candidate_cells
+            )
+        return iter_ranked_optimization_choices(
+            current.circuit,
+            current.timing.critical_paths,
+            eligible,
+        )
 
     def _record_rejection(
         self,
@@ -365,48 +419,20 @@ class CircuitOptimizer:
         self,
         current: _Evaluation,
         reference: _NormalizationReference,
+        choices: tuple[_SizingChoice, ...],
     ) -> list[_CandidateEvaluation]:
-        """Build and exactly evaluate every selected, constraint-safe change."""
+        """Exactly evaluate every constraint-safe brute-force choice."""
 
         evaluations: list[_CandidateEvaluation] = []
-        allowed_sizes = set(self.config.optimization.allowed_sizes)
-        choices = self._eligible_choices(current, allowed_sizes)
-        choices = select_optimization_choices(
-            current.circuit,
-            current.timing.critical_paths,
-            choices,
-            self.heuristic,
-            self.heuristic_gate_limit,
-        )
-        if self.heuristic is not OptimizationHeuristic.BRUTE_FORCE:
-            logger.debug(
-                "Heuristic selected %d gate(s) for exact evaluation",
-                len(choices),
+        for gate, candidate_cell in choices:
+            candidate = self._candidate_evaluation(
+                current,
+                reference,
+                gate,
+                candidate_cell,
             )
-        gate_position = {
-            gate_name: position
-            for position, gate_name in enumerate(current.circuit.gates)
-        }
-        for gate, candidate_cells in choices:
-            for candidate_cell in candidate_cells:
-                candidate_circuit = replace_gate_cell(
-                    current.circuit,
-                    gate.name,
-                    candidate_cell,
-                )
-                if not self._satisfies_constraints(candidate_circuit):
-                    continue
-
-                candidate = self._evaluate(candidate_circuit, reference)
-                evaluations.append(
-                    _CandidateEvaluation(
-                        evaluation=candidate,
-                        gate_name=gate.name,
-                        gate_position=gate_position[gate.name],
-                        size_factor=candidate_cell.size_factor,
-                        cell_name=candidate_cell.name,
-                    )
-                )
+            if candidate is not None:
+                evaluations.append(candidate)
 
         return evaluations
 
@@ -423,11 +449,6 @@ class CircuitOptimizer:
             current.timing.critical_paths,
         )
         for gate, candidate_cells in choices:
-            # Primary-input boundary policy: comment out this condition and its
-            # `continue` to allow resizing gates connected directly to a PI.
-            # if any(net.net_type is NetType.INPUT for net in gate.inputs):
-            #     continue
-
             alternatives = tuple(
                 cell
                 for cell in candidate_cells
@@ -438,49 +459,28 @@ class CircuitOptimizer:
                 eligible.append((gate, alternatives))
         return eligible
 
-    def _random_greedy_change(
+    def _evaluate_single_choice(
         self,
         current: _Evaluation,
         reference: _NormalizationReference,
-        random_generator: Random,
-        rejected_choices: set[tuple[str, str]],
-    ) -> _AcceptedChange | _RejectedChange | _StopDecision:
-        """Try one random critical-path gate in this optimizer iteration."""
+        gate: Gate,
+        candidate_cell: Cell,
+    ) -> _AcceptedChange | _RejectedChange:
+        """Evaluate exactly one sizing choice for this optimizer iteration."""
 
-        choices = [
-            choice
-            for choice in self._random_greedy_choices(current)
-            if (choice[0].name, choice[1].name) not in rejected_choices
-        ]
-        if not choices:
-            return _StopDecision(
-                OptimizationTermination.NO_FEASIBLE_CHANGE,
-                "all one-step critical-path upsizes were exhausted",
-            )
-        gate, candidate_cell = random_generator.choice(choices)
-        gate_position = {
-            gate_name: position
-            for position, gate_name in enumerate(current.circuit.gates)
-        }
-        candidate_circuit = replace_gate_cell(
-            current.circuit,
-            gate.name,
+        candidate = self._candidate_evaluation(
+            current,
+            reference,
+            gate,
             candidate_cell,
         )
-        if not self._satisfies_constraints(candidate_circuit):
+        if candidate is None:
             return _RejectedChange(
                 gate.name,
                 candidate_cell.name,
                 "candidate violates area or power constraints",
             )
 
-        candidate = _CandidateEvaluation(
-            evaluation=self._evaluate(candidate_circuit, reference),
-            gate_name=gate.name,
-            gate_position=gate_position[gate.name],
-            size_factor=candidate_cell.size_factor,
-            cell_name=candidate_cell.name,
-        )
         decision = self._select_next_change(current, [candidate])
         if isinstance(decision, _AcceptedChange):
             return decision
@@ -490,7 +490,33 @@ class CircuitOptimizer:
             decision.message,
         )
 
-    def _random_greedy_choices(
+    def _candidate_evaluation(
+        self,
+        current: _Evaluation,
+        reference: _NormalizationReference,
+        gate: Gate,
+        candidate_cell: Cell,
+    ) -> _CandidateEvaluation | None:
+        candidate_circuit = replace_gate_cell(
+            current.circuit,
+            gate.name,
+            candidate_cell,
+        )
+        if not self._satisfies_constraints(candidate_circuit):
+            return None
+        gate_position = {
+            gate_name: position
+            for position, gate_name in enumerate(current.circuit.gates)
+        }
+        return _CandidateEvaluation(
+            evaluation=self._evaluate(candidate_circuit, reference),
+            gate_name=gate.name,
+            gate_position=gate_position[gate.name],
+            size_factor=candidate_cell.size_factor,
+            cell_name=candidate_cell.name,
+        )
+
+    def _critical_path_one_step_choices(
         self,
         current: _Evaluation,
     ) -> list[tuple[Gate, Cell]]:
@@ -504,11 +530,6 @@ class CircuitOptimizer:
                 if gate.name in seen:
                     continue
                 seen.add(gate.name)
-
-                # Primary-input boundary policy: comment out this condition and
-                # its `continue` to allow resizing gates connected directly to a PI.
-                if any(net.net_type is NetType.INPUT for net in gate.inputs):
-                    continue
 
                 larger_cell = _next_larger_sizing_cell(
                     current.circuit,
@@ -631,7 +652,6 @@ class CircuitOptimizer:
             accepted_iterations=sum(entry.accepted is True for entry in history),
             termination=termination,
             heuristic=self.heuristic,
-            gate_limit=self._effective_gate_limit,
             random_seed=self.random_seed,
             sta_calls=self._sta_calls,
             history=tuple(history),
@@ -669,15 +689,6 @@ class CircuitOptimizer:
             power=evaluation.circuit.power,
             cost=evaluation.cost,
         )
-
-    @property
-    def _effective_gate_limit(self) -> int | None:
-        if self.heuristic is OptimizationHeuristic.BRUTE_FORCE:
-            return None
-        if self.heuristic is OptimizationHeuristic.RANDOM_GREEDY:
-            return 1
-        return self.heuristic_gate_limit
-
 
 def _timing_is_met(wns: float) -> bool:
     return wns >= -TIMING_EPSILON_NS

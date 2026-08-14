@@ -21,6 +21,7 @@ from .optimization_reports import save_optimization_reports
 from .optimizer import CircuitOptimizer, OptimizationResult
 from .report_models import (
     CANONICAL_OPTIMIZATION,
+    EFFORT_GAP_OPTIMIZATION,
     GREEDY_OPTIMIZATION,
     TimedOptimization,
 )
@@ -72,6 +73,7 @@ GENERATED_ARTIFACT_FILENAMES: tuple[str, ...] = (
     "critical_paths.csv",
     "logical_effort_analysis.json",
     "optimization_slack_weighted_capacitance.csv",
+    "optimization_criticality_effort_gap.csv",
     "optimization_random_greedy.csv",
     "optimization_summary.csv",
     "optimization_comparison.json",
@@ -176,6 +178,13 @@ class Experiments:
                 CircuitOptimizer(
                     circuit,
                     OptimizationHeuristic.SLACK_WEIGHTED_CAPACITANCE,
+                ),
+            ),
+            self._time_optimization(
+                EFFORT_GAP_OPTIMIZATION,
+                CircuitOptimizer(
+                    circuit,
+                    OptimizationHeuristic.CRITICALITY_EFFORT_GAP,
                 ),
             ),
             self._time_optimization(

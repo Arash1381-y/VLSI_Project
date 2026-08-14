@@ -1,6 +1,13 @@
 const canvas = document.querySelector("#graph-canvas");
 const panel = document.querySelector("#graph");
 const context = canvas.getContext("2d");
+const workspace = document.querySelector(".workspace");
+const inspector = document.querySelector(".inspector");
+const inspectorResizer = document.querySelector("#inspector-resizer");
+
+const defaultInspectorWidth = 414;
+const minimumInspectorWidth = 340;
+const minimumGraphWidth = 360;
 
 const state = {
   topology: null,
@@ -28,6 +35,11 @@ const state = {
   showNetLabels: false,
   visibleStates: { original: true, optimized: true },
   criticalNets: { original: new Map(), optimized: new Map() },
+  focusedNodeIds: new Set(),
+  focusedNetNames: new Set(),
+  inspectorWidth: defaultInspectorWidth,
+  resizingInspector: false,
+  inspectorPointerId: null,
 };
 
 const gateFamilies = [
@@ -61,13 +73,21 @@ async function initialize() {
     const response = await fetch("/api/topology", { cache: "no-store" });
     if (!response.ok) throw new Error(`Topology request failed (${response.status})`);
     const topology = await response.json();
-    validateTopology(topology);
-    loadTopology(topology);
-    document.querySelector("#loading-state").hidden = true;
-    prepareSchematicView(topology);
+    if (topology === null) {
+      showDirectoryPrompt();
+    } else {
+      await openTopology(topology);
+    }
   } catch (error) {
     showLoadError(error instanceof Error ? error.message : String(error));
   }
+}
+
+async function openTopology(topology) {
+  validateTopology(topology);
+  loadTopology(topology);
+  document.querySelector("#loading-state").hidden = true;
+  await prepareSchematicView(topology);
 }
 
 function validateTopology(topology) {
@@ -82,6 +102,10 @@ function validateTopology(topology) {
 
 function loadTopology(topology) {
   state.topology = topology;
+  state.schematicReady = false;
+  state.schematicNodes = [];
+  state.schematicRoutes = new Map();
+  state.viewMode = "analysis";
   state.analysisNodes = layoutNodes(topology.nodes);
   state.nodes = state.analysisNodes;
   state.nodeById = new Map(state.nodes.map((node) => [node.id, node]));
@@ -90,6 +114,14 @@ function loadTopology(topology) {
   );
   state.criticalNets.original = criticalNetRanks(topology.states.original.critical_paths);
   state.criticalNets.optimized = criticalNetRanks(topology.states.optimized.critical_paths);
+  renderCircuitSummary();
+  selectNode(null);
+  document.querySelector('[data-view="schematic"]').disabled = true;
+  document.querySelectorAll("[data-view]").forEach((button) => {
+    const active = button.dataset.view === "analysis";
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-pressed", String(active));
+  });
 
   document.title = `${topology.circuit_name} · Topology Viewer`;
   document.querySelector("#circuit-title").textContent = topology.circuit_name;
@@ -110,6 +142,7 @@ async function prepareSchematicView(topology) {
       buildSchematicLayout(topology),
       preloadGateSymbols(),
     ]);
+    if (state.topology !== topology) return;
     state.schematicNodes = layout.nodes;
     state.schematicRoutes = layout.routes;
     state.schematicReady = true;
@@ -121,13 +154,19 @@ async function prepareSchematicView(topology) {
       activateView("schematic");
     }
   } catch (error) {
+    if (state.topology !== topology) return;
     status.textContent = `Schematic layout unavailable: ${error instanceof Error ? error.message : String(error)}`;
     status.style.color = colors.signal;
   }
 }
 
 async function preloadGateSymbols() {
+  if (state.gateSymbols.size === gateFamilies.length) return;
   await Promise.all(gateFamilies.map((family) => new Promise((resolve, reject) => {
+    if (state.gateSymbols.has(family)) {
+      resolve();
+      return;
+    }
     const image = new Image();
     image.addEventListener("load", () => {
       state.gateSymbols.set(family, image);
@@ -136,6 +175,46 @@ async function preloadGateSymbols() {
     image.addEventListener("error", () => reject(new Error(`cannot load ${family} gate symbol`)), { once: true });
     image.src = `/gate-symbols/${family}.svg`;
   })));
+}
+
+function showDirectoryPrompt() {
+  state.topology = null;
+  state.nodes = [];
+  state.nodeById = new Map();
+  state.nets = [];
+  const loading = document.querySelector("#loading-state");
+  loading.hidden = false;
+  loading.replaceChildren();
+  const message = document.createElement("span");
+  message.textContent = "Choose an experiment output directory with the Dir button";
+  loading.append(message);
+}
+
+async function chooseOutputDirectory() {
+  if (typeof window.showDirectoryPicker !== "function") {
+    document.querySelector("#directory-picker").click();
+    return;
+  }
+  try {
+    const directory = await window.showDirectoryPicker({ mode: "read" });
+    const topologyHandle = await directory.getFileHandle("circuit_topology.json");
+    await openTopologyFile(await topologyHandle.getFile());
+  } catch (error) {
+    if (error instanceof DOMException && error.name === "AbortError") return;
+    showLoadError(error instanceof Error ? error.message : String(error));
+  }
+}
+
+async function openTopologyFile(file) {
+  const loading = document.querySelector("#loading-state");
+  loading.hidden = false;
+  loading.textContent = `Reading ${file.name}`;
+  try {
+    const topology = JSON.parse(await file.text());
+    await openTopology(topology);
+  } catch (error) {
+    showLoadError(error instanceof Error ? error.message : String(error));
+  }
 }
 
 function layoutNodes(rawNodes) {
@@ -621,9 +700,9 @@ function drawNetLabel(name, x, y, selected) {
 
 function drawNode(node) {
   const selected = node.id === state.selectedId;
-  const related = !state.selectedId || selected || nodeIsNeighbor(node.id);
+  const related = !state.selectedId || state.focusedNodeIds.has(node.id);
   context.save();
-  context.globalAlpha = related ? 1 : 0.26;
+  context.globalAlpha = related ? 1 : 0.06;
   if (node.kind === "gate" && showResizeDifference() && gateWasResized(node.name)) {
     drawResizeHighlight(node);
   }
@@ -787,16 +866,7 @@ function nodeFill(kind) {
 }
 
 function netIsSelected(net) {
-  return Boolean(state.selectedId) && (
-    net.source === state.selectedId || net.targets.some((target) => target.node === state.selectedId)
-  );
-}
-
-function nodeIsNeighbor(nodeId) {
-  return state.nets.some((net) => {
-    if (!netIsSelected(net)) return false;
-    return net.source === nodeId || net.targets.some((target) => target.node === nodeId);
-  });
+  return Boolean(state.selectedId) && state.focusedNetNames.has(net.name);
 }
 
 function screenToWorld(screenX, screenY) {
@@ -813,6 +883,7 @@ function hitNode(screenX, screenY) {
 
 function selectNode(node) {
   state.selectedId = node?.id ?? null;
+  updateSelectionFocus(node);
   const empty = document.querySelector("#empty-selection");
   const details = document.querySelector("#selection-details");
   empty.hidden = Boolean(node);
@@ -826,9 +897,143 @@ function selectNode(node) {
   const type = document.querySelector("#selection-type");
   type.textContent = node.kind === "gate" ? node.gate_type : "Circuit boundary";
   renderGateAnalysis(node);
-  renderNetList("#incoming-nets", state.nets.filter((net) => net.targets.some((target) => target.node === node.id)));
-  renderNetList("#outgoing-nets", state.nets.filter((net) => net.source === node.id));
+  renderNetList(
+    "#incoming-nets",
+    state.nets.filter((net) => net.targets.some((target) => target.node === node.id)),
+  );
+  renderNameList("#generated-outputs", generatedOutputNames(node));
   requestFrame();
+}
+
+function renderCircuitSummary() {
+  if (!state.topology) return;
+  const units = state.topology.units;
+  const fields = {
+    wns: (value) => formatMetric(value, units.time),
+    tns: (value) => formatMetric(value, units.time),
+    circuit_delay: (value) => formatMetric(value, units.time),
+    area: (value, summary) => formatBudget(value, summary.maximum_area, units.area),
+    power: (value, summary) => formatBudget(value, summary.maximum_power, units.power),
+    leakage_power: (value) => formatMetric(value, units.power),
+    dynamic_power: (value) => formatMetric(value, units.power),
+    timing_compliant: formatCompliance,
+    area_compliant: formatCompliance,
+    power_compliant: formatCompliance,
+    all_constraints_compliant: formatCompliance,
+  };
+  for (const stateName of ["original", "optimized"]) {
+    const card = document.querySelector(`[data-summary-state="${stateName}"]`);
+    card.hidden = !state.visibleStates[stateName];
+    const summary = state.topology.states[stateName].summary;
+    const original = state.topology.states.original.summary;
+    Object.entries(fields).forEach(([field, formatter]) => {
+      const output = card.querySelector(`[data-field="${field}"]`);
+      output.replaceChildren(document.createTextNode(formatter(summary[field], summary)));
+      const comparison = stateName === "optimized"
+        ? formatSummaryChange(field, summary[field], original[field], units.time)
+        : null;
+      if (comparison !== null) {
+        const delta = document.createElement("span");
+        delta.className = "metric-delta";
+        delta.textContent = comparison.text;
+        delta.title = comparison.title;
+        output.append(delta);
+      }
+      output.classList.toggle("pass", summary[field] === true);
+      output.classList.toggle("fail", summary[field] === false);
+      output.closest("div").classList.toggle(
+        "changed",
+        stateName === "optimized" && summary[field] !== original[field],
+      );
+    });
+  }
+}
+
+function formatCompliance(value) {
+  return value ? "Pass" : "Fail";
+}
+
+function formatBudget(value, maximum, unit) {
+  return `${formatNumber(value)} / ${formatNumber(maximum)} ${unit}`;
+}
+
+function formatSummaryChange(field, optimizedValue, originalValue, timeUnit) {
+  if (field === "wns" || field === "tns") {
+    return numericChange(optimizedValue, originalValue, (change) => ({
+      text: `${signedNumber(change)} ${timeUnit}`,
+      title: "Absolute change from original",
+    }));
+  }
+  const percentage = relativePercentageChange(optimizedValue, originalValue);
+  return percentage === null ? null : {
+    text: percentage,
+    title: "Relative change from original",
+  };
+}
+
+function numericChange(optimizedValue, originalValue, formatter) {
+  if (
+    typeof optimizedValue !== "number"
+    || typeof originalValue !== "number"
+    || !Number.isFinite(optimizedValue)
+    || !Number.isFinite(originalValue)
+  ) return null;
+  return formatter(optimizedValue - originalValue);
+}
+
+function signedNumber(value) {
+  const prefix = value > 0 ? "+" : "";
+  return `${prefix}${formatNumber(value)}`;
+}
+
+function relativePercentageChange(optimizedValue, originalValue) {
+  if (
+    typeof optimizedValue !== "number"
+    || typeof originalValue !== "number"
+    || !Number.isFinite(optimizedValue)
+    || !Number.isFinite(originalValue)
+  ) return null;
+  if (originalValue === 0) return optimizedValue === 0 ? "0%" : "—";
+  const percentage = ((optimizedValue - originalValue) / Math.abs(originalValue)) * 100;
+  return `${signedNumber(percentage)}%`;
+}
+
+function updateSelectionFocus(node) {
+  state.focusedNodeIds = new Set();
+  state.focusedNetNames = new Set();
+  if (!node) return;
+
+  state.focusedNodeIds.add(node.id);
+  const incoming = state.nets.filter((net) => net.targets.some((target) => target.node === node.id));
+  incoming.forEach((net) => {
+    state.focusedNetNames.add(net.name);
+    state.focusedNodeIds.add(net.source);
+  });
+
+  const pending = [node.id];
+  const traversed = new Set();
+  while (pending.length) {
+    const sourceId = pending.shift();
+    if (!sourceId || traversed.has(sourceId)) continue;
+    traversed.add(sourceId);
+    state.nets.filter((net) => net.source === sourceId).forEach((net) => {
+      state.focusedNetNames.add(net.name);
+      net.targets.forEach((target) => {
+        state.focusedNodeIds.add(target.node);
+        pending.push(target.node);
+      });
+    });
+  }
+}
+
+function generatedOutputNames(node) {
+  if (!node) return [];
+  if (node.kind === "output") return [node.name];
+  return [...state.focusedNodeIds]
+    .map((nodeId) => state.nodeById.get(nodeId))
+    .filter((focusedNode) => focusedNode?.kind === "output")
+    .map((focusedNode) => focusedNode.name)
+    .sort();
 }
 
 function renderGateAnalysis(node) {
@@ -849,33 +1054,72 @@ function renderAnalysisCard(stateName, gateName) {
   const timeUnit = state.topology.units.time;
   const pathRanks = analysisState.critical_paths
     .filter((path) => path.gates.includes(gateName))
-    .map((path) => `#${path.rank} (${Number(path.slack).toPrecision(4)} ${timeUnit})`)
+    .map((path) => `#${path.rank} (${formatNumber(path.slack)} ${timeUnit})`)
     .join(", ");
-  card.querySelector('[data-field="cell"]').textContent = metrics.cell;
-  card.querySelector('[data-field="size"]').textContent = metrics.size;
-  card.querySelector('[data-field="load"]').textContent = formatMetric(metrics.load_capacitance, capUnit);
-  card.querySelector('[data-field="rise"]').textContent = formatMetric(metrics.delay_rise, timeUnit);
-  card.querySelector('[data-field="fall"]').textContent = formatMetric(metrics.delay_fall, timeUnit);
-  card.querySelector('[data-field="paths"]').textContent = pathRanks || "None";
+  const values = {
+    cell: metrics.cell,
+    size: metrics.size,
+    load: formatMetric(metrics.load_capacitance, capUnit),
+    rise: formatMetric(metrics.delay_rise, timeUnit),
+    fall: formatMetric(metrics.delay_fall, timeUnit),
+    paths: pathRanks || "None",
+  };
+  const original = state.topology.states.original;
+  const originalMetrics = original.gates[gateName];
+  const originalPathRanks = original.critical_paths
+    .filter((path) => path.gates.includes(gateName))
+    .map((path) => `#${path.rank} (${formatNumber(path.slack)} ${timeUnit})`)
+    .join(", ") || "None";
+  const originalValues = {
+    cell: originalMetrics.cell,
+    size: originalMetrics.size,
+    load: formatMetric(originalMetrics.load_capacitance, capUnit),
+    rise: formatMetric(originalMetrics.delay_rise, timeUnit),
+    fall: formatMetric(originalMetrics.delay_fall, timeUnit),
+    paths: originalPathRanks,
+  };
+  Object.entries(values).forEach(([field, value]) => {
+    const output = card.querySelector(`[data-field="${field}"]`);
+    output.textContent = value;
+    output.closest("div").classList.toggle(
+      "changed",
+      stateName === "optimized" && value !== originalValues[field],
+    );
+  });
 }
 
 function formatMetric(value, unit) {
-  return `${Number(value).toPrecision(6)} ${unit}`;
+  return `${formatNumber(value)} ${unit}`;
+}
+
+function formatNumber(value) {
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric)) return String(value);
+  const rounded = Number(numeric.toFixed(4));
+  if (Object.is(rounded, -0) || rounded === 0) return "0";
+  const formatted = rounded.toFixed(4).replace(/\.?0+$/, "");
+  if (formatted.startsWith("0.")) return formatted.slice(1);
+  if (formatted.startsWith("-0.")) return `-${formatted.slice(2)}`;
+  return formatted;
 }
 
 function renderNetList(selector, nets) {
+  renderNameList(selector, nets.map((net) => net.name));
+}
+
+function renderNameList(selector, names) {
   const list = document.querySelector(selector);
   list.replaceChildren();
-  if (!nets.length) {
+  if (!names.length) {
     const item = document.createElement("li");
     item.className = "none";
     item.textContent = "None";
     list.append(item);
     return;
   }
-  nets.forEach((net) => {
+  names.forEach((name) => {
     const item = document.createElement("li");
-    item.textContent = net.name;
+    item.textContent = name;
     list.append(item);
   });
 }
@@ -904,6 +1148,57 @@ function activateView(viewMode) {
       : "Interactive circuit topology",
   );
   fitView();
+}
+
+function inspectorWidthLimits() {
+  const availableWidth = workspace.getBoundingClientRect().width;
+  const maximum = availableWidth - 54 - 24 - minimumGraphWidth;
+  return {
+    minimum: minimumInspectorWidth,
+    maximum: Math.max(minimumInspectorWidth, maximum),
+  };
+}
+
+function applyInspectorWidth(requestedWidth, persist = true) {
+  if (window.matchMedia("(max-width: 900px)").matches) {
+    inspector.style.setProperty("--inspector-font-scale", "1");
+    return;
+  }
+  const limits = inspectorWidthLimits();
+  const width = clamp(requestedWidth, limits.minimum, limits.maximum);
+  const fontScale = clamp(Math.sqrt(width / defaultInspectorWidth), 0.9, 1.5);
+  state.inspectorWidth = width;
+  workspace.style.setProperty("--inspector-width", `${width}px`);
+  inspector.style.setProperty("--inspector-font-scale", String(fontScale));
+  inspectorResizer.setAttribute("aria-valuemax", String(Math.round(limits.maximum)));
+  inspectorResizer.setAttribute("aria-valuenow", String(Math.round(width)));
+  if (persist) {
+    try {
+      localStorage.setItem("circuit-viewer-inspector-width", String(width));
+    } catch {
+      // Browser privacy settings may disable local storage; resizing still works.
+    }
+  }
+}
+
+function initializeInspectorResize() {
+  let initialWidth = defaultInspectorWidth;
+  try {
+    const storedWidth = Number(localStorage.getItem("circuit-viewer-inspector-width"));
+    if (Number.isFinite(storedWidth) && storedWidth > 0) initialWidth = storedWidth;
+  } catch {
+    // Use the default when local storage is unavailable.
+  }
+  applyInspectorWidth(initialWidth, false);
+}
+
+function finishInspectorResize(event) {
+  if (!state.resizingInspector || event.pointerId !== state.inspectorPointerId) return;
+  state.resizingInspector = false;
+  state.inspectorPointerId = null;
+  inspectorResizer.classList.remove("active");
+  document.body.classList.remove("resizing-inspector");
+  inspectorResizer.releasePointerCapture(event.pointerId);
 }
 
 panel.addEventListener("wheel", (event) => {
@@ -959,9 +1254,57 @@ panel.addEventListener("keydown", (event) => {
   event.preventDefault();
 });
 
+inspectorResizer.addEventListener("pointerdown", (event) => {
+  if (event.button !== 0 || window.matchMedia("(max-width: 900px)").matches) return;
+  state.resizingInspector = true;
+  state.inspectorPointerId = event.pointerId;
+  inspectorResizer.classList.add("active");
+  document.body.classList.add("resizing-inspector");
+  inspectorResizer.setPointerCapture(event.pointerId);
+  event.preventDefault();
+});
+
+inspectorResizer.addEventListener("pointermove", (event) => {
+  if (!state.resizingInspector || event.pointerId !== state.inspectorPointerId) return;
+  const workspaceRight = workspace.getBoundingClientRect().right;
+  applyInspectorWidth(workspaceRight - event.clientX);
+});
+
+inspectorResizer.addEventListener("pointerup", finishInspectorResize);
+inspectorResizer.addEventListener("pointercancel", finishInspectorResize);
+inspectorResizer.addEventListener("dblclick", () => {
+  applyInspectorWidth(defaultInspectorWidth);
+});
+inspectorResizer.addEventListener("keydown", (event) => {
+  const step = event.shiftKey ? 40 : 16;
+  if (event.key === "ArrowLeft") applyInspectorWidth(state.inspectorWidth + step);
+  else if (event.key === "ArrowRight") applyInspectorWidth(state.inspectorWidth - step);
+  else if (event.key === "Home") applyInspectorWidth(defaultInspectorWidth);
+  else return;
+  event.preventDefault();
+});
+
+window.addEventListener("resize", () => applyInspectorWidth(state.inspectorWidth, false));
+
 document.querySelector("#zoom-in").addEventListener("click", () => zoomAt(1.25));
 document.querySelector("#zoom-out").addEventListener("click", () => zoomAt(1 / 1.25));
 document.querySelector("#fit-view").addEventListener("click", fitView);
+document.querySelector("#choose-directory").addEventListener("click", chooseOutputDirectory);
+document.querySelector("#directory-picker").addEventListener("change", async (event) => {
+  const files = [...event.target.files];
+  const candidates = files
+    .filter((file) => file.name === "circuit_topology.json")
+    .sort((left, right) => (
+      left.webkitRelativePath.split("/").length
+      - right.webkitRelativePath.split("/").length
+    ));
+  if (!candidates.length) {
+    showLoadError("Selected directory does not contain circuit_topology.json");
+  } else {
+    await openTopologyFile(candidates[0]);
+  }
+  event.target.value = "";
+});
 document.querySelectorAll("[data-view]").forEach((button) => {
   button.addEventListener("click", () => activateView(button.dataset.view));
 });
@@ -970,14 +1313,18 @@ document.querySelector("#show-net-labels").addEventListener("change", (event) =>
   requestFrame();
 });
 
-for (const stateName of ["original", "optimized"]) {
-  document.querySelector(`#show-${stateName}`).addEventListener("change", (event) => {
-    state.visibleStates[stateName] = event.target.checked;
+document.querySelectorAll("[data-state]").forEach((button) => {
+  button.addEventListener("click", () => {
+    const stateName = button.dataset.state;
+    state.visibleStates[stateName] = !state.visibleStates[stateName];
+    button.classList.toggle("active", state.visibleStates[stateName]);
+    button.setAttribute("aria-pressed", String(state.visibleStates[stateName]));
+    renderCircuitSummary();
     const selected = state.nodeById.get(state.selectedId);
     if (selected) renderGateAnalysis(selected);
     requestFrame();
   });
-}
+});
 
 function updateZoomReadout() {
   document.querySelector("#zoom-readout").textContent = `${Math.round(state.targetScale * 100)}%`;
@@ -994,4 +1341,5 @@ function clamp(value, minimum, maximum) {
 }
 
 new ResizeObserver(resizeCanvas).observe(panel);
+initializeInspectorResize();
 initialize();

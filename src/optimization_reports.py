@@ -9,6 +9,7 @@ from .experiment_artifacts import ArtifactWriter
 from .optimizer import OptimizationIteration
 from .report_models import (
     CANONICAL_OPTIMIZATION,
+    EFFORT_GAP_OPTIMIZATION,
     GREEDY_OPTIMIZATION,
     TimedOptimization,
     circuit_specification,
@@ -150,16 +151,23 @@ def _comparison_record(
 ) -> dict[str, object]:
     by_name = {run.name: run for run in runs}
     logical = by_name[CANONICAL_OPTIMIZATION]
+    effort_gap = by_name[EFFORT_GAP_OPTIMIZATION]
     greedy = by_name[GREEDY_OPTIMIZATION]
     initial_cost = logical.result.history[0].cost
     return {
         "canonical_method": CANONICAL_OPTIMIZATION,
-        "difference_definition": "greedy_baseline - logical_effort_guided",
+        "difference_definition": "candidate method - canonical method",
         "pre_optimization": circuit_specification(
             circuit, nominal_timing, initial_cost
         ),
         "logical_effort_guided": optimization_record(logical),
+        "criticality_effort_gap": optimization_record(effort_gap),
         "greedy_baseline": optimization_record(greedy),
-        "differences": optimization_differences(logical, greedy),
+        "differences_from_canonical": {
+            EFFORT_GAP_OPTIMIZATION: optimization_differences(
+                logical,
+                effort_gap,
+            ),
+            GREEDY_OPTIMIZATION: optimization_differences(logical, greedy),
+        },
     }
-

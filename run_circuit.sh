@@ -8,14 +8,15 @@ CIRCUITS_ROOT="$PROJECT_ROOT/Input_Files/circuits"
 usage() {
     cat <<'EOF'
 Usage:
-  ./run_circuit.sh <circuit-name-or-directory> [--debug] [--output-dir DIR]
-  ./run_circuit.sh --all [--debug] [--output-root DIR]
+  ./run_circuit.sh <circuit-name-or-directory> [--debug] [--plot-optimization] [--output-dir DIR]
+  ./run_circuit.sh --all [--debug] [--plot-optimization] [--output-root DIR]
   ./run_circuit.sh --list
 
 Examples:
   ./run_circuit.sh c01_inverter_chain
   ./run_circuit.sh c05_multi_output --debug
   ./run_circuit.sh c05_multi_output --output-dir outputs/experiment-01
+  ./run_circuit.sh c05_multi_output --plot-optimization
   ./run_circuit.sh Input_Files/circuits/valid/c10_three_input_gates
   ./run_circuit.sh --all
   ./run_circuit.sh --all --output-root outputs/all-experiments
@@ -36,6 +37,7 @@ list_circuits() {
 run_all_circuits() {
     local output_root=""
     local debug=false
+    local plot_optimization=false
     local category circuit_dir circuit_name output_dir exit_status
     local analyzed=0
     local rejected=0
@@ -46,6 +48,10 @@ run_all_circuits() {
         case "$1" in
             --debug)
                 debug=true
+                shift
+                ;;
+            --plot|--plot-optimization)
+                plot_optimization=true
                 shift
                 ;;
             --output-root)
@@ -106,7 +112,13 @@ run_all_circuits() {
             fi
 
             if [[ "$category" == "valid" && $exit_status -eq 0 ]]; then
-                ((analyzed += 1))
+                if [[ "$plot_optimization" == true ]] \
+                    && ! python3.10 -m scripts.plot_optimization "$output_dir"; then
+                    ((failed += 1))
+                    echo "error: optimization plotting failed for $circuit_name" >&2
+                else
+                    ((analyzed += 1))
+                fi
             elif [[ "$category" == "invalid" && $exit_status -ne 0 ]] \
                 && validation_report_rejected "$output_dir/validation_report.json"; then
                 ((rejected += 1))
@@ -166,6 +178,36 @@ esac
 target=$1
 shift
 
+plot_optimization=false
+requested_output_dir=""
+forwarded_arguments=()
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --plot|--plot-optimization)
+            plot_optimization=true
+            shift
+            ;;
+        --output-dir)
+            if [[ $# -lt 2 ]]; then
+                echo "error: --output-dir requires a directory" >&2
+                exit 2
+            fi
+            requested_output_dir=$2
+            forwarded_arguments+=("$1" "$2")
+            shift 2
+            ;;
+        --output-dir=*)
+            requested_output_dir=${1#--output-dir=}
+            forwarded_arguments+=("$1")
+            shift
+            ;;
+        *)
+            forwarded_arguments+=("$1")
+            shift
+            ;;
+    esac
+done
+
 if [[ -d "$target" ]]; then
     circuit_dir=$target
 elif [[ -d "$PROJECT_ROOT/$target" ]]; then
@@ -206,4 +248,29 @@ if ! command -v python3.10 >/dev/null 2>&1; then
 fi
 
 cd -- "$PROJECT_ROOT"
-exec python3.10 -m src.main "$netlist_path" "$config_path" "$@"
+if python3.10 -m src.main \
+    "$netlist_path" "$config_path" "${forwarded_arguments[@]}"; then
+    :
+else
+    exit_status=$?
+    exit "$exit_status"
+fi
+
+if [[ "$plot_optimization" == true ]]; then
+    if [[ -n "$requested_output_dir" ]]; then
+        plot_input=$requested_output_dir
+    else
+        plot_input=$(python3.10 - "$config_path" "$PROJECT_ROOT/outputs" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+config_path = Path(sys.argv[1])
+output_root = Path(sys.argv[2])
+configuration = json.loads(config_path.read_text(encoding="utf-8"))
+print(output_root / configuration["circuit_name"])
+PY
+)
+    fi
+    python3.10 -m scripts.plot_optimization "$plot_input"
+fi

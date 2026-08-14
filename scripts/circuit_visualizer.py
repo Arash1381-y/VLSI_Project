@@ -1,4 +1,4 @@
-"""Serve the interactive topology viewer for one circuit output directory."""
+"""Serve the interactive topology viewer with optional initial circuit data."""
 
 from __future__ import annotations
 
@@ -67,8 +67,12 @@ def build_argument_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "output_directory",
+        nargs="?",
         type=Path,
-        help=f"circuit output directory containing {TOPOLOGY_FILENAME}",
+        help=(
+            f"optional circuit output directory containing {TOPOLOGY_FILENAME}; "
+            "omit it to choose a directory in the browser"
+        ),
     )
     parser.add_argument("--host", default="127.0.0.1", help="server host")
     parser.add_argument("--port", type=int, default=8765, help="server port")
@@ -83,7 +87,11 @@ def build_argument_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> None:
     arguments = build_argument_parser().parse_args(argv)
     try:
-        topology = load_topology(arguments.output_directory)
+        topology = (
+            load_topology(arguments.output_directory)
+            if arguments.output_directory is not None
+            else None
+        )
         server = create_server(arguments.host, arguments.port, topology)
     except (OSError, ViewerError) as error:
         raise SystemExit(f"error: {error}") from error
@@ -105,7 +113,7 @@ def main(argv: list[str] | None = None) -> None:
 def create_server(
     host: str,
     port: int,
-    topology: dict[str, Any],
+    topology: dict[str, Any] | None,
 ) -> ThreadingHTTPServer:
     """Create a local viewer server; port zero selects an available port."""
 

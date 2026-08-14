@@ -15,7 +15,10 @@ from src.config import Config
 from src.experiments import DEFAULT_EXPERIMENTS, Experiments
 from src.logical_effort import analyze_path_logical_effort
 from src.netlist import NetListParser
-from src.optimization_heuristics import OptimizationHeuristic
+from src.optimization_heuristics import (
+    OptimizationHeuristic,
+    criticality_effort_gap_scores,
+)
 from src.optimizer import CircuitOptimizer
 from src.sta import analyze_timing
 from src.topology import circuit_analysis_graph, circuit_topology
@@ -153,6 +156,91 @@ def test_optimizer_reports_exact_sta_call_count() -> None:
     assert result.total_iterations == result.history[-1].iteration
 
 
+def test_criticality_effort_gap_uses_signed_stage_overshoot() -> None:
+    circuit = load_circuit("c03_fanout_branch")
+    timing = analyze_timing(circuit)
+    scores = criticality_effort_gap_scores(circuit, timing.critical_paths)
+    expected: dict[str, float] = {}
+    minimum_slack = min(path.slack for path in timing.critical_paths)
+    maximum_slack = max(path.slack for path in timing.critical_paths)
+    slack_range = maximum_slack - minimum_slack
+
+    for path in timing.critical_paths:
+        urgency = 1.0
+        if slack_range > 0.0:
+            urgency += (maximum_slack - path.slack) / slack_range
+        analysis = analyze_path_logical_effort(circuit, path.path)
+        for stage in analysis.stages:
+            score = urgency * (
+                stage.stage_effort - analysis.optimal_stage_effort
+            )
+            gate_name = stage.step.gate.name
+            expected[gate_name] = max(expected.get(gate_name, -float("inf")), score)
+
+    assert scores == pytest.approx(expected)
+
+
+def test_ranked_one_shot_choices_repair_c13_with_pi_connected_gates() -> None:
+    circuit = load_circuit("c13_large_reconvergent_network")
+
+    result = CircuitOptimizer(
+        circuit,
+        OptimizationHeuristic.SLACK_WEIGHTED_CAPACITANCE,
+    ).optimize()
+
+    assert result.circuit.gates["G7"].cell.name == "NOR3_X2"
+    assert result.circuit.gates["G6"].cell.name == "NAND3_X2"
+    assert result.timing.wns >= 0.0
+    assert result.circuit.area <= circuit.config.design_constraints.maximum_area
+    assert (
+        result.circuit.power
+        <= circuit.config.design_constraints.maximum_power_uW
+    )
+    assert result.sta_calls <= result.total_iterations + 1
+    assert result.total_iterations == sum(
+        entry.changed_gate is not None for entry in result.history
+    )
+
+    choices_since_acceptance: set[tuple[str, str]] = set()
+    for entry in result.history:
+        if entry.changed_gate is None or entry.new_cell is None:
+            continue
+        choice = (entry.changed_gate, entry.new_cell)
+        assert choice not in choices_since_acceptance
+        choices_since_acceptance.add(choice)
+        if entry.accepted:
+            choices_since_acceptance.clear()
+
+
+def test_random_greedy_can_resize_pi_connected_gates() -> None:
+    circuit = load_circuit("c13_large_reconvergent_network")
+
+    result = CircuitOptimizer(
+        circuit,
+        OptimizationHeuristic.RANDOM_GREEDY,
+        random_seed=0,
+    ).optimize()
+
+    assert any(
+        entry.changed_gate == "G7" and entry.new_cell == "NOR3_X2"
+        for entry in result.history
+    )
+    assert result.sta_calls <= result.total_iterations + 1
+    assert result.total_iterations == sum(
+        entry.changed_gate is not None for entry in result.history
+    )
+
+    choices_since_acceptance: set[tuple[str, str]] = set()
+    for entry in result.history:
+        if entry.changed_gate is None or entry.new_cell is None:
+            continue
+        choice = (entry.changed_gate, entry.new_cell)
+        assert choice not in choices_since_acceptance
+        choices_since_acceptance.add(choice)
+        if entry.accepted:
+            choices_since_acceptance.clear()
+
+
 def test_complete_core_artifact_manifest_and_summary(tmp_path: Path) -> None:
     circuit = load_circuit("c01_inverter_chain")
     netlist = CIRCUITS / "valid" / "c01_inverter_chain" / "netlist.txt"
@@ -165,6 +253,7 @@ def test_complete_core_artifact_manifest_and_summary(tmp_path: Path) -> None:
         "critical_paths.csv",
         "logical_effort_analysis.json",
         "optimization_slack_weighted_capacitance.csv",
+        "optimization_criticality_effort_gap.csv",
         "optimization_random_greedy.csv",
         "optimization_summary.csv",
         "optimization_comparison.json",
@@ -179,6 +268,18 @@ def test_complete_core_artifact_manifest_and_summary(tmp_path: Path) -> None:
         b"\x89PNG\r\n\x1a\n"
     )
     summary = json.loads((tmp_path / "summary.json").read_text())
+    assert set(summary["optimizers"]) == {
+        "logical_effort_guided",
+        "criticality_effort_gap",
+        "greedy_baseline",
+    }
+    with (tmp_path / "optimization_summary.csv").open(newline="") as file:
+        optimizer_rows = list(csv.DictReader(file))
+    assert {row["method"] for row in optimizer_rows} == {
+        "slack_weighted_capacitance",
+        "criticality_effort_gap",
+        "random_greedy",
+    }
     post = summary["post_optimization"]
     compliance = summary["compliance"]
     assert compliance["timing_compliant"] == (post["wns_ns"] >= 0.0)
@@ -190,6 +291,33 @@ def test_complete_core_artifact_manifest_and_summary(tmp_path: Path) -> None:
     graph, positions = build_circuit_graph(circuit)
     assert nx_is_dag(graph)
     assert set(graph.nodes) == set(positions)
+
+
+def test_runner_plot_flag_uses_current_optimization_reports(
+    tmp_path: Path,
+) -> None:
+    output = tmp_path / "plotted-circuit"
+    completed = subprocess.run(
+        (
+            "bash",
+            str(ROOT / "run_circuit.sh"),
+            "c01_inverter_chain",
+            "--output-dir",
+            str(output),
+            "--plot-optimization",
+        ),
+        cwd=ROOT,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+
+    assert completed.returncode == 0, completed.stderr
+    for filename in (
+        "optimization_convergence.png",
+        "optimization_outcomes.png",
+    ):
+        assert (output / filename).read_bytes().startswith(b"\x89PNG\r\n\x1a\n")
 
 
 def test_visual_gate_size_and_outline_increase_with_cell_strength() -> None:
@@ -225,6 +353,21 @@ def test_analysis_graph_compares_gate_metrics_and_critical_paths() -> None:
     states = graph["states"]
     assert isinstance(states, dict)
     for state in (states["original"], states["optimized"]):
+        summary = state["summary"]
+        assert summary["wns"] == timing.wns
+        assert summary["tns"] == timing.tns
+        assert summary["circuit_delay"] == timing.circuit_delay
+        assert summary["area"] == circuit.area
+        assert summary["power"] == circuit.power
+        assert summary["leakage_power"] == circuit.leakage_power
+        assert summary["dynamic_power"] == circuit.dynamic_power
+        assert summary["all_constraints_compliant"] == all(
+            (
+                summary["timing_compliant"],
+                summary["area_compliant"],
+                summary["power_compliant"],
+            )
+        )
         gate = state["gates"]["G1"]
         assert set(gate) == {
             "cell",

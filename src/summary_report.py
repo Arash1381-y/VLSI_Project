@@ -10,6 +10,7 @@ from .experiment_artifacts import ArtifactWriter, ExperimentError
 from .logical_effort import LogicalEffortPathAnalysis
 from .report_models import (
     CANONICAL_OPTIMIZATION,
+    EFFORT_GAP_OPTIMIZATION,
     GREEDY_OPTIMIZATION,
     TimedOptimization,
     circuit_compliance,
@@ -31,6 +32,7 @@ def save_final_summary(
     monte_carlo_summary: dict[str, object],
 ) -> None:
     logical_run = optimization_runs[CANONICAL_OPTIMIZATION]
+    effort_gap_run = optimization_runs[EFFORT_GAP_OPTIMIZATION]
     greedy_run = optimization_runs[GREEDY_OPTIMIZATION]
     canonical = logical_run.result
     compliance = circuit_compliance(canonical.circuit, canonical.timing)
@@ -49,9 +51,19 @@ def save_final_summary(
         ),
         "optimizers": {
             "logical_effort_guided": optimization_record(logical_run),
+            "criticality_effort_gap": optimization_record(effort_gap_run),
             "greedy_baseline": optimization_record(greedy_run),
         },
-        "optimizer_comparison": optimization_differences(logical_run, greedy_run),
+        "optimizer_comparison": {
+            EFFORT_GAP_OPTIMIZATION: optimization_differences(
+                logical_run,
+                effort_gap_run,
+            ),
+            GREEDY_OPTIMIZATION: optimization_differences(
+                logical_run,
+                greedy_run,
+            ),
+        },
         "critical_paths": _critical_path_summary(circuit, nominal_timing),
         "logical_effort_worst_path": _worst_logical_effort(logical_effort),
         "monte_carlo": monte_carlo_summary,
@@ -135,4 +147,3 @@ def _artifact_manifest(writer: ArtifactWriter) -> dict[str, str]:
     artifacts = dict(sorted(writer.artifacts.items()))
     artifacts["summary.json"] = "summary.json"
     return artifacts
-

@@ -34,6 +34,12 @@ directory. To place the complete batch under a separate output root, use:
 ./run_circuit.sh --all --output-root outputs/all-experiments
 ```
 
+Add optimization convergence and outcome plots for every valid circuit with:
+
+```bash
+./run_circuit.sh --all --plot-optimization
+```
+
 Add `--debug` to either form to enable debug logging for every circuit. Valid
 circuits run the complete analysis pipeline. Invalid examples are expected to
 exit nonzero and count as successful when their report contains
@@ -45,6 +51,12 @@ Run a valid circuit by directory name:
 
 ```bash
 ./run_circuit.sh c01_inverter_chain
+```
+
+Generate the optimization comparison plots immediately after analysis with:
+
+```bash
+./run_circuit.sh c01_inverter_chain --plot-optimization
 ```
 
 Results are written to:
@@ -88,8 +100,16 @@ optimization, power, area, and Monte Carlo settings.
 
 ## 4. Open the interactive circuit viewer
 
-First run the analyzer so the circuit output directory contains
-`circuit_topology.json`. Then start the viewer with that directory:
+First run the analyzer so an output directory contains
+`circuit_topology.json`. Start the viewer without a circuit argument:
+
+```bash
+python3.10 -m scripts.circuit_visualizer
+```
+
+Use the `Dir` button in the left toolbar to select any generated circuit
+output directory. Directory contents remain local to the browser. You can
+still open a particular output directly from the command line:
 
 ```bash
 python3.10 -m scripts.circuit_visualizer \
@@ -99,6 +119,12 @@ python3.10 -m scripts.circuit_visualizer \
 The viewer prints its local URL and opens it in the default browser. Its main
 controls are:
 
+- use `Dir` in the left toolbar to open another experiment output directory;
+- drag the handle on the inspector's left edge to widen the comparison panel;
+  its text scales with its width, arrow keys resize it when focused, and a
+  double-click resets the default width; at larger widths the original and
+  optimized summaries and gate details appear side by side; optimized values
+  show signed percentage changes, except WNS/TNS which show absolute deltas;
 - use `Analysis` for the compact topology view or `Schematic` for actual gate
   symbols with pin-aware orthogonal wiring;
 - drag to pan;
@@ -139,6 +165,9 @@ python3.10 -m scripts.circuit_visualizer \
 Stop the viewer with `Ctrl+C` in its terminal.
 
 ## 5. Generate optimization comparison plots
+
+The plots compare slack-weighted capacitance, criticality/effort-gap, and
+random greedy using total attempted iterations on the horizontal axis.
 
 Generate plots for every circuit under `outputs`:
 

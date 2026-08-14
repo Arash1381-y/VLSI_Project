@@ -9,6 +9,9 @@ Run one bundled circuit with:
 ./run_circuit.sh c01_inverter_chain
 ```
 
+Add `--plot-optimization` to generate convergence and outcome plots after a
+successful run. The same flag works with `./run_circuit.sh --all`.
+
 Each invocation writes an independent directory under `outputs/<circuit_name>`.
 Invalid inputs write `validation_report.json` and `run.log`, then exit with a
 nonzero status without running analysis.
@@ -74,7 +77,8 @@ Every valid circuit produces these core artifacts:
   `P`, optimal effort, theoretical delay, target capacitance, and discrete cells.
 - `optimization_*.csv`, `optimization_summary.csv`, and
   `optimization_comparison.json`: complete iteration histories and the
-  logical-effort-guided versus random-greedy comparison, including STA calls.
+  slack-weighted, criticality/effort-gap, and random-greedy comparison,
+  including STA calls.
 - `circuit_graph_pre_optimization.png` and
   `circuit_graph_post_optimization.png`: slack-colored DAGs with critical paths.
 - `monte_carlo_*.csv` and `monte_carlo_summary.json`: paired statistical timing

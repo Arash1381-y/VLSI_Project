@@ -10,42 +10,17 @@
   <body>
     <a class="skip-link" href="#graph">Skip to circuit graph</a>
     <main class="app-shell">
-      <header class="topbar">
-        <div class="brand-lockup">
-          <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
-          <div>
-            <p class="eyebrow">Netlist workbench</p>
-            <h1 id="circuit-title">Loading topology…</h1>
-          </div>
-        </div>
-
-        <div class="view-switch" role="group" aria-label="Circuit view">
-          <button class="active" data-view="analysis" type="button" aria-pressed="true">Analysis</button>
-          <button data-view="schematic" type="button" aria-pressed="false" disabled>Schematic</button>
-        </div>
-
-        <fieldset class="state-filters" aria-label="Visible analysis states">
-          <legend>Compare states</legend>
-          <label class="original-filter">
-            <input id="show-original" type="checkbox" checked>
-            <span></span>Original
-          </label>
-          <label class="optimized-filter">
-            <input id="show-optimized" type="checkbox" checked>
-            <span></span>Optimized
-          </label>
-        </fieldset>
-
-        <dl class="counts" aria-label="Circuit topology counts">
-          <div><dt>Gates</dt><dd id="gate-count">—</dd></div>
-          <div><dt>Nets</dt><dd id="net-count">—</dd></div>
-          <div><dt>Inputs</dt><dd id="input-count">—</dd></div>
-          <div><dt>Outputs</dt><dd id="output-count">—</dd></div>
-        </dl>
-      </header>
-
       <section class="workspace" aria-label="Topology workspace">
         <aside class="tool-rail" aria-label="Graph controls">
+          <button id="choose-directory" class="directory-button" type="button" title="Choose output directory" aria-label="Choose output directory">Dir</button>
+          <input id="directory-picker" type="file" webkitdirectory multiple hidden>
+          <span class="rail-rule" aria-hidden="true"></span>
+          <button class="rail-toggle active" data-view="analysis" type="button" title="Analysis view" aria-label="Analysis view" aria-pressed="true">A</button>
+          <button class="rail-toggle" data-view="schematic" type="button" title="Schematic view" aria-label="Schematic view" aria-pressed="false" disabled>S</button>
+          <span class="rail-rule" aria-hidden="true"></span>
+          <button id="show-original" class="rail-toggle original-toggle active" data-state="original" type="button" title="Show original state" aria-label="Show original state" aria-pressed="true">O</button>
+          <button id="show-optimized" class="rail-toggle optimized-toggle active" data-state="optimized" type="button" title="Show optimized state" aria-label="Show optimized state" aria-pressed="true">P</button>
+          <span class="rail-rule" aria-hidden="true"></span>
           <button id="zoom-in" type="button" title="Zoom in" aria-label="Zoom in">+</button>
           <button id="zoom-out" type="button" title="Zoom out" aria-label="Zoom out">−</button>
           <button id="fit-view" class="fit-button" type="button" title="Fit graph" aria-label="Fit graph">Fit</button>
@@ -71,13 +46,69 @@
         </section>
 
         <aside class="inspector" aria-labelledby="inspector-title">
+          <div
+            id="inspector-resizer"
+            class="inspector-resizer"
+            role="separator"
+            aria-label="Resize topology inspector"
+            aria-orientation="vertical"
+            aria-valuemin="340"
+            aria-valuenow="414"
+            tabindex="0"
+            title="Drag to resize · Double-click to reset"
+          ></div>
+          <div class="inspector-scroll">
           <div class="inspector-heading">
-            <p class="eyebrow">Selection</p>
-            <h2 id="inspector-title">Topology inspector</h2>
+            <p class="eyebrow">Circuit</p>
+            <h2 id="circuit-title">No output selected</h2>
+            <p id="inspector-title" class="inspector-label">Topology inspector</p>
+            <dl class="counts" aria-label="Circuit topology counts">
+              <div><dt>Gates</dt><dd id="gate-count">—</dd></div>
+              <div><dt>Nets</dt><dd id="net-count">—</dd></div>
+              <div><dt>Inputs</dt><dd id="input-count">—</dd></div>
+              <div><dt>Outputs</dt><dd id="output-count">—</dd></div>
+            </dl>
           </div>
           <div id="empty-selection" class="empty-selection">
-            <span class="empty-glyph" aria-hidden="true"></span>
-            <p>Select a node to isolate its connected nets and neighboring nodes.</p>
+            <div class="summary-heading">
+              <p class="eyebrow">Circuit comparison</p>
+              <h3>Original vs optimized</h3>
+              <p>Select a node for its gate-level analysis and downstream output cone.</p>
+            </div>
+            <div class="circuit-summary">
+              <article class="analysis-card original-card" data-summary-state="original">
+                <header><i></i><h4>Original</h4></header>
+                <dl>
+                  <div><dt>WNS</dt><dd data-field="wns"></dd></div>
+                  <div><dt>TNS</dt><dd data-field="tns"></dd></div>
+                  <div><dt>Delay</dt><dd data-field="circuit_delay"></dd></div>
+                  <div><dt>Area / max</dt><dd data-field="area"></dd></div>
+                  <div><dt>Power / max</dt><dd data-field="power"></dd></div>
+                  <div><dt>Leakage</dt><dd data-field="leakage_power"></dd></div>
+                  <div><dt>Dynamic</dt><dd data-field="dynamic_power"></dd></div>
+                  <div><dt>Timing</dt><dd data-field="timing_compliant"></dd></div>
+                  <div><dt>Area constraint</dt><dd data-field="area_compliant"></dd></div>
+                  <div><dt>Power constraint</dt><dd data-field="power_compliant"></dd></div>
+                  <div><dt>All constraints</dt><dd data-field="all_constraints_compliant"></dd></div>
+                </dl>
+              </article>
+              <article class="analysis-card optimized-card" data-summary-state="optimized">
+                <header><i></i><h4>Optimized</h4></header>
+                <dl>
+                  <div><dt>WNS</dt><dd data-field="wns"></dd></div>
+                  <div><dt>TNS</dt><dd data-field="tns"></dd></div>
+                  <div><dt>Delay</dt><dd data-field="circuit_delay"></dd></div>
+                  <div><dt>Area / max</dt><dd data-field="area"></dd></div>
+                  <div><dt>Power / max</dt><dd data-field="power"></dd></div>
+                  <div><dt>Leakage</dt><dd data-field="leakage_power"></dd></div>
+                  <div><dt>Dynamic</dt><dd data-field="dynamic_power"></dd></div>
+                  <div><dt>Timing</dt><dd data-field="timing_compliant"></dd></div>
+                  <div><dt>Area constraint</dt><dd data-field="area_compliant"></dd></div>
+                  <div><dt>Power constraint</dt><dd data-field="power_compliant"></dd></div>
+                  <div><dt>All constraints</dt><dd data-field="all_constraints_compliant"></dd></div>
+                </dl>
+              </article>
+            </div>
           </div>
           <div id="selection-details" class="selection-details" hidden>
             <p class="selection-kind" id="selection-kind"></p>
@@ -107,14 +138,16 @@
                 </dl>
               </article>
             </div>
-            <section>
-              <h4>Incoming nets</h4>
-              <ul id="incoming-nets"></ul>
-            </section>
-            <section>
-              <h4>Outgoing nets</h4>
-              <ul id="outgoing-nets"></ul>
-            </section>
+            <div class="connectivity-row">
+              <section>
+                <h4>Incoming nets</h4>
+                <ul id="incoming-nets"></ul>
+              </section>
+              <section>
+                <h4>Generated outputs</h4>
+                <ul id="generated-outputs"></ul>
+              </section>
+            </div>
           </div>
           <footer class="legend" aria-label="Node legend">
             <span><i class="input-dot"></i>Primary input</span>
@@ -125,6 +158,7 @@
             <span><i class="resized-x2-mark"></i>Resized to X2</span>
             <span><i class="resized-x4-mark"></i>Resized to X4</span>
           </footer>
+          </div>
         </aside>
       </section>
     </main>
