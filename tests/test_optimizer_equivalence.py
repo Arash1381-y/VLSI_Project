@@ -4,16 +4,16 @@ from pathlib import Path
 
 import pytest
 
-from src.cell import CellLibrary
-from src.circuit import Circuit
-from src.config import Config
-from src.netlist import NetListParser
-from src.optimization_heuristics import OptimizationHeuristic
-from src.optimizer import CircuitOptimizer, OptimizationResult
+from vlsi_sta.domain.cell import CellLibrary
+from vlsi_sta.domain.circuit import Circuit
+from vlsi_sta.input.config import Config
+from vlsi_sta.input.netlist import NetListParser
+from vlsi_sta.optimization.heuristics import OptimizationHeuristic
+from vlsi_sta.optimization.optimizer import CircuitOptimizer, OptimizationResult
 
 
 ROOT = Path(__file__).resolve().parent.parent
-VALID_CIRCUITS = ROOT / "Input_Files" / "circuits" / "valid"
+VALID_CIRCUITS = ROOT / "examples" / "circuits" / "valid"
 VALID_CIRCUIT_NAMES = tuple(
     path.name for path in sorted(VALID_CIRCUITS.iterdir()) if path.is_dir()
 )

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from src.numeric import compare_floats
+from vlsi_sta.domain.numeric import compare_floats
 
 
 def test_compare_floats_returns_order_outside_tolerance() -> None:

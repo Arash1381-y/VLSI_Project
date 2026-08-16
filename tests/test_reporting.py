@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import csv
 import json
+import os
 import subprocess
 import sys
 from dataclasses import FrozenInstanceError
@@ -10,29 +11,29 @@ from unittest.mock import patch
 
 import pytest
 
-from src.cell import CellLibrary
-from src.circuit import Circuit, replace_gate_cell, replacement_area_and_power
-from src.config import Config
-from src.experiments import (
+from vlsi_sta.domain.cell import CellLibrary
+from vlsi_sta.domain.circuit import Circuit, replace_gate_cell, replacement_area_and_power
+from vlsi_sta.input.config import Config
+from vlsi_sta.app.experiments import (
     DEFAULT_EXPERIMENTS,
     OBSOLETE_ARTIFACT_FILENAMES,
     Experiments,
 )
-from src.logical_effort import analyze_path_logical_effort
-from src.netlist import NetListParser
-from src.optimization_heuristics import (
+from vlsi_sta.analysis.logical_effort import analyze_path_logical_effort
+from vlsi_sta.input.netlist import NetListParser
+from vlsi_sta.optimization.heuristics import (
     OptimizationHeuristic,
     criticality_effort_gap_scores,
 )
-from src.optimizer import CircuitOptimizer
-from src.sta import analyze_timing
-from src.topology import circuit_analysis_graph, circuit_topology
-from src.visualization import build_circuit_graph
-from src.visualization import _GraphStyle, _gate_node_area, _gate_outline_width
+from vlsi_sta.optimization.optimizer import CircuitOptimizer
+from vlsi_sta.analysis.sta import analyze_timing
+from vlsi_sta.reporting.topology import circuit_analysis_graph, circuit_topology
+from vlsi_sta.reporting.visualization import build_circuit_graph
+from vlsi_sta.reporting.visualization import _GraphStyle, _gate_node_area, _gate_outline_width
 
 
 ROOT = Path(__file__).resolve().parent.parent
-CIRCUITS = ROOT / "Input_Files" / "circuits"
+CIRCUITS = ROOT / "examples" / "circuits"
 
 
 def load_circuit(name: str) -> Circuit:
@@ -68,13 +69,15 @@ def test_invalid_circuit_writes_only_validation_artifacts(
         (
             sys.executable,
             "-m",
-            "src.main",
+            "vlsi_sta",
+            "analyze",
             str(directory / "netlist.txt"),
             str(directory / "config.json"),
             "--output-dir",
             str(output),
         ),
         cwd=ROOT,
+        env={**os.environ, "PYTHONPATH": str(ROOT / "src")},
         check=False,
         capture_output=True,
         text=True,
@@ -183,7 +186,7 @@ def test_logical_effort_report_identities_and_branching(tmp_path: Path) -> None:
 
 def test_optimizer_reports_exact_sta_call_count() -> None:
     circuit = load_circuit("c06_deep_critical_path")
-    from src import optimizer as optimizer_module
+    import vlsi_sta.optimization.optimizer as optimizer_module
 
     original = optimizer_module.analyze_timing
     call_count = 0
@@ -193,7 +196,7 @@ def test_optimizer_reports_exact_sta_call_count() -> None:
         call_count += 1
         return original(circuit_to_analyze)
 
-    with patch("src.optimizer.analyze_timing", side_effect=counted):
+    with patch("vlsi_sta.optimization.optimizer.analyze_timing", side_effect=counted):
         result = CircuitOptimizer(
             circuit,
             OptimizationHeuristic.SLACK_WEIGHTED_CAPACITANCE,
@@ -274,7 +277,7 @@ def test_optimizer_prefilters_infeasible_replacements_before_copying() -> None:
     circuit = load_circuit("c13_large_reconvergent_network")
 
     with patch(
-        "src.optimizer.replace_gate_cell",
+        "vlsi_sta.optimization.optimizer.replace_gate_cell",
         wraps=replace_gate_cell,
     ) as copied:
         result = CircuitOptimizer(

@@ -5,7 +5,7 @@ import threading
 from pathlib import Path
 from urllib.request import urlopen
 
-from scripts.circuit_visualizer import (
+from vlsi_sta.viewer.server import (
     ASSETS,
     build_argument_parser,
     create_server,

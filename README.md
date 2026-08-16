@@ -18,24 +18,27 @@ nonzero status without running analysis.
 
 ## Code structure
 
-- `main.py` is the minimal executable entry point; `cli.py` defines arguments,
-  while `application.py` coordinates validation, loading, and experiment startup.
-- `circuit.py`, `netlist.py`, `cell.py`, and `config.py` own immutable input and
-  derived circuit data.
-- `sta.py`, `logical_effort.py`, `optimizer.py`, and `monte_carlo.py` contain
-  analysis algorithms and return result values rather than storing run state on
-  the circuit.
-- `experiments.py` coordinates the configured workflow and caches results that
-  later steps reuse.
-- `*_reports.py`, `report_models.py`, and `experiment_artifacts.py` convert
-  results into stable report schemas and handle serialization.
-- `visualization.py` builds and renders the deterministic circuit DAG.
-- `scripts/` contains optional post-processing tools that consume generated
-  artifacts but are not part of the circuit-analysis runtime. For example:
+- `src/vlsi_sta/domain/` owns circuit and cell models with numeric helpers.
+- `src/vlsi_sta/input/` parses and validates configurations and netlists.
+- `src/vlsi_sta/analysis/` contains STA, logical-effort, and Monte Carlo analyses.
+- `src/vlsi_sta/optimization/` contains optimizers and selection heuristics.
+- `src/vlsi_sta/reporting/` owns report schemas, serialization, plots, and graph
+  output.
+- `src/vlsi_sta/app/` coordinates normal analysis workflows and provides the
+  unified CLI.
+- `src/vlsi_sta/benchmarking/` contains benchmark configuration, generation,
+  evaluation, and plotting. Generation and evaluation expose stable package APIs
+  while their implementations live in separate subpackages.
+- `src/vlsi_sta/viewer/` packages the topology viewer server and static assets.
+- `examples/` contains bundled valid/invalid circuits and benchmark configuration.
+- `scripts/` is reserved for repository automation such as release packaging.
 
-  ```bash
-  python3.10 -m scripts.plot_optimization outputs
-  ```
+Install the package in editable mode to expose the command-line entry point:
+
+```bash
+python3.10 -m pip install -e .
+vlsi-sta --help
+```
 
 ## Interactive topology viewer
 
@@ -47,7 +50,7 @@ cell, load capacitance, rise/fall delay, and ranked critical paths.
 Open one circuit output directory with:
 
 ```bash
-python3.10 -m scripts.circuit_visualizer outputs/c15_high_fanout_sizing_fabric
+vlsi-sta view outputs/c15_high_fanout_sizing_fabric
 ```
 
 The local viewer opens in a browser and supports mouse/touch panning, cursor-
@@ -123,12 +126,12 @@ lists inside CSV fields.
 
 The standalone benchmarking package creates deterministic, repairable sizing
 problems without changing the analyzer CLI or storing benchmark state on a
-`Circuit`. Start from [benchmark_config.example.json](benchmark_config.example.json)
+`Circuit`. Start from [examples/benchmark_config.json](examples/benchmark_config.json)
 and run:
 
 ```bash
-python3.10 -m src.benchmarking generate benchmark_config.json
-python3.10 -m src.benchmarking evaluate benchmarks/complex_repair_suite
+vlsi-sta benchmark generate examples/benchmark_config.json
+vlsi-sta benchmark evaluate benchmarks/complex_repair_suite
 ```
 
 Both commands show concise INFO-level progress by default: suite totals, the
@@ -138,8 +141,8 @@ and subsystem analysis logs are available at DEBUG. Select quieter or more
 detailed output with:
 
 ```bash
-python3.10 -m src.benchmarking --log-level WARNING generate benchmark_config.json
-python3.10 -m src.benchmarking --log-level DEBUG evaluate benchmarks/complex_repair_suite
+vlsi-sta benchmark --log-level WARNING generate examples/benchmark_config.json
+vlsi-sta benchmark --log-level DEBUG evaluate benchmarks/complex_repair_suite
 ```
 
 The configuration is schema-versioned and strict: unknown/missing fields,
@@ -205,3 +208,16 @@ Every evaluation run creates:
 - `evaluation_summary.json`: hashes, hierarchical aggregates grouped by source,
   size, depth, fanout, reconvergence, violation severity, and headroom, plus the
   artifact map.
+
+Generate suite-level comparison plots from an evaluation directory with:
+
+```bash
+vlsi-sta benchmark plot \
+  benchmarks/<suite>/evaluation/<run-id>
+```
+
+The plots are written to `<run-id>/plots` by default. They cover repair-rate
+confidence intervals, convergence by total attempted iteration, per-case repair
+reliability, runtime scaling, final cost, STA work, and oracle-based gate-selection
+quality. Use `--output-dir` to choose another destination and `--dpi` to control
+image resolution.

@@ -7,18 +7,18 @@ from pathlib import Path
 
 import pytest
 
-from src.benchmarking import BenchmarkConfig, BenchmarkConfigError
-from src.benchmarking.evaluation import evaluate_suite
-from src.benchmarking.generation import generate_suite
-from src.cell import CellLibrary
-from src.circuit import Circuit
-from src.config import Config
-from src.netlist import NetListParser, NetType
-from src.sta import analyze_timing
+from vlsi_sta.benchmarking import BenchmarkConfig, BenchmarkConfigError
+from vlsi_sta.benchmarking.evaluation import evaluate_suite
+from vlsi_sta.benchmarking.generation import generate_suite
+from vlsi_sta.domain.cell import CellLibrary
+from vlsi_sta.domain.circuit import Circuit
+from vlsi_sta.input.config import Config
+from vlsi_sta.input.netlist import NetListParser, NetType
+from vlsi_sta.analysis.sta import analyze_timing
 
 
 PROJECT = Path(__file__).resolve().parents[1]
-LIBRARY = PROJECT / "Input_Files" / "cell_library.json"
+LIBRARY = PROJECT / "examples" / "cell_library.json"
 
 
 def _document(output_root: Path, suite: str = "repair_suite") -> dict[str, object]:
@@ -139,7 +139,7 @@ def test_generation_is_replayable_valid_and_deterministic(
     tmp_path: Path,
     caplog: pytest.LogCaptureFixture,
 ) -> None:
-    caplog.set_level(logging.INFO, logger="src.benchmarking.generation")
+    caplog.set_level(logging.INFO, logger="vlsi_sta.benchmarking.generation")
     first = generate_suite(
         _write_config(
             tmp_path / "first.json",
@@ -197,7 +197,7 @@ def test_evaluation_writes_oracle_and_replays_optimizer_history(
     tmp_path: Path,
     caplog: pytest.LogCaptureFixture,
 ) -> None:
-    caplog.set_level(logging.INFO, logger="src.benchmarking.evaluation")
+    caplog.set_level(logging.INFO, logger="vlsi_sta.benchmarking.evaluation")
     document = _document(tmp_path / "output")
     sources = document["sources"]
     assert isinstance(sources, dict)
@@ -275,7 +275,7 @@ def test_seeded_generation_preserves_topology_and_families(tmp_path: Path) -> No
         "seeded": [{
             "directory": str(
                 PROJECT
-                / "Input_Files"
+                / "examples"
                 / "circuits"
                 / "valid"
                 / "c06_deep_critical_path"
@@ -290,7 +290,7 @@ def test_seeded_generation_preserves_topology_and_families(tmp_path: Path) -> No
     seed_library = CellLibrary(LIBRARY)
     _, seed_gates, _ = NetListParser(
         PROJECT
-        / "Input_Files"
+        / "examples"
         / "circuits"
         / "valid"
         / "c06_deep_critical_path"

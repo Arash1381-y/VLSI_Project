@@ -1,0 +1,25 @@
+[build-system]
+requires = ["hatchling>=1.21"]
+build-backend = "hatchling.build"
+
+[project]
+name = "vlsi-sta"
+version = "0.1.0"
+description = "Static timing analysis, circuit optimization, and benchmarking tools"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "matplotlib>=3.5",
+    "networkx>=2.8",
+    "numpy>=1.21",
+]
+
+[project.scripts]
+vlsi-sta = "vlsi_sta.app.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/vlsi_sta"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

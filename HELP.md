@@ -4,12 +4,12 @@
 
 - Python 3.10
 - A graphical web browser for the interactive viewer
-- Python packages listed in `requirements.txt`
+- Python packages declared in `pyproject.toml`
 
-From the project directory, install the runtime dependencies:
+From the project directory, install the package and its `vlsi-sta` command:
 
 ```bash
-python3.10 -m pip install -r requirements.txt
+python3.10 -m pip install -e .
 ```
 
 ## 2. Run a bundled circuit
@@ -80,7 +80,7 @@ Enable detailed logs with:
 You can also pass an entire circuit directory:
 
 ```bash
-./run_circuit.sh Input_Files/circuits/valid/c06_deep_critical_path
+./run_circuit.sh examples/circuits/valid/c06_deep_critical_path
 ```
 
 That directory must contain both `netlist.txt` and `config.json`.
@@ -90,9 +90,9 @@ That directory must contain both `netlist.txt` and `config.json`.
 The equivalent direct Python command is:
 
 ```bash
-python3.10 -m src.main \
-  Input_Files/circuits/valid/c01_inverter_chain/netlist.txt \
-  Input_Files/circuits/valid/c01_inverter_chain/config.json
+vlsi-sta analyze \
+  examples/circuits/valid/c01_inverter_chain/netlist.txt \
+  examples/circuits/valid/c01_inverter_chain/config.json
 ```
 
 The configuration selects the shared cell library and controls timing,
@@ -104,7 +104,7 @@ First run the analyzer so an output directory contains
 `circuit_topology.json`. Start the viewer without a circuit argument:
 
 ```bash
-python3.10 -m scripts.circuit_visualizer
+vlsi-sta view
 ```
 
 Use the `Dir` button in the left toolbar to select any generated circuit
@@ -112,7 +112,7 @@ output directory. Directory contents remain local to the browser. You can
 still open a particular output directly from the command line:
 
 ```bash
-python3.10 -m scripts.circuit_visualizer \
+vlsi-sta view \
   outputs/c01_inverter_chain
 ```
 
@@ -149,7 +149,7 @@ http://127.0.0.1:8765/?view=schematic
 To start the server without opening a browser:
 
 ```bash
-python3.10 -m scripts.circuit_visualizer \
+vlsi-sta view \
   outputs/c01_inverter_chain \
   --no-browser
 ```
@@ -157,7 +157,7 @@ python3.10 -m scripts.circuit_visualizer \
 Choose a different port when the default port `8765` is occupied:
 
 ```bash
-python3.10 -m scripts.circuit_visualizer \
+vlsi-sta view \
   outputs/c01_inverter_chain \
   --port 9000
 ```
@@ -172,14 +172,14 @@ random greedy using total attempted iterations on the horizontal axis.
 Generate plots for every circuit under `outputs`:
 
 ```bash
-python3.10 -m scripts.plot_optimization outputs \
+vlsi-sta plot optimization outputs \
   --output-dir outputs/plots/all
 ```
 
 Or plot one circuit only:
 
 ```bash
-python3.10 -m scripts.plot_optimization outputs/c06_deep_critical_path
+vlsi-sta plot optimization outputs/c06_deep_critical_path
 ```
 
 ## 6. Run checks

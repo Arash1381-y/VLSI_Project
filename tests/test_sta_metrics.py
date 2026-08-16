@@ -4,11 +4,11 @@ from pathlib import Path
 
 import pytest
 
-from src.cell import CellLibrary
-from src.circuit import Circuit
-from src.config import Config
-from src.netlist import NetListParser
-from src.sta import analyze_timing, analyze_timing_metrics
+from vlsi_sta.domain.cell import CellLibrary
+from vlsi_sta.domain.circuit import Circuit
+from vlsi_sta.input.config import Config
+from vlsi_sta.input.netlist import NetListParser
+from vlsi_sta.analysis.sta import analyze_timing, analyze_timing_metrics
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -24,7 +24,7 @@ ROOT = Path(__file__).resolve().parents[1]
     ),
 )
 def test_compact_timing_metrics_match_full_sta(case_name: str) -> None:
-    directory = ROOT / "Input_Files" / "circuits" / "valid" / case_name
+    directory = ROOT / "examples" / "circuits" / "valid" / case_name
     config = Config(directory / "config.json")
     library = CellLibrary(config.cell_library_path)
     nets, gates, cells = NetListParser(directory / "netlist.txt", library).parse()

@@ -3,7 +3,7 @@
 set -euo pipefail
 
 PROJECT_ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
-CIRCUITS_ROOT="$PROJECT_ROOT/Input_Files/circuits"
+CIRCUITS_ROOT="$PROJECT_ROOT/examples/circuits"
 
 usage() {
     cat <<'EOF'
@@ -17,7 +17,7 @@ Examples:
   ./run_circuit.sh c05_multi_output --debug
   ./run_circuit.sh c05_multi_output --output-dir outputs/experiment-01
   ./run_circuit.sh c05_multi_output --plot-optimization
-  ./run_circuit.sh Input_Files/circuits/valid/c10_three_input_gates
+  ./run_circuit.sh examples/circuits/valid/c10_three_input_gates
   ./run_circuit.sh --all
   ./run_circuit.sh --all --output-root outputs/all-experiments
 EOF
@@ -96,7 +96,8 @@ run_all_circuits() {
             fi
 
             command=(
-                python3.10 -m src.main
+                env PYTHONPATH="$PROJECT_ROOT/src${PYTHONPATH:+:$PYTHONPATH}" \
+                python3.10 -m vlsi_sta analyze
                 "$circuit_dir/netlist.txt"
                 "$circuit_dir/config.json"
                 --output-dir "$output_dir"
@@ -113,7 +114,8 @@ run_all_circuits() {
 
             if [[ "$category" == "valid" && $exit_status -eq 0 ]]; then
                 if [[ "$plot_optimization" == true ]] \
-                    && ! python3.10 -m scripts.plot_optimization "$output_dir"; then
+                    && ! env PYTHONPATH="$PROJECT_ROOT/src${PYTHONPATH:+:$PYTHONPATH}" \
+                    python3.10 -m vlsi_sta plot optimization "$output_dir"; then
                     ((failed += 1))
                     echo "error: optimization plotting failed for $circuit_name" >&2
                 else
@@ -248,7 +250,8 @@ if ! command -v python3.10 >/dev/null 2>&1; then
 fi
 
 cd -- "$PROJECT_ROOT"
-if python3.10 -m src.main \
+if env PYTHONPATH="$PROJECT_ROOT/src${PYTHONPATH:+:$PYTHONPATH}" \
+    python3.10 -m vlsi_sta analyze \
     "$netlist_path" "$config_path" "${forwarded_arguments[@]}"; then
     :
 else
@@ -272,5 +275,6 @@ print(output_root / configuration["circuit_name"])
 PY
 )
     fi
-    python3.10 -m scripts.plot_optimization "$plot_input"
+    env PYTHONPATH="$PROJECT_ROOT/src${PYTHONPATH:+:$PYTHONPATH}" \
+        python3.10 -m vlsi_sta plot optimization "$plot_input"
 fi
