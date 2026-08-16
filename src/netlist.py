@@ -32,20 +32,33 @@ class NetType(Enum):
     OUTPUT = 2
 
 
-@dataclass
+@dataclass(frozen=True)
 class Net:
+    """Immutable net connectivity expressed through gate instance names."""
+
+    name: str
     net_type: NetType
-    driver: Gate | None = None
-    loads: list[tuple[int, Gate]] = field(default_factory=list)
-    name: str = ""
+    driver: str | None
+    loads: tuple[tuple[int, str], ...]
+
+
+@dataclass(frozen=True)
+class Gate:
+    """Immutable logical gate independent of its discrete size assignment."""
+
+    name: str
+    cell_family: str
+    inputs: tuple[str, ...]
+    output: str
 
 
 @dataclass
-class Gate:
-    cell: Cell
-    inputs: list[Net] = field(default_factory=list)
-    output: Net | None = None
-    name: str = ""
+class _NetBuilder:
+    """Mutable parser-only state finalized into a frozen :class:`Net`."""
+
+    net_type: NetType = NetType.INTERNAL
+    driver: str | None = None
+    loads: list[tuple[int, str]] = field(default_factory=list)
 
 
 @dataclass(frozen=True, eq=False)
@@ -77,16 +90,20 @@ class NetListParser:
     ) -> None:
         self.netlist_path = Path(netlist_path)
         self.cell_library = cell_library
-        self.netlist: dict[str, Net] = {}
+        self._nets: dict[str, _NetBuilder] = {}
         self.gates: dict[str, Gate] = {}
+        self.gate_cells: dict[str, Cell] = {}
         self._input_names: set[str] = set()
         self._output_names: set[str] = set()
 
-    def parse(self) -> tuple[dict[str, Net], dict[str, Gate]]:
+    def parse(
+        self,
+    ) -> tuple[dict[str, Net], dict[str, Gate], dict[str, Cell]]:
         """Parse, connect, and validate the gate-level netlist."""
 
-        self.netlist.clear()
+        self._nets.clear()
         self.gates.clear()
+        self.gate_cells.clear()
         self._input_names.clear()
         self._output_names.clear()
 
@@ -103,7 +120,16 @@ class NetListParser:
             ) from exc
 
         self._validate_drivers()
-        return self.netlist, self.gates
+        netlist = {
+            name: Net(
+                name=name,
+                net_type=builder.net_type,
+                driver=builder.driver,
+                loads=tuple(builder.loads),
+            )
+            for name, builder in self._nets.items()
+        }
+        return netlist, dict(self.gates), dict(self.gate_cells)
 
     def _parse_line(self, tokens: list[str], line_number: int) -> None:
         if tokens[0] in {"INPUT", "OUTPUT"}:
@@ -195,8 +221,8 @@ class NetListParser:
                 "invalid_input_count",
             )
 
-        gate = Gate(cell=cell, name=gate_name)
-        gate.inputs = [self._net(name) for name in input_names]
+        for name in input_names:
+            self._net(name)
         output = self._net(output_name)
         if output_name in self._input_names:
             raise self._error(
@@ -207,25 +233,31 @@ class NetListParser:
             raise self._error(
                 line_number,
                 f"net {output_name!r} has multiple drivers "
-                f"({output.driver.name!r} and {gate_name!r})",
+                f"({output.driver!r} and {gate_name!r})",
                 "multiple_drivers",
             )
 
-        gate.output = output
-        output.driver = gate
-        for pin_index, net in enumerate(gate.inputs):
-            net.loads.append((pin_index, gate))
+        gate = Gate(
+            name=gate_name,
+            cell_family=cell.family,
+            inputs=tuple(input_names),
+            output=output_name,
+        )
+        output.driver = gate_name
+        for pin_index, input_name in enumerate(input_names):
+            self._nets[input_name].loads.append((pin_index, gate_name))
         self.gates[gate_name] = gate
+        self.gate_cells[gate_name] = cell
 
-    def _net(self, name: str) -> Net:
+    def _net(self, name: str) -> _NetBuilder:
         if not name:
             raise NetlistError("signal names cannot be empty")
-        if name not in self.netlist:
-            self.netlist[name] = Net(NetType.INTERNAL, name=name)
-        return self.netlist[name]
+        if name not in self._nets:
+            self._nets[name] = _NetBuilder()
+        return self._nets[name]
 
     def _validate_drivers(self) -> None:
-        for name, net in self.netlist.items():
+        for name, net in self._nets.items():
             if name in self._input_names:
                 continue
             if net.driver is None:

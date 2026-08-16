@@ -103,8 +103,8 @@ def _analysis_state(
         "summary": _analysis_summary(circuit, timing),
         "gates": {
             gate_name: {
-                "cell": circuit.gates[gate_name].cell.name,
-                "size": circuit.gates[gate_name].cell.size,
+                "cell": circuit.cell_for(gate_name).name,
+                "size": circuit.cell_for(gate_name).size,
                 "load_capacitance": circuit.fanout_capacitances[gate_name],
                 "delay_rise": circuit.gate_delays[gate_name].rise,
                 "delay_fall": circuit.gate_delays[gate_name].fall,
@@ -143,9 +143,7 @@ def _critical_path(rank: int, critical_path: CriticalPath) -> dict[str, object]:
     path = critical_path.path
     net_names = [path.input_net.name]
     for step in path.steps:
-        if step.gate.output is None:
-            raise NetlistError(f"gate {step.gate.name!r} has no output")
-        net_names.append(step.gate.output.name)
+        net_names.append(step.gate.output)
     return {
         "rank": rank,
         "slack": critical_path.slack,
@@ -170,15 +168,15 @@ def _gate_node(gate: Gate, level: int) -> dict[str, object]:
         "id": f"gate:{gate.name}",
         "kind": "gate",
         "name": gate.name,
-        "gate_type": gate.cell.family,
+        "gate_type": gate.cell_family,
         "level": level,
     }
 
 
 def _net_record(net: Net) -> dict[str, object]:
     targets = [
-        {"node": f"gate:{gate.name}", "pin": pin_number}
-        for pin_number, gate in net.loads
+        {"node": f"gate:{gate_name}", "pin": pin_number}
+        for pin_number, gate_name in net.loads
     ]
     if net.net_type is NetType.OUTPUT:
         targets.append({"node": f"output:{net.name}", "pin": None})
@@ -195,4 +193,4 @@ def _net_source(net: Net) -> str:
         return f"input:{net.name}"
     if net.driver is None:
         raise NetlistError(f"net {net.name!r} has no driver")
-    return f"gate:{net.driver.name}"
+    return f"gate:{net.driver}"

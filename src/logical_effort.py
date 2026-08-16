@@ -53,10 +53,11 @@ def compute_path_delay(circuit: Circuit, path: CircuitPath) -> float:
     normalized_delay = 0.0
     for step in path.steps:
         gate = step.gate
-        input_pin = gate.cell.input_pins[step.input_pin]
+        cell = circuit.cell_for(gate)
+        input_pin = cell.input_pins[step.input_pin]
         if input_pin.capacitance <= 0.0:
             raise NetlistError(
-                f"cell {gate.cell.name!r} input pin {input_pin.name!r} "
+                f"cell {cell.name!r} input pin {input_pin.name!r} "
                 "has non-positive capacitance"
             )
 
@@ -64,7 +65,7 @@ def compute_path_delay(circuit: Circuit, path: CircuitPath) -> float:
         electrical_effort = total_output_load / input_pin.capacitance
         normalized_delay += (
             input_pin.logical_effort * electrical_effort
-            + gate.cell.parasitic_delay
+            + cell.parasitic_delay
         )
 
     return tau * normalized_delay
@@ -134,14 +135,14 @@ def analyze_path_logical_effort(
     stage_terms = [
         (
             step,
-            _stage_logical_effort(step),
+            _stage_logical_effort(circuit, step),
             _stage_branching_effort(circuit, path, index, endpoint_load),
-            _on_path_load(path, index, endpoint_load),
+            _on_path_load(circuit, path, index, endpoint_load),
         )
         for index, step in enumerate(path.steps)
     ]
     first_step = path.steps[0]
-    first_input_capacitance = first_step.gate.cell.input_pins[
+    first_input_capacitance = circuit.cell_for(first_step.gate).input_pins[
         first_step.input_pin
     ].capacitance
 
@@ -150,18 +151,19 @@ def analyze_path_logical_effort(
     electrical_effort = endpoint_load / first_input_capacitance
     path_effort = path_logical_effort * branching_effort * electrical_effort
     optimal_effort = path_effort ** (1.0 / len(path.steps))
-    parasitic_delay = sum(step.gate.cell.parasitic_delay for step in path.steps)
+    parasitic_delay = sum(
+        circuit.cell_for(step.gate).parasitic_delay for step in path.steps
+    )
     minimum_normalized_delay = len(path.steps) * optimal_effort + parasitic_delay
     stages: list[LogicalEffortStage] = []
     for step, logical_effort, branch, on_path_load in stage_terms:
-        input_capacitance = step.gate.cell.input_pins[
-            step.input_pin
-        ].capacitance
+        cell = circuit.cell_for(step.gate)
+        input_capacitance = cell.input_pins[step.input_pin].capacitance
         total_load = circuit.fanout_capacitances[step.gate.name]
         electrical_effort_stage = on_path_load / input_capacitance
         target_capacitance = logical_effort * total_load / optimal_effort
         candidates = circuit.cell_library.sizing_candidates(
-            step.gate.cell.family,
+            cell.family,
             step.input_pin,
             target_capacitance,
         )
@@ -174,7 +176,7 @@ def analyze_path_logical_effort(
                 stage_effort=(
                     logical_effort * branch * electrical_effort_stage
                 ),
-                parasitic_delay=step.gate.cell.parasitic_delay,
+                parasitic_delay=cell.parasitic_delay,
                 input_capacitance=input_capacitance,
                 total_output_load=total_load,
                 on_path_load=on_path_load,
@@ -199,11 +201,12 @@ def analyze_path_logical_effort(
     )
 
 
-def _stage_logical_effort(step: PathStep) -> float:
-    input_pin = step.gate.cell.input_pins[step.input_pin]
+def _stage_logical_effort(circuit: Circuit, step: PathStep) -> float:
+    cell = circuit.cell_for(step.gate)
+    input_pin = cell.input_pins[step.input_pin]
     if input_pin.capacitance <= 0.0 or input_pin.logical_effort <= 0.0:
         raise NetlistError(
-            f"cell {step.gate.cell.name!r} input pin {input_pin.name!r} "
+            f"cell {cell.name!r} input pin {input_pin.name!r} "
             "must have positive capacitance and logical effort"
         )
     return input_pin.logical_effort
@@ -216,7 +219,7 @@ def _stage_branching_effort(
     endpoint_load: float,
 ) -> float:
     step = path.steps[stage_index]
-    on_path_load = _on_path_load(path, stage_index, endpoint_load)
+    on_path_load = _on_path_load(circuit, path, stage_index, endpoint_load)
     total_load = circuit.fanout_capacitances[step.gate.name]
     if on_path_load <= 0.0 or total_load <= 0.0:
         raise NetlistError(
@@ -227,6 +230,7 @@ def _stage_branching_effort(
 
 
 def _on_path_load(
+    circuit: Circuit,
     path: CircuitPath,
     stage_index: int,
     endpoint_load: float,
@@ -234,7 +238,9 @@ def _on_path_load(
     if stage_index == len(path.steps) - 1:
         return endpoint_load
     next_step = path.steps[stage_index + 1]
-    return next_step.gate.cell.input_pins[next_step.input_pin].capacitance
+    return circuit.cell_for(next_step.gate).input_pins[
+        next_step.input_pin
+    ].capacitance
 
 
 def _validate_circuit_path(circuit: Circuit, path: CircuitPath) -> None:
@@ -253,10 +259,8 @@ def _validate_circuit_path(circuit: Circuit, path: CircuitPath) -> None:
             raise NetlistError(
                 f"gate {step.gate.name!r} has no input pin {step.input_pin}"
             )
-        if step.gate.inputs[step.input_pin] is not current_net:
+        if step.gate.inputs[step.input_pin] != current_net.name:
             raise NetlistError("circuit path contains disconnected steps")
-        if step.gate.output is None:
-            raise NetlistError(f"gate {step.gate.name!r} has no output net")
-        current_net = step.gate.output
+        current_net = circuit.netlist[step.gate.output]
     if current_net is not path.output_net:
         raise NetlistError("circuit path does not reach its declared output")

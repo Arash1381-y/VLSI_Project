@@ -14,6 +14,7 @@ from .config import Config, ConfigError
 from .experiments import (
     DEFAULT_EXPERIMENTS,
     GENERATED_ARTIFACT_FILENAMES,
+    OBSOLETE_ARTIFACT_FILENAMES,
     ExperimentError,
     Experiments,
 )
@@ -81,8 +82,11 @@ def load_circuit(arguments: CommandLineArguments) -> Circuit:
 
     config = Config(arguments.config)
     cell_library = CellLibrary(config.cell_library_path)
-    netlist, gates = NetListParser(arguments.netlist, cell_library).parse()
-    return Circuit(netlist, gates, config, cell_library)
+    netlist, gates, gate_cells = NetListParser(
+        arguments.netlist,
+        cell_library,
+    ).parse()
+    return Circuit(netlist, gates, gate_cells, config, cell_library)
 
 
 def run_experiments(
@@ -131,11 +135,14 @@ def _load_validated_circuit(
     stages["cell_library"] = "passed"
     logger.info("Cell-library validation passed: %s", config.cell_library_path)
 
-    netlist, gates = NetListParser(arguments.netlist, cell_library).parse()
+    netlist, gates, gate_cells = NetListParser(
+        arguments.netlist,
+        cell_library,
+    ).parse()
     stages["netlist"] = "passed"
     logger.info("Netlist parsing and driver validation passed: %s", arguments.netlist)
 
-    circuit = Circuit(netlist, gates, config, cell_library)
+    circuit = Circuit(netlist, gates, gate_cells, config, cell_library)
     stages["dag"] = "passed"
     logger.info("DAG validation passed")
     return circuit
@@ -180,7 +187,10 @@ def _start_run_output(
 
 def _prepare_output_directory(directory: Path) -> None:
     directory.mkdir(parents=True, exist_ok=True)
-    for filename in GENERATED_ARTIFACT_FILENAMES:
+    for filename in (
+        *GENERATED_ARTIFACT_FILENAMES,
+        *OBSOLETE_ARTIFACT_FILENAMES,
+    ):
         artifact = directory / filename
         if artifact.is_file():
             artifact.unlink()

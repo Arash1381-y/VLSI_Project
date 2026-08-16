@@ -57,13 +57,13 @@ def build_circuit_graph(circuit: Circuit) -> tuple[Any, dict[str, tuple[float, f
         _add_port(graph, positions, "pi", name, 0.0, index, "input")
     for level_index, level in enumerate(circuit.topological_order, start=1):
         for row, gate in enumerate(level):
-            _add_gate(graph, positions, gate, level_index, row)
+            _add_gate(circuit, graph, positions, gate, level_index, row)
     output_level = float(len(circuit.topological_order) + 1)
     for index, name in enumerate(outputs):
         _add_port(graph, positions, "po", name, output_level, index, "output")
         driver = circuit.netlist[name].driver
         if driver is not None:
-            graph.add_edge(f"gate:{driver.name}", f"po:{name}", net=name)
+            graph.add_edge(f"gate:{driver}", f"po:{name}", net=name)
     return graph, positions
 
 
@@ -92,12 +92,12 @@ def draw_circuit_graph(
     nodes = _group_nodes(graph)
     style = _graph_style(circuit)
     path_edges = _classify_edges(graph, timing)
-    labels = _node_labels(graph, nodes, timing)
+    labels = _node_labels(circuit, graph, nodes, timing)
     figure, axis = _new_figure(style)
 
     _draw_edges(graph, positions, path_edges, axis)
     gate_collection = _draw_nodes(
-        graph, positions, nodes, timing, slack_extent, style, axis
+        circuit, graph, positions, nodes, timing, slack_extent, style, axis
     )
     nx.draw_networkx_labels(
         graph,
@@ -134,6 +134,7 @@ def _add_port(
 
 
 def _add_gate(
+    circuit: Circuit,
     graph: Any,
     positions: dict[str, tuple[float, float]],
     gate: Gate,
@@ -143,8 +144,10 @@ def _add_gate(
     node = f"gate:{gate.name}"
     graph.add_node(node, kind="gate", gate=gate)
     positions[node] = float(level), -float(row)
-    for input_net in gate.inputs:
-        graph.add_edge(_input_source(input_net), node, net=input_net.name)
+    for input_name in gate.inputs:
+        graph.add_edge(
+            _input_source(circuit.netlist[input_name]), node, net=input_name
+        )
 
 
 def _input_source(input_net: Net) -> str:
@@ -152,7 +155,7 @@ def _input_source(input_net: Net) -> str:
         return f"pi:{input_net.name}"
     if input_net.driver is None:
         raise NetlistError(f"net {input_net.name!r} has no driver")
-    return f"gate:{input_net.driver.name}"
+    return f"gate:{input_net.driver}"
 
 
 def _group_nodes(graph: Any) -> _NodeGroups:
@@ -197,12 +200,13 @@ def _classify_edges(graph: Any, timing: TimingAnalysisResult) -> _PathEdges:
 
 
 def _node_labels(
+    circuit: Circuit,
     graph: Any,
     nodes: _NodeGroups,
     timing: TimingAnalysisResult,
 ) -> dict[str, str]:
     labels = {
-        node: _gate_label(graph.nodes[node]["gate"], timing)
+        node: _gate_label(circuit, graph.nodes[node]["gate"], timing)
         for node in nodes.gates
     }
     labels.update(
@@ -211,9 +215,13 @@ def _node_labels(
     return labels
 
 
-def _gate_label(gate: Gate, timing: TimingAnalysisResult) -> str:
+def _gate_label(
+    circuit: Circuit,
+    gate: Gate,
+    timing: TimingAnalysisResult,
+) -> str:
     slack = timing.node_slack(_gate_output_name(gate))
-    return f"{gate.name}\n{gate.cell.name}\nS={slack:.4g} ns"
+    return f"{gate.name}\n{circuit.cell_for(gate).name}\nS={slack:.4g} ns"
 
 
 def _new_figure(style: _GraphStyle) -> tuple[Figure, Axes]:
@@ -248,6 +256,7 @@ def _draw_edges(
 
 
 def _draw_nodes(
+    circuit: Circuit,
     graph: Any,
     positions: dict[str, tuple[float, float]],
     nodes: _NodeGroups,
@@ -260,8 +269,9 @@ def _draw_nodes(
     _draw_ports(graph, positions, nodes.outputs, "D", "#e8daef", "#7d3c98", style, axis)
     gates = [cast(Gate, graph.nodes[node]["gate"]) for node in nodes.gates]
     slacks = [timing.node_slack(_gate_output_name(gate)) for gate in gates]
-    sizes = [_gate_node_area(style, gate.cell.size_factor) for gate in gates]
-    outlines = [_gate_outline_width(gate.cell.size_factor) for gate in gates]
+    size_factors = [circuit.cell_for(gate).size_factor for gate in gates]
+    sizes = [_gate_node_area(style, factor) for factor in size_factors]
+    outlines = [_gate_outline_width(factor) for factor in size_factors]
     return nx.draw_networkx_nodes(
         graph,
         positions,
@@ -399,6 +409,4 @@ def _gate_outline_width(size_factor: float) -> float:
 
 
 def _gate_output_name(gate: Gate) -> str:
-    if gate.output is None:
-        raise NetlistError(f"gate {gate.name!r} has no output")
-    return gate.output.name
+    return gate.output

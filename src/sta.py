@@ -53,6 +53,15 @@ class TimingAnalysisResult:
         return min(slack.rise, slack.fall)
 
 
+@dataclass(frozen=True)
+class TimingMetrics:
+    """Compact endpoint metrics for high-volume candidate evaluation."""
+
+    wns: float
+    tns: float
+    circuit_delay: float
+
+
 def analyze_timing(
     circuit: Circuit,
     gate_delays: Mapping[str, RiseFall] | None = None,
@@ -91,6 +100,33 @@ def analyze_timing(
     return _timing_result(
         critical_paths, wns, tns, circuit_delay,
         arrival_times, required_times, transition_slacks,
+    )
+
+
+def analyze_timing_metrics(
+    circuit: Circuit,
+    gate_delays: Mapping[str, RiseFall] | None = None,
+) -> TimingMetrics:
+    """Compute endpoint metrics without backward STA or path extraction."""
+
+    delays = circuit.gate_delays if gate_delays is None else gate_delays
+    arrival_times = _compute_arrival_values(circuit, delays)
+    output_slacks: list[float] = []
+    for net_name, net in circuit.netlist.items():
+        if net.net_type is not NetType.OUTPUT:
+            continue
+        arrival = arrival_times[net_name]
+        required = circuit.config.output_required(net_name)
+        rise_slack = required.rise - arrival.rise
+        fall_slack = required.fall - arrival.fall
+        if circuit.config.timing_analysis.separate_rise_fall:
+            output_slacks.extend((rise_slack, fall_slack))
+        else:
+            output_slacks.append(min(rise_slack, fall_slack))
+    return TimingMetrics(
+        wns=min(output_slacks, default=float("inf")),
+        tns=sum(slack for slack in output_slacks if slack < 0.0),
+        circuit_delay=_compute_circuit_delay(circuit, arrival_times),
     )
 
 
@@ -185,6 +221,7 @@ def _find_critical_paths(
                 output_transition,
             )
             _trace_paths_backward(
+                circuit=circuit,
                 current_net=output_net,
                 current_transition=output_transition,
                 output_net=output_net,
@@ -200,6 +237,7 @@ def _find_critical_paths(
 
 
 def _trace_paths_backward(
+    circuit: Circuit,
     current_net: Net,
     current_transition: Transition,
     output_net: Net,
@@ -225,15 +263,17 @@ def _trace_paths_backward(
         )
         return
 
-    gate = current_net.driver
-    if gate is None:
+    gate_name = current_net.driver
+    if gate_name is None:
         raise NetlistError(f"net {current_net.name!r} has no driver")
+    gate = circuit.gates[gate_name]
 
     for pin_number, input_transition in predecessors[
         (current_net.name, current_transition)
     ]:
         _trace_paths_backward(
-            current_net=gate.inputs[pin_number],
+            circuit=circuit,
+            current_net=circuit.input_net(gate, pin_number),
             current_transition=input_transition,
             output_net=output_net,
             reversed_steps=reversed_steps + (PathStep(gate, pin_number),),
@@ -320,8 +360,6 @@ def _compute_arrival_times(
 
     for level in circuit.topological_order:
         for gate in level:
-            if gate.output is None:
-                raise NetlistError(f"gate {gate.name!r} has no output net")
             rise_arrival, rise_predecessors = _select_predecessors(
                 circuit,
                 gate,
@@ -336,14 +374,64 @@ def _compute_arrival_times(
                 arrival_times,
                 gate_delays,
             )
-            arrival_times[gate.output.name] = RiseFall(
+            arrival_times[gate.output] = RiseFall(
                 rise_arrival,
                 fall_arrival,
             )
-            predecessors[(gate.output.name, Transition.RISE)] = rise_predecessors
-            predecessors[(gate.output.name, Transition.FALL)] = fall_predecessors
+            predecessors[(gate.output, Transition.RISE)] = rise_predecessors
+            predecessors[(gate.output, Transition.FALL)] = fall_predecessors
 
     return arrival_times, predecessors
+
+
+def _compute_arrival_values(
+    circuit: Circuit,
+    gate_delays: Mapping[str, RiseFall],
+) -> dict[str, RiseFall]:
+    """Propagate arrivals without retaining controlling predecessor arcs."""
+
+    arrival_times = {
+        net_name: RiseFall(
+            circuit.config.input_arrival(net_name).rise,
+            circuit.config.input_arrival(net_name).fall,
+        )
+        for net_name, net in circuit.netlist.items()
+        if net.net_type is NetType.INPUT
+    }
+    for level in circuit.topological_order:
+        for gate in level:
+            arrival_times[gate.output] = RiseFall(
+                _maximum_gate_arrival(
+                    circuit, gate, Transition.RISE, arrival_times, gate_delays
+                ),
+                _maximum_gate_arrival(
+                    circuit, gate, Transition.FALL, arrival_times, gate_delays
+                ),
+            )
+    return arrival_times
+
+
+def _maximum_gate_arrival(
+    circuit: Circuit,
+    gate: Gate,
+    output_transition: Transition,
+    arrival_times: Mapping[str, RiseFall],
+    gate_delays: Mapping[str, RiseFall],
+) -> float:
+    gate_delay = _transition_value(gate_delays[gate.name], output_transition)
+    cell = circuit.cell_for(gate)
+    candidates = (
+        _transition_value(arrival_times[input_name], input_transition) + gate_delay
+        for pin_number, input_name in enumerate(gate.inputs)
+        for input_transition in _valid_input_transitions(
+            cell.input_pins[pin_number].timing_sense,
+            output_transition,
+        )
+    )
+    try:
+        return max(candidates)
+    except ValueError as exc:
+        raise NetlistError(f"gate {gate.name!r} has no timing input arcs") from exc
 
 
 def _select_predecessors(
@@ -360,15 +448,16 @@ def _select_predecessors(
         output_transition,
     )
     candidates: list[tuple[float, PredecessorArc]] = []
-    for pin_number, input_net in enumerate(gate.inputs):
-        timing_sense = gate.cell.input_pins[pin_number].timing_sense
+    cell = circuit.cell_for(gate)
+    for pin_number, input_name in enumerate(gate.inputs):
+        timing_sense = cell.input_pins[pin_number].timing_sense
         for input_transition in _valid_input_transitions(
             timing_sense,
             output_transition,
         ):
             candidate_arrival = (
                 _transition_value(
-                    arrival_times[input_net.name],
+                    arrival_times[input_name],
                     input_transition,
                 )
                 + gate_delay
@@ -405,27 +494,25 @@ def _compute_required_times(
     infinite_required = RiseFall(float("inf"), float("inf"))
     for level in reversed(circuit.topological_order):
         for gate in level:
-            if gate.output is None:
-                raise NetlistError(f"gate {gate.name!r} has no output net")
-
             output_required = required_times.get(
-                gate.output.name,
+                gate.output,
                 infinite_required,
             )
             gate_delay = gate_delays[gate.name]
+            cell = circuit.cell_for(gate)
 
-            for pin_number, input_net in enumerate(gate.inputs):
-                timing_sense = gate.cell.input_pins[pin_number].timing_sense
+            for pin_number, input_name in enumerate(gate.inputs):
+                timing_sense = cell.input_pins[pin_number].timing_sense
                 candidate = _propagate_required(
                     output_required,
                     gate_delay,
                     timing_sense,
                 )
                 existing_required = required_times.get(
-                    input_net.name,
+                    input_name,
                     infinite_required,
                 )
-                required_times[input_net.name] = RiseFall(
+                required_times[input_name] = RiseFall(
                     min(existing_required.rise, candidate.rise),
                     min(existing_required.fall, candidate.fall),
                 )

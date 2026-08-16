@@ -1,4 +1,4 @@
-"""Minimal executable entry point for circuit analysis."""
+"""Entry point for circuit analysis."""
 
 from __future__ import annotations
 
