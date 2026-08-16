@@ -24,8 +24,11 @@ def load_circuit(name: str) -> Circuit:
     directory = VALID_CIRCUITS / name
     config = Config(directory / "config.json")
     library = CellLibrary(config.cell_library_path)
-    nets, gates = NetListParser(directory / "netlist.txt", library).parse()
-    return Circuit(nets, gates, config, library)
+    nets, gates, gate_cells = NetListParser(
+        directory / "netlist.txt",
+        library,
+    ).parse()
+    return Circuit(nets, gates, gate_cells, config, library)
 
 
 @pytest.mark.parametrize("circuit_name", VALID_CIRCUIT_NAMES)

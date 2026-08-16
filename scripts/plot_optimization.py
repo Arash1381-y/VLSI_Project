@@ -19,6 +19,7 @@ from matplotlib.ticker import MaxNLocator
 
 HISTORY_PREFIX = "optimization_"
 SUMMARY_FILENAME = "optimization_summary.csv"
+COMPARISON_FILENAME = "optimization_comparison.csv"
 HEURISTIC_COLOR_INDEX = {
     "slack_weighted_capacitance": 0,
     "criticality_effort_gap": 1,
@@ -92,7 +93,7 @@ def load_histories(directory: Path) -> tuple[OptimizationHistory, ...]:
 
     histories: list[OptimizationHistory] = []
     for path in sorted(directory.glob(f"{HISTORY_PREFIX}*.csv")):
-        if path.name == SUMMARY_FILENAME:
+        if path.name in {SUMMARY_FILENAME, COMPARISON_FILENAME}:
             continue
         heuristic = path.stem.removeprefix(HISTORY_PREFIX)
         rows = _read_rows(path)

@@ -124,7 +124,7 @@ def _slack_weighted_capacitance_scores(
             circuit,
             critical_path.path,
         ):
-            current_capacitance = step.gate.cell.input_pins[
+            current_capacitance = circuit.cell_for(step.gate).input_pins[
                 step.input_pin
             ].capacitance
             mismatch = abs(math.log(target_capacitance / current_capacitance))

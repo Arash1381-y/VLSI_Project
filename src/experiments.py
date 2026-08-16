@@ -66,17 +66,19 @@ DEFAULT_RANDOM_SEED = 0
 GENERATED_ARTIFACT_FILENAMES: tuple[str, ...] = (
     "run.log",
     "validation_report.json",
-    "fanout_capacitances.json",
-    "gate_delays.json",
-    "timing_analysis.json",
+    "fanout_capacitances.csv",
+    "gate_delays.csv",
+    "timing_summary.csv",
     "timing_analysis.csv",
     "critical_paths.csv",
-    "logical_effort_analysis.json",
+    "logical_effort_paths.csv",
+    "logical_effort_stages.csv",
+    "logical_effort_candidates.csv",
     "optimization_slack_weighted_capacitance.csv",
     "optimization_criticality_effort_gap.csv",
     "optimization_random_greedy.csv",
     "optimization_summary.csv",
-    "optimization_comparison.json",
+    "optimization_comparison.csv",
     "circuit_topology.json",
     "circuit_graph_pre_optimization.png",
     "circuit_graph_post_optimization.png",
@@ -87,8 +89,15 @@ GENERATED_ARTIFACT_FILENAMES: tuple[str, ...] = (
     "monte_carlo_statistics.csv",
     "monte_carlo_summary.json",
     "summary.json",
-    # Obsolete artifact produced by an earlier implementation.
+)
+
+OBSOLETE_ARTIFACT_FILENAMES: tuple[str, ...] = (
     "optimization.csv",
+    "fanout_capacitances.json",
+    "gate_delays.json",
+    "timing_analysis.json",
+    "logical_effort_analysis.json",
+    "optimization_comparison.json",
 )
 
 
@@ -318,6 +327,7 @@ __all__ = [
     "DEFAULT_EXPERIMENTS",
     "DEFAULT_RANDOM_SEED",
     "GENERATED_ARTIFACT_FILENAMES",
+    "OBSOLETE_ARTIFACT_FILENAMES",
     "ExperimentError",
     "ExperimentName",
     "Experiments",

@@ -9,12 +9,8 @@ from .experiment_artifacts import ArtifactWriter
 from .optimizer import OptimizationIteration
 from .report_models import (
     CANONICAL_OPTIMIZATION,
-    EFFORT_GAP_OPTIMIZATION,
-    GREEDY_OPTIMIZATION,
     TimedOptimization,
-    circuit_specification,
     optimization_differences,
-    optimization_record,
     optimization_role,
 )
 from .sta import TimingAnalysisResult
@@ -37,6 +33,20 @@ SUMMARY_HEADER = (
     "area", "power_uW", "cost",
 )
 
+COMPARISON_HEADER = (
+    "state", "method", "role", "reference_method", "heuristic",
+    "random_seed", "maximum_iterations", "total_iterations",
+    "accepted_iterations", "sta_calls", "elapsed_seconds", "termination",
+    "timing_compliant", "power_compliant", "area_compliant",
+    "wns_ns", "tns_ns",
+    "circuit_delay_ns", "area", "leakage_power_uW", "dynamic_power_uW",
+    "power_uW", "cost", "wns_delta_from_canonical_ns",
+    "tns_delta_from_canonical_ns", "delay_delta_from_canonical_ns",
+    "area_delta_from_canonical", "power_delta_from_canonical_uW",
+    "cost_delta_from_canonical", "runtime_delta_from_canonical_seconds",
+    "sta_calls_delta_from_canonical",
+)
+
 
 def save_optimization_reports(
     writer: ArtifactWriter,
@@ -55,9 +65,10 @@ def save_optimization_reports(
         SUMMARY_HEADER,
         (_summary_row(run) for run in runs),
     )
-    writer.write_json(
+    writer.write_csv(
         "optimization_comparison",
-        _comparison_record(circuit, nominal_timing, runs),
+        COMPARISON_HEADER,
+        _comparison_rows(circuit, nominal_timing, runs),
     )
 
 
@@ -144,30 +155,97 @@ def _summary_row(run: TimedOptimization) -> tuple[object, ...]:
     )
 
 
-def _comparison_record(
+def _comparison_rows(
     circuit: Circuit,
     nominal_timing: TimingAnalysisResult,
     runs: Sequence[TimedOptimization],
-) -> dict[str, object]:
+) -> Iterable[tuple[object, ...]]:
     by_name = {run.name: run for run in runs}
-    logical = by_name[CANONICAL_OPTIMIZATION]
-    effort_gap = by_name[EFFORT_GAP_OPTIMIZATION]
-    greedy = by_name[GREEDY_OPTIMIZATION]
-    initial_cost = logical.result.history[0].cost
-    return {
-        "canonical_method": CANONICAL_OPTIMIZATION,
-        "difference_definition": "candidate method - canonical method",
-        "pre_optimization": circuit_specification(
-            circuit, nominal_timing, initial_cost
-        ),
-        "logical_effort_guided": optimization_record(logical),
-        "criticality_effort_gap": optimization_record(effort_gap),
-        "greedy_baseline": optimization_record(greedy),
-        "differences_from_canonical": {
-            EFFORT_GAP_OPTIMIZATION: optimization_differences(
-                logical,
-                effort_gap,
-            ),
-            GREEDY_OPTIMIZATION: optimization_differences(logical, greedy),
-        },
-    }
+    canonical = by_name[CANONICAL_OPTIMIZATION]
+    yield _pre_optimization_comparison_row(circuit, nominal_timing, canonical)
+    for run in runs:
+        yield _post_optimization_comparison_row(canonical, run)
+
+
+def _pre_optimization_comparison_row(
+    circuit: Circuit,
+    timing: TimingAnalysisResult,
+    canonical: TimedOptimization,
+) -> tuple[object, ...]:
+    constraints = circuit.config.design_constraints
+    return (
+        "pre_optimization",
+        "pre_optimization",
+        "baseline",
+        CANONICAL_OPTIMIZATION,
+        "",
+        "",
+        circuit.config.optimization.maximum_iterations,
+        0,
+        0,
+        0,
+        0.0,
+        "",
+        timing.wns >= 0.0,
+        circuit.power <= constraints.maximum_power_uW,
+        circuit.area <= constraints.maximum_area,
+        timing.wns,
+        timing.tns,
+        timing.circuit_delay,
+        circuit.area,
+        circuit.leakage_power,
+        circuit.dynamic_power,
+        circuit.power,
+        canonical.result.history[0].cost,
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+    )
+
+
+def _post_optimization_comparison_row(
+    canonical: TimedOptimization,
+    run: TimedOptimization,
+) -> tuple[object, ...]:
+    result = run.result
+    circuit = result.circuit
+    constraints = circuit.config.design_constraints
+    differences = optimization_differences(canonical, run)
+    return (
+        "post_optimization",
+        run.name,
+        optimization_role(run.name),
+        CANONICAL_OPTIMIZATION,
+        result.heuristic.value,
+        result.random_seed,
+        circuit.config.optimization.maximum_iterations,
+        result.total_iterations,
+        result.accepted_iterations,
+        result.sta_calls,
+        run.elapsed_seconds,
+        result.termination.value,
+        result.timing.wns >= 0.0,
+        circuit.power <= constraints.maximum_power_uW,
+        circuit.area <= constraints.maximum_area,
+        result.timing.wns,
+        result.timing.tns,
+        result.timing.circuit_delay,
+        circuit.area,
+        circuit.leakage_power,
+        circuit.dynamic_power,
+        circuit.power,
+        result.cost,
+        differences["wns_ns"],
+        differences["tns_ns"],
+        differences["circuit_delay_ns"],
+        differences["area"],
+        differences["power_uW"],
+        result.cost - canonical.result.cost,
+        differences["runtime_seconds"],
+        differences["sta_calls"],
+    )

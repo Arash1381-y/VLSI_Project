@@ -9,9 +9,10 @@ from enum import Enum
 from random import Random
 
 from .cell import Cell
-from .circuit import Circuit, replace_gate_cell
+from .circuit import Circuit, replace_gate_cell, replacement_area_and_power
 from .logical_effort import OptimizationChoice, get_optimization_candidates
 from .netlist import Gate
+from .numeric import compare_floats
 from .optimization_heuristics import (
     OptimizationHeuristic,
     iter_criticality_effort_gap_choices,
@@ -21,9 +22,6 @@ from .sta import TimingAnalysisResult, analyze_timing
 
 
 logger = logging.getLogger(__name__)
-
-TIMING_EPSILON_NS = 1.0e-12
-
 
 class OptimizationTermination(str, Enum):
     DISABLED = "disabled"
@@ -293,7 +291,7 @@ class CircuitOptimizer:
                 phase=OptimizationPhase.REJECTED,
                 accepted=False,
                 changed_gate=decision.gate_name,
-                previous_cell=current.circuit.gates[decision.gate_name].cell.name,
+                previous_cell=current.circuit.cell_for(decision.gate_name).name,
                 new_cell=decision.cell_name,
                 rejection_reason=decision.message,
             )
@@ -351,7 +349,10 @@ class CircuitOptimizer:
 
         improvement = current.cost - best.evaluation.cost
         minimum_improvement = self.config.optimization.minimum_cost_improvement
-        if improvement <= 0.0 or improvement < minimum_improvement:
+        if (
+            compare_floats(improvement, 0.0) <= 0
+            or compare_floats(improvement, minimum_improvement) < 0
+        ):
             return _StopDecision(
                 OptimizationTermination.TIMING_MET_NO_COST_IMPROVEMENT,
                 "timing is met and the best cost improvement "
@@ -390,7 +391,7 @@ class CircuitOptimizer:
         iteration: int,
     ) -> _Evaluation:
         candidate = change.candidate
-        previous_cell = current.circuit.gates[candidate.gate_name].cell.name
+        previous_cell = current.circuit.cell_for(candidate.gate_name).name
         history.append(
             self._history_entry(
                 candidate.evaluation,
@@ -449,11 +450,12 @@ class CircuitOptimizer:
             current.timing.critical_paths,
         )
         for gate, candidate_cells in choices:
+            current_cell = current.circuit.cell_for(gate)
             alternatives = tuple(
                 cell
                 for cell in candidate_cells
                 if cell.size in allowed_sizes
-                and cell.name != gate.cell.name
+                and cell.name != current_cell.name
             )
             if alternatives:
                 eligible.append((gate, alternatives))
@@ -497,6 +499,14 @@ class CircuitOptimizer:
         gate: Gate,
         candidate_cell: Cell,
     ) -> _CandidateEvaluation | None:
+        area, power = replacement_area_and_power(
+            current.circuit,
+            gate.name,
+            candidate_cell,
+        )
+        if self._violates_area_or_power_constraints(area, power):
+            return None
+
         candidate_circuit = replace_gate_cell(
             current.circuit,
             gate.name,
@@ -514,6 +524,19 @@ class CircuitOptimizer:
             gate_position=gate_position[gate.name],
             size_factor=candidate_cell.size_factor,
             cell_name=candidate_cell.name,
+        )
+
+    def _violates_area_or_power_constraints(
+        self,
+        area: float,
+        power: float,
+    ) -> bool:
+        """Reject definite area or power violations before construction."""
+
+        constraints = self.config.design_constraints
+        return (
+            compare_floats(area, constraints.maximum_area) > 0
+            or compare_floats(power, constraints.maximum_power_uW) > 0
         )
 
     def _critical_path_one_step_choices(
@@ -690,16 +713,17 @@ class CircuitOptimizer:
             cost=evaluation.cost,
         )
 
+
 def _timing_is_met(wns: float) -> bool:
-    return wns >= -TIMING_EPSILON_NS
+    return compare_floats(wns, 0.0) >= 0
 
 
 def _strictly_improves(candidate: float, current: float) -> bool:
-    return candidate > current + TIMING_EPSILON_NS
+    return compare_floats(candidate, current) > 0
 
 
 def _timing_values_tie(candidate: float, current: float) -> bool:
-    return abs(candidate - current) <= TIMING_EPSILON_NS
+    return compare_floats(candidate, current) == 0
 
 
 def _next_larger_sizing_cell(
@@ -709,14 +733,15 @@ def _next_larger_sizing_cell(
 ) -> Cell | None:
     """Return the immediate larger allowed variant, without skipping a size."""
 
+    current_cell = circuit.cell_for(gate)
     variants = sorted(
-        circuit.cell_library.variants(gate.cell.family),
+        circuit.cell_library.variants(current_cell.family),
         key=lambda cell: (cell.size_factor, cell.name),
     )
     current_index = next(
         index
         for index, cell in enumerate(variants)
-        if cell.name == gate.cell.name
+        if cell.name == current_cell.name
     )
     next_index = current_index + 1
     if next_index >= len(variants):

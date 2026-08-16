@@ -4,15 +4,20 @@ import csv
 import json
 import subprocess
 import sys
+from dataclasses import FrozenInstanceError
 from pathlib import Path
 from unittest.mock import patch
 
 import pytest
 
 from src.cell import CellLibrary
-from src.circuit import Circuit
+from src.circuit import Circuit, replace_gate_cell, replacement_area_and_power
 from src.config import Config
-from src.experiments import DEFAULT_EXPERIMENTS, Experiments
+from src.experiments import (
+    DEFAULT_EXPERIMENTS,
+    OBSOLETE_ARTIFACT_FILENAMES,
+    Experiments,
+)
 from src.logical_effort import analyze_path_logical_effort
 from src.netlist import NetListParser
 from src.optimization_heuristics import (
@@ -34,8 +39,11 @@ def load_circuit(name: str) -> Circuit:
     directory = CIRCUITS / "valid" / name
     config = Config(directory / "config.json")
     library = CellLibrary(config.cell_library_path)
-    nets, gates = NetListParser(directory / "netlist.txt", library).parse()
-    return Circuit(nets, gates, config, library)
+    nets, gates, gate_cells = NetListParser(
+        directory / "netlist.txt",
+        library,
+    ).parse()
+    return Circuit(nets, gates, gate_cells, config, library)
 
 
 @pytest.mark.parametrize(
@@ -95,15 +103,28 @@ def test_timing_result_and_csv_expose_complete_gate_timing(tmp_path: Path) -> No
     assert [row["node"] for row in rows] == ["G1", "G2", "G3"]
     for row in rows:
         gate = circuit.gates[row["node"]]
-        assert gate.output is not None
-        net_name = gate.output.name
+        net_name = gate.output
         assert float(row["cload_fF"]) == circuit.fanout_capacitances[gate.name]
         assert float(row["at_rise_ns"]) == result.arrival_times[net_name].rise
         assert float(row["rt_fall_ns"]) == result.required_times[net_name].fall
         assert float(row["node_slack_ns"]) == result.node_slack(net_name)
 
+    with (tmp_path / "fanout_capacitances.csv").open(newline="") as file:
+        fanout_rows = list(csv.DictReader(file))
+    with (tmp_path / "gate_delays.csv").open(newline="") as file:
+        delay_rows = list(csv.DictReader(file))
+    with (tmp_path / "timing_summary.csv").open(newline="") as file:
+        summary_rows = list(csv.DictReader(file))
+    assert [row["gate"] for row in fanout_rows] == ["G1", "G2", "G3"]
+    assert [row["gate"] for row in delay_rows] == ["G1", "G2", "G3"]
+    assert len(summary_rows) == 1
+    assert float(summary_rows[0]["wns_ns"]) == result.wns
+    assert int(summary_rows[0]["reported_path_count"]) == len(
+        result.critical_paths
+    )
 
-def test_logical_effort_report_identities_and_branching() -> None:
+
+def test_logical_effort_report_identities_and_branching(tmp_path: Path) -> None:
     circuit = load_circuit("c03_fanout_branch")
     timing = analyze_timing(circuit)
     analyses = [
@@ -130,9 +151,34 @@ def test_logical_effort_report_identities_and_branching() -> None:
         )
         for stage in analysis.stages:
             assert all(
-                cell.family == stage.step.gate.cell.family
+                cell.family == circuit.cell_for(stage.step.gate).family
                 for cell in stage.candidates
             )
+
+    Experiments(
+        tmp_path,
+        ("timing_analysis", "logical_effort_analysis"),
+        CIRCUITS / "valid" / "c03_fanout_branch" / "netlist.txt",
+    ).run(circuit)
+    with (tmp_path / "logical_effort_paths.csv").open(newline="") as file:
+        path_rows = list(csv.DictReader(file))
+    with (tmp_path / "logical_effort_stages.csv").open(newline="") as file:
+        stage_rows = list(csv.DictReader(file))
+    with (tmp_path / "logical_effort_candidates.csv").open(newline="") as file:
+        candidate_rows = list(csv.DictReader(file))
+
+    assert len(path_rows) == len(analyses)
+    assert len(stage_rows) == sum(len(item.stages) for item in analyses)
+    for row in path_rows:
+        assert float(row["F_total_effort"]) == pytest.approx(
+            float(row["G_path_logical_effort"])
+            * float(row["B_branching_effort"])
+            * float(row["H_electrical_effort"])
+        )
+    for row in candidate_rows:
+        gate = circuit.gates[row["gate"]]
+        candidate = circuit.cell_library.find(row["candidate_cell"])
+        assert candidate.family == gate.cell_family
 
 
 def test_optimizer_reports_exact_sta_call_count() -> None:
@@ -154,6 +200,93 @@ def test_optimizer_reports_exact_sta_call_count() -> None:
         ).optimize()
     assert result.sta_calls == call_count
     assert result.total_iterations == result.history[-1].iteration
+
+
+def test_replacement_area_and_power_deltas_match_full_circuit() -> None:
+    circuit = load_circuit("c03_fanout_branch")
+
+    for gate in circuit.gates.values():
+        current_cell = circuit.cell_for(gate)
+        for replacement in circuit.cell_library.variants(current_cell.family):
+            expected_area, expected_power = replacement_area_and_power(
+                circuit,
+                gate.name,
+                replacement,
+            )
+            candidate = replace_gate_cell(circuit, gate.name, replacement)
+            assignments = dict(circuit.gate_cells)
+            assignments[gate.name] = replacement
+            rebuilt = Circuit(
+                circuit.netlist,
+                circuit.gates,
+                assignments,
+                circuit.config,
+                circuit.cell_library,
+            )
+            assert expected_area == pytest.approx(candidate.area, abs=1.0e-12)
+            assert expected_power == pytest.approx(candidate.power, abs=1.0e-12)
+            assert candidate.area == pytest.approx(rebuilt.area, abs=1.0e-12)
+            assert candidate.leakage_power == pytest.approx(
+                rebuilt.leakage_power, abs=1.0e-12
+            )
+            assert candidate.dynamic_power == pytest.approx(
+                rebuilt.dynamic_power, abs=1.0e-12
+            )
+            assert candidate.fanout_capacitances == pytest.approx(
+                rebuilt.fanout_capacitances, abs=1.0e-12
+            )
+            for gate_name, delay in rebuilt.gate_delays.items():
+                assert candidate.gate_delays[gate_name].rise == pytest.approx(
+                    delay.rise, abs=1.0e-12
+                )
+                assert candidate.gate_delays[gate_name].fall == pytest.approx(
+                    delay.fall, abs=1.0e-12
+                )
+
+
+def test_topology_is_frozen_and_shared_by_sizing_variants() -> None:
+    circuit = load_circuit("c03_fanout_branch")
+    gate = next(iter(circuit.gates.values()))
+    net = circuit.output_net(gate)
+    replacement = next(
+        cell
+        for cell in circuit.cell_library.variants(circuit.cell_for(gate).family)
+        if cell is not circuit.cell_for(gate)
+    )
+
+    with pytest.raises(FrozenInstanceError):
+        setattr(gate, "name", "changed")
+    with pytest.raises(FrozenInstanceError):
+        setattr(net, "name", "changed")
+    with pytest.raises(FrozenInstanceError):
+        setattr(circuit.topology, "gates", {})
+
+    variant = replace_gate_cell(circuit, gate.name, replacement)
+    assert variant.topology is circuit.topology
+    assert variant.netlist is circuit.netlist
+    assert variant.gates is circuit.gates
+    assert variant.topological_order is circuit.topological_order
+    assert variant.cell_for(gate) is replacement
+    assert circuit.cell_for(gate) is not replacement
+
+
+def test_optimizer_prefilters_infeasible_replacements_before_copying() -> None:
+    circuit = load_circuit("c13_large_reconvergent_network")
+
+    with patch(
+        "src.optimizer.replace_gate_cell",
+        wraps=replace_gate_cell,
+    ) as copied:
+        result = CircuitOptimizer(
+            circuit,
+            OptimizationHeuristic.SLACK_WEIGHTED_CAPACITANCE,
+        ).optimize()
+
+    attempted_replacements = sum(
+        entry.changed_gate is not None for entry in result.history
+    )
+    assert copied.call_count < attempted_replacements
+    assert result.timing.wns >= 0.0
 
 
 def test_criticality_effort_gap_uses_signed_stage_overshoot() -> None:
@@ -188,8 +321,8 @@ def test_ranked_one_shot_choices_repair_c13_with_pi_connected_gates() -> None:
         OptimizationHeuristic.SLACK_WEIGHTED_CAPACITANCE,
     ).optimize()
 
-    assert result.circuit.gates["G7"].cell.name == "NOR3_X2"
-    assert result.circuit.gates["G6"].cell.name == "NAND3_X2"
+    assert result.circuit.cell_for("G7").name == "NOR3_X2"
+    assert result.circuit.cell_for("G6").name == "NAND3_X2"
     assert result.timing.wns >= 0.0
     assert result.circuit.area <= circuit.config.design_constraints.maximum_area
     assert (
@@ -246,17 +379,19 @@ def test_complete_core_artifact_manifest_and_summary(tmp_path: Path) -> None:
     netlist = CIRCUITS / "valid" / "c01_inverter_chain" / "netlist.txt"
     Experiments(tmp_path, DEFAULT_EXPERIMENTS, netlist).run(circuit)
     required = {
-        "fanout_capacitances.json",
-        "gate_delays.json",
-        "timing_analysis.json",
+        "fanout_capacitances.csv",
+        "gate_delays.csv",
+        "timing_summary.csv",
         "timing_analysis.csv",
         "critical_paths.csv",
-        "logical_effort_analysis.json",
+        "logical_effort_paths.csv",
+        "logical_effort_stages.csv",
+        "logical_effort_candidates.csv",
         "optimization_slack_weighted_capacitance.csv",
         "optimization_criticality_effort_gap.csv",
         "optimization_random_greedy.csv",
         "optimization_summary.csv",
-        "optimization_comparison.json",
+        "optimization_comparison.csv",
         "circuit_topology.json",
         "circuit_graph_pre_optimization.png",
         "circuit_graph_post_optimization.png",
@@ -280,6 +415,20 @@ def test_complete_core_artifact_manifest_and_summary(tmp_path: Path) -> None:
         "criticality_effort_gap",
         "random_greedy",
     }
+    with (tmp_path / "optimization_comparison.csv").open(newline="") as file:
+        comparison_rows = list(csv.DictReader(file))
+    assert [row["state"] for row in comparison_rows] == [
+        "pre_optimization",
+        "post_optimization",
+        "post_optimization",
+        "post_optimization",
+    ]
+    canonical_row = next(
+        row
+        for row in comparison_rows
+        if row["method"] == "slack_weighted_capacitance"
+    )
+    assert float(canonical_row["wns_delta_from_canonical_ns"]) == 0.0
     post = summary["post_optimization"]
     compliance = summary["compliance"]
     assert compliance["timing_compliant"] == (post["wns_ns"] >= 0.0)
@@ -297,6 +446,9 @@ def test_runner_plot_flag_uses_current_optimization_reports(
     tmp_path: Path,
 ) -> None:
     output = tmp_path / "plotted-circuit"
+    output.mkdir()
+    for filename in OBSOLETE_ARTIFACT_FILENAMES:
+        (output / filename).write_text("stale", encoding="utf-8")
     completed = subprocess.run(
         (
             "bash",
@@ -313,6 +465,10 @@ def test_runner_plot_flag_uses_current_optimization_reports(
     )
 
     assert completed.returncode == 0, completed.stderr
+    assert not any(
+        (output / filename).exists()
+        for filename in OBSOLETE_ARTIFACT_FILENAMES
+    )
     for filename in (
         "optimization_convergence.png",
         "optimization_outcomes.png",
