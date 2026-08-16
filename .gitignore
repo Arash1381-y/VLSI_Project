@@ -8,6 +8,7 @@ htmlcov/
 
 # Generated circuit analyses, reports, plots, and visualizer data.
 /outputs/
+/benchmarks/
 
 # Generated release archives.
 /dist/

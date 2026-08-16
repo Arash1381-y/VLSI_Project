@@ -66,17 +66,20 @@ Every valid circuit produces these core artifacts:
 
 - `validation_report.json` and `run.log`: structured input validation and the
   complete execution log.
-- `fanout_capacitances.json` and `gate_delays.json`: unit-tagged physical data.
+- `fanout_capacitances.csv` and `gate_delays.csv`: topologically ordered,
+  one-row-per-gate physical data.
 - `circuit_topology.json`: shared topology with original/optimized gate metrics
   and critical-path overlays for interactive or external graph consumers.
 - `timing_analysis.csv`: one topologically ordered row per gate, including load,
   rise/fall delay, arrival time, required time, transition slack, and node slack.
-- `timing_analysis.json` and `critical_paths.csv`: circuit timing metrics and the
-  configured top-K transition-aware critical paths.
-- `logical_effort_analysis.json`: path and stage values for `G`, `B`, `H`, `F`,
-  `P`, optimal effort, theoretical delay, target capacitance, and discrete cells.
+- `timing_summary.csv` and `critical_paths.csv`: overall circuit timing metrics
+  and the configured top-K transition-aware critical paths.
+- `logical_effort_paths.csv`, `logical_effort_stages.csv`, and
+  `logical_effort_candidates.csv`: normalized path, stage, and discrete sizing
+  records for `G`, `B`, `H`, `F`, `P`, optimal effort, theoretical delay, and
+  target capacitance.
 - `optimization_*.csv`, `optimization_summary.csv`, and
-  `optimization_comparison.json`: complete iteration histories and the
+  `optimization_comparison.csv`: complete iteration histories and the
   slack-weighted, criticality/effort-gap, and random-greedy comparison,
   including STA calls.
 - `circuit_graph_pre_optimization.png` and
@@ -86,9 +89,22 @@ Every valid circuit produces these core artifacts:
 - `summary.json`: the aggregate nominal, optimized, statistical, constraint, and
   artifact manifest.
 
-CSV column names carry units (`_ns`, `_fF`, and `_uW`). JSON files either carry
-unit metadata or use unit-suffixed property names. Computation and serialization
-retain Python floating-point precision; rounding is limited to plot labels.
+CSV column names carry units (`_ns`, `_fF`, and `_uW`). Remaining JSON files
+represent hierarchical validation, topology, statistical-summary, or aggregate
+run data. Computation and serialization retain Python floating-point precision;
+rounding is limited to plot labels.
+
+The specialized gate tables use these columns:
+
+| File | Columns |
+| --- | --- |
+| `fanout_capacitances.csv` | `gate`, `cell`, `output_net`, `is_primary_output`, `fanout_capacitance_fF` |
+| `gate_delays.csv` | `gate`, `cell`, `output_net`, `delay_rise_ns`, `delay_fall_ns` |
+| `timing_summary.csv` | Circuit delay, WNS, TNS, compliance, runtime, and critical-path counts |
+
+Logical-effort data is normalized by `path_rank` and `stage_index`. Candidate
+cells occupy separate rows in `logical_effort_candidates.csv`, avoiding encoded
+lists inside CSV fields.
 
 `timing_analysis.csv` uses the following columns:
 
@@ -102,3 +118,90 @@ retain Python floating-point precision; rounding is limited to plot labels.
 | `rt_rise_ns`, `rt_fall_ns` | Rise/fall required times at the output net |
 | `slack_rise_ns`, `slack_fall_ns` | Required time minus arrival time |
 | `node_slack_ns` | Minimum of the rise and fall slacks |
+
+## Sizing benchmark generator and evaluator
+
+The standalone benchmarking package creates deterministic, repairable sizing
+problems without changing the analyzer CLI or storing benchmark state on a
+`Circuit`. Start from [benchmark_config.example.json](benchmark_config.example.json)
+and run:
+
+```bash
+python3.10 -m src.benchmarking generate benchmark_config.json
+python3.10 -m src.benchmarking evaluate benchmarks/complex_repair_suite
+```
+
+Both commands show concise INFO-level progress by default: suite totals, the
+current case number, and completed-case counts. Detailed generation attempts,
+beam-search expansions, perturbations, optimizer runs, oracle replay decisions,
+and subsystem analysis logs are available at DEBUG. Select quieter or more
+detailed output with:
+
+```bash
+python3.10 -m src.benchmarking --log-level WARNING generate benchmark_config.json
+python3.10 -m src.benchmarking --log-level DEBUG evaluate benchmarks/complex_repair_suite
+```
+
+The configuration is schema-versioned and strict: unknown/missing fields,
+invalid ranges or enums, unsupported family/size combinations, empty sources,
+and incompatible seed circuits are rejected before generation. All random seeds
+are derived from SHA-256 values, so they do not depend on Python's randomized
+`hash()` implementation.
+
+Generation supports structured levelized DAGs and immutable topologies imported
+from valid seed circuits. It establishes an independent best-known reference by
+multi-start beam search over every gate and adjacent legal size, then downsizes
+one or more gates until the serialized initial circuit has negative WNS while
+remaining inside its area and power limits. The reference is certified only as
+`best_known_multi_start_beam`; global optimality is never implied. A suite uses
+this layout:
+
+```text
+benchmarks/<suite>/
+  suite_config.json
+  cell_library.json
+  suite_manifest.json
+  generation_cases.csv
+  generation_failures.csv
+  cases/<case-id>/
+    netlist.txt
+    config.json
+    reference_assignment.json
+    benchmark_manifest.json
+    planted_mutations.csv
+```
+
+Each case is written atomically after its initial and reference invariants have
+been replayed through the production parser, `Circuit`, and STA implementation.
+If retries are exhausted, generation exits nonzero and preserves the suite-level
+failure diagnostics without leaving a partial case directory.
+
+Evaluation verifies the copied library digest and reference assignment, runs all
+configured heuristics, repeats random greedy with deterministic seeds, and
+enforces the configured per-run timeout. Independent cases run in parallel using
+`evaluation.parallel_workers` (default: `4`), while their report fragments are
+merged in manifest order for reproducible output. For every recorded optimizer
+decision, an independent counterfactual oracle evaluates every allowed same-family
+replacement on every gate—not only reported critical-path gates. It ranks timing
+repair by WNS, tied-WNS TNS, and cost; after repair it ranks cost reduction while
+preserving timing, area, and power. Exact planted-assignment recovery is retained
+as a diagnostic, while compliant timing repair is the primary result.
+
+Every evaluation run creates:
+
+- `case_runs.csv`: final metrics, constraint-repair status, runtime, iteration and
+  STA-call counts, reference distance, and timeout/error state.
+- `optimizer_iterations.csv`: replayable optimizer histories.
+- `oracle_states.csv`: one row per unique gate-cell assignment encountered while
+  replaying a case, including its stable state ID and assignment digest.
+- `oracle_candidates.csv`: every counterfactual gate/cell candidate once per
+  unique oracle state, with timing, physical, cost, feasibility, beneficial, and
+  tied-best status. Repeated rejected decisions reference the existing state
+  instead of duplicating all candidate rows.
+- `gate_selection_scores.csv`: gate/move hits, WNS/TNS/cost regret, off-path
+  opportunities, planted-gate diagnostics, and the corresponding oracle state ID.
+- `heuristic_summary.csv`: Wilson intervals, failure and timeout rates, random
+  runtime dispersion, selection accuracy, regret, reference, and effort metrics.
+- `evaluation_summary.json`: hashes, hierarchical aggregates grouped by source,
+  size, depth, fanout, reconvergence, violation severity, and headroom, plus the
+  artifact map.

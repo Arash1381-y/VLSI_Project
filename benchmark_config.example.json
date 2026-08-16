@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "suite": {
+    "name": "complex_repair_suite",
+    "output_root": "benchmarks",
+    "random_seed": 1405,
+    "maximum_attempts_per_case": 50
+  },
+  "cell_library": "Input_Files/cell_library.json",
+  "sources": {
+    "generated": {
+      "case_count": 100,
+      "topology": {
+        "gate_count": [50, 150],
+        "logic_levels": [8, 20],
+        "primary_inputs": [4, 16],
+        "primary_outputs": [2, 8],
+        "maximum_fanout": 6,
+        "reconvergence_probability": 0.35,
+        "branch_probability": 0.4,
+        "family_weights": {
+          "INV": 1.0,
+          "BUF": 0.5,
+          "NAND2": 2.0,
+          "NAND3": 1.0,
+          "NOR2": 2.0,
+          "NOR3": 1.0,
+          "XOR2": 0.5,
+          "XNOR2": 0.5
+        }
+      }
+    },
+    "seeded": [
+      {
+        "directory": "Input_Files/circuits/valid/c15_high_fanout_sizing_fabric",
+        "case_count": 20
+      }
+    ]
+  },
+  "electrical": {
+    "input_arrival_rise_ns": [0.0, 0.02],
+    "input_arrival_fall_ns": [0.0, 0.02],
+    "output_load_fF": [2.0, 10.0],
+    "required_time_margin_ns": [0.002, 0.03],
+    "supply_voltage": 1.0,
+    "frequency_hz": 100000000,
+    "temperature_c": 25.0,
+    "default_activity_factor": 0.1,
+    "activity_override_probability": 0.2,
+    "activity_override_range": [0.05, 0.3]
+  },
+  "reference_search": {
+    "algorithm": "multi_start_beam",
+    "allowed_sizes": ["X1", "X2", "X4"],
+    "beam_width": 64,
+    "restarts": 8,
+    "maximum_expansions": 20000,
+    "stagnation_limit": 500,
+    "provisional_area_headroom": 0.3,
+    "provisional_power_headroom": 0.3,
+    "final_area_headroom": [0.02, 0.1],
+    "final_power_headroom": [0.02, 0.1]
+  },
+  "perturbation": {
+    "direction": "downsize_only",
+    "changed_gate_count": [1, 8],
+    "steps_per_gate": [1, 2],
+    "target_wns_ns": [-0.1, -0.001],
+    "require_reference_path_gate": true,
+    "require_critical_path_change": false,
+    "maximum_attempts": 500
+  },
+  "analyzer": {
+    "top_k_paths": 10,
+    "separate_rise_fall": true,
+    "maximum_iterations": 100,
+    "minimum_cost_improvement": 0.000001,
+    "weights": {
+      "delay": 1.0,
+      "power": 0.2,
+      "area": 0.2,
+      "timing_violation": 5.0
+    }
+  },
+  "evaluation": {
+    "heuristics": [
+      "brute_force",
+      "slack_weighted_capacitance",
+      "criticality_effort_gap",
+      "random_greedy"
+    ],
+    "random_greedy_repetitions": 20,
+    "candidate_scope": "all_allowed_variants",
+    "maximum_seconds_per_run": 60,
+    "parallel_workers": 4
+  }
+}
