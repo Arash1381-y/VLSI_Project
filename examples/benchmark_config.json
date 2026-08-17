@@ -6,12 +6,12 @@
     "random_seed": 1405,
     "maximum_attempts_per_case": 50
   },
-  "cell_library": "examples/cell_library.json",
+  "cell_library": "cell_library.json",
   "sources": {
     "generated": {
-      "case_count": 100,
+      "case_count": 40,
       "topology": {
-        "gate_count": [50, 150],
+        "gate_count": [150, 250],
         "logic_levels": [8, 20],
         "primary_inputs": [4, 16],
         "primary_outputs": [2, 8],
@@ -32,7 +32,7 @@
     },
     "seeded": [
       {
-        "directory": "examples/circuits/valid/c15_high_fanout_sizing_fabric",
+        "directory": "circuits/valid/c15_high_fanout_sizing_fabric",
         "case_count": 20
       }
     ]
