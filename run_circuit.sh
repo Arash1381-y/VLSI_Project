@@ -4,6 +4,24 @@ set -euo pipefail
 
 PROJECT_ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 CIRCUITS_ROOT="$PROJECT_ROOT/examples/circuits"
+PYTHON_BIN=${PYTHON_BIN:-python3}
+
+require_python() {
+    local current_version
+    if ! command -v "$PYTHON_BIN" >/dev/null 2>&1; then
+        echo "error: Python executable '$PYTHON_BIN' is not available in PATH" >&2
+        return 127
+    fi
+    if ! "$PYTHON_BIN" -c \
+        'import sys; raise SystemExit(sys.version_info < (3, 10))'; then
+        current_version=$(
+            "$PYTHON_BIN" -c \
+                'import sys; print(".".join(map(str, sys.version_info[:3])))'
+        )
+        echo "error: Python 3.10 or newer is required; found $current_version" >&2
+        return 2
+    fi
+}
 
 usage() {
     cat <<'EOF'
@@ -74,10 +92,7 @@ run_all_circuits() {
         esac
     done
 
-    if ! command -v python3.10 >/dev/null 2>&1; then
-        echo "error: python3.10 is not available in PATH" >&2
-        return 127
-    fi
+    require_python || return $?
 
     cd -- "$PROJECT_ROOT"
     if [[ -z "$output_root" ]]; then
@@ -97,7 +112,7 @@ run_all_circuits() {
 
             command=(
                 env PYTHONPATH="$PROJECT_ROOT/src${PYTHONPATH:+:$PYTHONPATH}" \
-                python3.10 -m vlsi_sta analyze
+                "$PYTHON_BIN" -m vlsi_sta analyze
                 "$circuit_dir/netlist.txt"
                 "$circuit_dir/config.json"
                 --output-dir "$output_dir"
@@ -115,7 +130,7 @@ run_all_circuits() {
             if [[ "$category" == "valid" && $exit_status -eq 0 ]]; then
                 if [[ "$plot_optimization" == true ]] \
                     && ! env PYTHONPATH="$PROJECT_ROOT/src${PYTHONPATH:+:$PYTHONPATH}" \
-                    python3.10 -m vlsi_sta plot optimization "$output_dir"; then
+                    "$PYTHON_BIN" -m vlsi_sta plot optimization "$output_dir"; then
                     ((failed += 1))
                     echo "error: optimization plotting failed for $circuit_name" >&2
                 else
@@ -138,7 +153,7 @@ run_all_circuits() {
 }
 
 validation_report_rejected() {
-    python3.10 - "$1" <<'PY'
+    "$PYTHON_BIN" - "$1" <<'PY'
 import json
 import sys
 from pathlib import Path
@@ -244,14 +259,11 @@ if [[ ! -f "$config_path" ]]; then
     echo "error: missing configuration: $config_path" >&2
     exit 2
 fi
-if ! command -v python3.10 >/dev/null 2>&1; then
-    echo "error: python3.10 is not available in PATH" >&2
-    exit 127
-fi
+require_python || exit $?
 
 cd -- "$PROJECT_ROOT"
 if env PYTHONPATH="$PROJECT_ROOT/src${PYTHONPATH:+:$PYTHONPATH}" \
-    python3.10 -m vlsi_sta analyze \
+    "$PYTHON_BIN" -m vlsi_sta analyze \
     "$netlist_path" "$config_path" "${forwarded_arguments[@]}"; then
     :
 else
@@ -263,7 +275,7 @@ if [[ "$plot_optimization" == true ]]; then
     if [[ -n "$requested_output_dir" ]]; then
         plot_input=$requested_output_dir
     else
-        plot_input=$(python3.10 - "$config_path" "$PROJECT_ROOT/outputs" <<'PY'
+        plot_input=$("$PYTHON_BIN" - "$config_path" "$PROJECT_ROOT/outputs" <<'PY'
 import json
 import sys
 from pathlib import Path
@@ -276,5 +288,5 @@ PY
 )
     fi
     env PYTHONPATH="$PROJECT_ROOT/src${PYTHONPATH:+:$PYTHONPATH}" \
-        python3.10 -m vlsi_sta plot optimization "$plot_input"
+        "$PYTHON_BIN" -m vlsi_sta plot optimization "$plot_input"
 fi

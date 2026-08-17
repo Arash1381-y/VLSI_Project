@@ -2,14 +2,14 @@
 
 ## 1. Requirements
 
-- Python 3.10
+- Python 3.10 or newer
 - A graphical web browser for the interactive viewer
 - Python packages declared in `pyproject.toml`
 
 From the project directory, install the package and its `vlsi-sta` command:
 
 ```bash
-python3.10 -m pip install -e .
+python3 -m pip install -e .
 ```
 
 ## 2. Run a bundled circuit
@@ -187,13 +187,13 @@ vlsi-sta plot optimization outputs/c06_deep_critical_path
 Run the automated tests:
 
 ```bash
-python3.10 -m pytest -q
+python3 -m pytest -q
 ```
 
 Run Pylance/Pyright-compatible type checking:
 
 ```bash
-python3.10 -m pyright
+python3 -m pyright
 ```
 
 ## 7. Create a project ZIP
@@ -214,9 +214,11 @@ artifacts. Choose another destination or replace an existing archive with:
 
 ## 8. Common errors
 
-### `python3.10 is not available`
+### `python3 is not available` or is too old
 
-Install Python 3.10 or ensure its executable is available on `PATH`.
+Install Python 3.10 or newer and ensure `python3` is available on `PATH`. To use
+a different compatible executable, set `PYTHON_BIN`, for example
+`PYTHON_BIN=/custom/path/python3 ./run_circuit.sh c01_inverter_chain`.
 
 ### `circuit_topology.json` is missing or has an unsupported schema
 

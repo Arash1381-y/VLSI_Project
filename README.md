@@ -36,7 +36,7 @@ nonzero status without running analysis.
 Install the package in editable mode to expose the command-line entry point:
 
 ```bash
-python3.10 -m pip install -e .
+python3 -m pip install -e .
 vlsi-sta --help
 ```
 
