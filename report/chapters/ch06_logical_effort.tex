@@ -1,0 +1,96 @@
+\chapter{Logical-Effort Analysis}
+\label{ch:logical-effort}
+
+This chapter documents the implementation of \cref{sec:bg-le} as applied to
+the top-$K$ critical paths reported by the STA engine
+(\cref{sec:sta-paths}). Logical-effort analysis is purely a
+\emph{post-processing} view over the STA result: it reads capacitances and
+delays directly off the already-analyzed circuit and does not perform any
+independent simulation of its own, so its results are always consistent
+with whatever sizing assignment was current when the STA pass that produced
+the critical paths was run.
+
+\section{Per-Stage Effort Computation}
+\label{sec:le-stage}
+
+For each critical path, the sequence of gates from the driving primary
+input to the endpoint is walked in order. At each stage $i$, the specific
+input pin through which the path enters that gate is identified (recovered
+from the same predecessor information used to reconstruct the path in
+\cref{sec:sta-paths}), which determines $g_i$, the logical effort of that
+particular pin, from the cell library. The on-path receiver capacitance
+$C_{\mathrm{onpath},i}$ is the input pin capacitance of the next stage along
+the path (or, for the final stage, the external load applied to the
+endpoint's net); the off-path capacitance $C_{\mathrm{offpath},i}$ is
+obtained by subtracting $C_{\mathrm{onpath},i}$ from the gate's total output
+load $C_{\mathrm{load},i}$, which was already computed by the STA engine
+(\cref{eq:cload}) and reflects the gate's \emph{actual, current} fan-out ---
+not an idealized or path-only load. Branching effort $b_i$, electrical
+effort $h_i$, and stage effort $f_i$ then follow directly from
+\cref{eq:le-stage}.
+
+\section{Path-Level Effort and the Sizing Target}
+\label{sec:le-path}
+
+Path-level quantities $G$, $B$, $H$, $F$, and $P$
+(\cref{eq:le-path}) are accumulated across all stages of the path, and the
+optimal per-stage effort $\hat f = F^{1/N}$ and theoretical minimum path
+delay $D_{LE,\mathrm{min}}$ (\cref{eq:le-min-delay}) are computed once per
+path. Every stage's actual effort $f_i$ is then compared to $\hat f$: a
+stage with $f_i \gg \hat f$ is disproportionately loaded relative to its own
+drive strength and is, by the theory, the best next candidate for
+up-sizing. This overshoot quantity, $f_i - \hat f$, is the ranking signal
+consumed by the optimizer's logical-effort-guided heuristics
+(\cref{sec:opt-heuristics}).
+
+Because each stage's desired capacitance (\cref{eq:le-target-cap}) depends
+only on that stage's own current load $C_{\mathrm{total},i}$ and its own
+$g_i$ --- both already known from the current, fixed sizing assignment ---
+computing every stage's target capacitance does not require processing the
+path in any particular order; the ``move backward along the path'' framing
+used in the assignment specification is a presentational convenience,
+carried over unchanged from classical hand-calculation logical-effort
+sizing, rather than a genuine data dependency in this implementation.
+
+\section{Discrete Sizing Candidates}
+\label{sec:le-candidates}
+
+The continuous target capacitance $C^{*}_{\mathrm{in},i}$
+(\cref{eq:le-target-cap}) will almost never coincide exactly with one of the
+three discrete sizes (\code{X1}/\code{X2}/\code{X4}) available in the
+library. Rather than rounding to the single nearest size by absolute
+capacitance difference, the implementation \emph{brackets} the target: it
+finds the largest available cell whose input pin capacitance is still at or
+below the target, and the smallest available cell whose input pin
+capacitance is at or above it, and reports both as candidates (falling back
+to the nearest boundary cell if the target lies outside the family's
+achievable range entirely). This bracketing approach is more principled
+than nearest-distance rounding because it guarantees the two candidates
+straddle the theoretical ideal from both sides, which matters when the
+optimizer (\cref{ch:optimization}) evaluates both bracket candidates via a
+full STA re-run and lets the \emph{measured} outcome, not the continuous
+approximation, determine which one is actually better once real,
+non-idealized loading effects on neighboring gates are accounted for.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+\textbf{Quantity} & \textbf{Symbol} & \textbf{Meaning} & \textbf{Computed from} \\
+\midrule
+Logical effort & $g_i$ & Gate-topology cost of driving equal load & Library, per pin \\
+Electrical effort & $h_i$ & On-path fan-out ratio & \cref{eq:le-stage} \\
+Branching effort & $b_i$ & Off-path loading tax & \cref{eq:le-stage} \\
+Stage effort & $f_i$ & $g_i b_i h_i$ & \cref{eq:le-stage} \\
+Path effort & $F$ & $\prod_i f_i$ & \cref{eq:le-path} \\
+Optimal stage effort & $\hat f$ & $F^{1/N}$ & \cref{eq:le-min-delay} \\
+Theoretical min.\ delay & $D_{LE,\mathrm{min}}$ & $\tau(NF^{1/N}+P)$ & \cref{eq:le-min-delay} \\
+Target capacitance & $C^{*}_{\mathrm{in},i}$ & Ideal input cap.\ for stage $i$ & \cref{eq:le-target-cap} \\
+\bottomrule
+\end{tabular}
+\caption{Summary of quantities reported per stage/path in
+\texttt{logical\_effort\_paths.csv}, \texttt{logical\_effort\_stages.csv},
+and \texttt{logical\_effort\_candidates.csv}.}
+\label{tab:le-summary}
+\end{table}

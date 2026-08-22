@@ -1,0 +1,162 @@
+\documentclass[11pt,a4paper]{report}
+
+% ---------- Layout ----------
+\usepackage[a4paper,left=3cm,right=3cm,top=3cm,bottom=3cm]{geometry}
+\usepackage{setspace}
+\onehalfspacing
+
+% ---------- Fonts / encoding ----------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{textcomp}
+
+% ---------- Math ----------
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{mathtools}
+\usepackage{siunitx}
+\sisetup{per-mode=symbol}
+
+% ---------- Graphics / figures ----------
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric,arrows.meta,positioning,fit,backgrounds,calc}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{xcolor}
+
+% ---------- Tables ----------
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{colortbl}
+
+% ---------- Code listings ----------
+\usepackage{listings}
+\usepackage{needspace}
+
+% ---------- Lists / misc ----------
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{cleveref}
+\usepackage{appendix}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+
+% ---------- Colors (used throughout) ----------
+\definecolor{uniblue}{RGB}{0,51,102}
+\definecolor{accentteal}{RGB}{0,121,140}
+\definecolor{codebg}{RGB}{246,246,248}
+\definecolor{placeholdergray}{RGB}{120,120,120}
+\definecolor{warncolor}{RGB}{176,58,46}
+
+% ---------- Hyperref setup ----------
+\hypersetup{
+    colorlinks=true,
+    linkcolor=uniblue,
+    citecolor=accentteal,
+    urlcolor=accentteal,
+    pdftitle={Static Timing Analysis and Logical-Effort Gate Sizing for VLSI Circuits},
+    pdfauthor={Student Name},
+    pdfsubject={Advanced VLSI Design Course Project},
+    bookmarksnumbered=true,
+}
+
+% ---------- Section title styling ----------
+\titleformat{\chapter}[display]
+  {\normalfont\bfseries\Huge\color{uniblue}}
+  {\chaptertitlename\ \thechapter}{20pt}{\Huge}
+\titlespacing*{\chapter}{0pt}{-20pt}{40pt}
+
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{uniblue}}{\thesection}{1em}{}
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{accentteal}}{\thesubsection}{1em}{}
+
+% ---------- Headers / footers ----------
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\fancyhead[L]{\small\nouppercase{\leftmark}}
+\fancyhead[R]{\small\thepage}
+\fancypagestyle{plain}{
+  \fancyhf{}
+  \fancyhead[L]{\small\nouppercase{\leftmark}}
+  \fancyhead[R]{\small\thepage}
+  \renewcommand{\headrulewidth}{0.4pt}
+}
+
+% ---------- Listings style (Python code excerpts) ----------
+\lstdefinestyle{pythonstyle}{
+    backgroundcolor=\color{codebg},
+    basicstyle=\ttfamily\footnotesize,
+    keywordstyle=\color{uniblue}\bfseries,
+    commentstyle=\color{gray}\itshape,
+    stringstyle=\color{accentteal},
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    numbersep=8pt,
+    frame=single,
+    rulecolor=\color{gray!40},
+    breaklines=true,
+    breakatwhitespace=false,
+    showstringspaces=false,
+    tabsize=4,
+    language=Python,
+    xleftmargin=1.5em,
+    framexleftmargin=1.2em,
+}
+\lstset{style=pythonstyle}
+
+% ---------- Figure / logo placeholder helpers ----------
+% Generic placeholder box standing in for a not-yet-inserted figure.
+% Usage: \figureplaceholder{width}{height}{Description text}
+\newcommand{\figureplaceholder}[3]{%
+  \begin{tikzpicture}
+    \draw[draw=placeholdergray, dashed, thick, fill=black!3]
+      (0,0) rectangle (#1,#2);
+    \draw[draw=placeholdergray, thin] (0,0) -- (#1,#2);
+    \draw[draw=placeholdergray, thin] (0,#2) -- (#1,0);
+    \node[align=center, text width=0.85*#1, font=\small\itshape,
+          text=placeholdergray] at (#1/2,#2/2) {FIGURE PLACEHOLDER\\[2pt] #3};
+  \end{tikzpicture}%
+}
+
+% Logo placeholder for the cover page (dashed square box)
+\newcommand{\logoplaceholder}[1]{%
+  \begin{tikzpicture}
+    \draw[draw=uniblue, dashed, thick, fill=uniblue!4] (0,0) rectangle (#1,#1);
+    \node[align=center, text width=0.8*#1, font=\bfseries\small, text=uniblue]
+      at (#1/2,#1/2) {UNIVERSITY\\LOGO\\HERE};
+  \end{tikzpicture}%
+}
+
+% A labelled note box, used to flag assumptions / TODOs to the author
+\newtcolorbox{authornote}[1][]{
+  breakable, colback=yellow!8, colframe=warncolor!70!black,
+  boxrule=0.6pt, arc=1pt, left=6pt, right=6pt, top=4pt, bottom=4pt,
+  fonttitle=\bfseries\small, title={Author note}, #1
+}
+
+\newtcolorbox{assumptionbox}[1][]{
+  breakable, colback=uniblue!4, colframe=uniblue,
+  boxrule=0.6pt, arc=1pt, left=6pt, right=6pt, top=4pt, bottom=4pt,
+  fonttitle=\bfseries\small, title={Modeling assumption}, #1
+}
+
+% ---------- Misc ----------
+\newcommand{\tool}{\textsc{StaSizer}\xspace}
+\newcommand{\code}[1]{\texttt{#1}}
+% \newcommand{\code}[1]{\lstinline[breaklines=true]{#1}}
+\usepackage{xspace}
+
+\setlist[itemize]{topsep=2pt, itemsep=2pt}
+\setlist[enumerate]{topsep=2pt, itemsep=2pt}
+
+\graphicspath{{figures/}}

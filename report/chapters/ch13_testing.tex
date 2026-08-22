@@ -1,0 +1,96 @@
+\chapter{Testing and Verification}
+\label{ch:testing}
+
+\section{Unit and Property Test Suite}
+\label{sec:test-suite}
+
+The repository's \code{tests/} directory contains seven test modules,
+summarized in \cref{tab:test-suite}. Two are worth describing individually
+because they test properties of the system, not just fixed input/output
+pairs.
+
+\begin{longtable}{@{}p{0.32\textwidth}p{0.60\textwidth}@{}}
+\toprule
+\textbf{Module} & \textbf{What it guards} \\
+\midrule
+\endhead
+\code{test\_numeric.py} &
+  \code{compare\_floats} (\cref{sec:opt-accept}): correct ordering outside
+  tolerance, scale-relative tolerance treating small differences as equal,
+  explicit-tolerance override, and rejection of invalid tolerance values. \\[4pt]
+\code{test\_sta\_metrics.py} &
+  \code{test\_compact\_timing\_metrics\_match\_full\_sta}, parametrized
+  over every valid benchmark circuit: asserts
+  \code{analyze\_timing\_metrics} (\cref{ch:sta}) reports exactly the same
+  WNS, TNS, and circuit delay as the full \code{analyze\_timing}, despite
+  skipping backward propagation and path extraction --- the cheaper code
+  path used by the optimizer's inner loop is never allowed to silently
+  diverge from the authoritative one. \\[4pt]
+\code{test\_optimizer\_equivalence.py} &
+  \code{test\_slack\_weighted\_is\_not\_worse\_than\_brute\_force}
+  (\cref{sec:test-equivalence}). \\[4pt]
+\code{test\_reporting.py} &
+  Fourteen tests covering the complete output contract: exact-match tests
+  for the invalid-circuit artifact set, gate-timing CSV completeness,
+  logical-effort identity/branching checks, exact STA-call counting,
+  agreement between the cheap area/power delta
+  (\code{replacement\_area\_and\_power}) and the full recomputed circuit,
+  topology sharing across sizing variants, pre-filtering of infeasible
+  replacements before a candidate \code{Circuit} is constructed, the
+  criticality/effort-gap signed-overshoot scoring rule, and --- named
+  explicitly --- \code{test\_ranked\_one\_shot\_choices\_repair\_c13\_with\_}
+  \code{pi\_connected\_gates} and
+  \code{test\_random\_greedy\_can\_resize\_pi\_connected\_gates}, which
+  assert that no heuristic excludes primary-input-adjacent gates from its
+  candidate pool (\cref{sec:opt-heuristics}). \\[4pt]
+\code{test\_benchmarking.py} &
+  Strictness and immutability of the benchmark configuration schema,
+  determinism and topology/family preservation of seeded generation, and
+  that evaluation both writes the oracle artifacts and can replay an
+  optimizer's recorded history exactly (\cref{ch:benchmarking}). \\[4pt]
+\code{test\_circuit\_visualizer.py} &
+  The interactive viewer's topology export contains only connectivity
+  data, resize highlighting scales visually with cell strength, and the
+  analysis-graph comparison view correctly diffs gate metrics and critical
+  paths between the two overlays (\cref{ch:viewer}). \\[4pt]
+\code{test\_python\_version.py} &
+  Guards the minimum supported Python version. \\
+\bottomrule
+\caption{The seven test modules under \texttt{tests/}.}
+\label{tab:test-suite}
+\end{longtable}
+
+\section{Property Test: Slack-Weighted Capacitance Is Never Worse Than Brute Force}
+\label{sec:test-equivalence}
+
+\code{test\_slack\_weighted\_is\_not\_worse\_than\_brute\_force} is
+parametrized over every circuit directory under
+\code{examples/circuits/valid/} and, for each, runs both the canonical
+heuristic and brute force to completion from an identical starting
+\code{Circuit}, then asserts (i) both results satisfy the configured area
+and power budgets, and (ii) the canonical heuristic's final state is
+\emph{not worse} than brute force's by the ordering used elsewhere in the
+optimizer itself (\cref{sec:opt-accept}): if brute force reached a
+timing-compliant design, slack-weighted capacitance must have too, and its
+final cost $J$ must be no larger (within \code{COMPARISON\_TOLERANCE} $=
+10^{-12}$); if neither reached compliance, slack-weighted capacitance's
+final WNS must be no worse. This is a genuinely useful regression test
+precisely because it does \emph{not} hard-code an expected numeric outcome
+per circuit --- it would fail automatically if a future change to the
+scoring formula in \cref{sec:opt-swc} ever caused the faster, sequential
+search to under-perform the exhaustive one it is meant to approximate,
+without needing to be updated every time an unrelated change shifts a
+circuit's exact WNS by a fraction of a picosecond.
+
+\section{Cross-Validation Against Hand-Derived Numbers}
+\label{sec:test-handcheck}
+
+Independently of the automated test suite, \cref{sec:sta-worked-example}
+hand-derives the load, delay, arrival time, required time, and slack of
+every gate in \code{c01\_inverter\_chain} directly from
+\cref{eq:cload,eq:drise,eq:dfall,eq:forward-sta,eq:backward-sta,eq:slack}
+and the library's published \code{INV\_X1}/\code{BUF\_X1} characterization
+data, without reference to the tool's own output. The resulting
+$\mathrm{WNS} = 0.009$~ns and $\mathrm{TNS} = 0$~ns match the tool's
+reported \code{timing\_summary.csv} entry for that circuit to six decimal
+places.

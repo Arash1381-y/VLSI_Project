@@ -1,0 +1,571 @@
+\chapter{Complete Per-Circuit Figures}
+\label{app:full-figures}
+
+For every one of the fifteen valid benchmark circuits, this appendix
+reproduces the pre-optimization circuit diagram, the post-optimization
+circuit diagram (canonical slack-weighted-capacitance heuristic), the
+convergence trace of all three sequential heuristics
+(\cref{sec:opt-heuristics}), and the final outcomes summary, in that
+order. \Cref{sec:res-case-c02,sec:res-case-divergence} discuss
+\texttt{c02\_basic\newline \_nand\_path} and
+\texttt{c13\_large\_reconvergent\_network} specifically; they are
+reproduced here again for completeness alongside the rest of the suite.
+The circuit-diagram renderings of the three largest circuits
+(\texttt{c13}--\texttt{c15}, 74--118 gates) are included for completeness
+but are more legibly explored via the interactive topology viewer
+(\cref{ch:viewer}) than at the fixed page width used here.
+
+\section{\texttt{c01\_inverter\_chain} (3 gates)}
+\label{app:fig-c01-inverter-chain}
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{c01_inverter_chain_pre.png}
+        \caption{Pre-optimization}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{c01_inverter_chain_post.png}
+        \caption{Post-optimization}
+    \end{subfigure}
+    \caption{\texttt{c01\_inverter\_chain}: circuit diagrams, nodes colored by slack,
+    critical path highlighted.}
+    \label{fig:app-c01-inverter-chain-graphs}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{c01_inverter_chain_conv.png}
+    \caption{\texttt{c01\_inverter\_chain}: optimization convergence trace.}
+    \label{fig:app-c01-inverter-chain-conv}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{c01_inverter_chain_outc.png}
+    \caption{\texttt{c01\_inverter\_chain}: optimization outcomes summary.}
+    \label{fig:app-c01-inverter-chain-outc}
+\end{figure}
+
+\clearpage
+
+\section{\texttt{c02\_basic\_nand\_path} (3 gates)}
+\label{app:fig-c02-basic-nand-path}
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{c02_basic_nand_path_pre.png}
+        \caption{Pre-optimization}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{c02_basic_nand_path_post.png}
+        \caption{Post-optimization}
+    \end{subfigure}
+    \caption{\texttt{c02\_basic\_nand\_path}: circuit diagrams, nodes colored by slack,
+    critical path highlighted.}
+    \label{fig:app-c02-basic-nand-path-graphs}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{c02_basic_nand_path_conv.png}
+    \caption{\texttt{c02\_basic\_nand\_path}: optimization convergence trace.}
+    \label{fig:app-c02-basic-nand-path-conv}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{c02_basic_nand_path_outc.png}
+    \caption{\texttt{c02\_basic\_nand\_path}: optimization outcomes summary.}
+    \label{fig:app-c02-basic-nand-path-outc}
+\end{figure}
+
+\clearpage
+
+\section{\texttt{c03\_fanout\_branch} (4 gates)}
+\label{app:fig-c03-fanout-branch}
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{c03_fanout_branch_pre.png}
+        \caption{Pre-optimization}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{c03_fanout_branch_post.png}
+        \caption{Post-optimization}
+    \end{subfigure}
+    \caption{\texttt{c03\_fanout\_branch}: circuit diagrams, nodes colored by slack,
+    critical path highlighted.}
+    \label{fig:app-c03-fanout-branch-graphs}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{c03_fanout_branch_conv.png}
+    \caption{\texttt{c03\_fanout\_branch}: optimization convergence trace.}
+    \label{fig:app-c03-fanout-branch-conv}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{c03_fanout_branch_outc.png}
+    \caption{\texttt{c03\_fanout\_branch}: optimization outcomes summary.}
+    \label{fig:app-c03-fanout-branch-outc}
+\end{figure}
+
+\clearpage
+
+\section{\texttt{c04\_reconvergent\_paths} (5 gates)}
+\label{app:fig-c04-reconvergent-paths}
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{c04_reconvergent_paths_pre.png}
+        \caption{Pre-optimization}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{c04_reconvergent_paths_post.png}
+        \caption{Post-optimization}
+    \end{subfigure}
+    \caption{\texttt{c04\_reconvergent\_paths}: circuit diagrams, nodes colored by slack,
+    critical path highlighted.}
+    \label{fig:app-c04-reconvergent-paths-graphs}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{c04_reconvergent_paths_conv.png}
+    \caption{\texttt{c04\_reconvergent\_paths}: optimization convergence trace.}
+    \label{fig:app-c04-reconvergent-paths-conv}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{c04_reconvergent_paths_outc.png}
+    \caption{\texttt{c04\_reconvergent\_paths}: optimization outcomes summary.}
+    \label{fig:app-c04-reconvergent-paths-outc}
+\end{figure}
+
+\clearpage
+
+\section{\texttt{c05\_multi\_output} (5 gates)}
+\label{app:fig-c05-multi-output}
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{c05_multi_output_pre.png}
+        \caption{Pre-optimization}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{c05_multi_output_post.png}
+        \caption{Post-optimization}
+    \end{subfigure}
+    \caption{\texttt{c05\_multi\_output}: circuit diagrams, nodes colored by slack,
+    critical path highlighted.}
+    \label{fig:app-c05-multi-output-graphs}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{c05_multi_output_conv.png}
+    \caption{\texttt{c05\_multi\_output}: optimization convergence trace.}
+    \label{fig:app-c05-multi-output-conv}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{c05_multi_output_outc.png}
+    \caption{\texttt{c05\_multi\_output}: optimization outcomes summary.}
+    \label{fig:app-c05-multi-output-outc}
+\end{figure}
+
+\clearpage
+
+\section{\texttt{c06\_deep\_critical\_path} (10 gates)}
+\label{app:fig-c06-deep-critical-path}
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{c06_deep_critical_path_pre.png}
+        \caption{Pre-optimization}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{c06_deep_critical_path_post.png}
+        \caption{Post-optimization}
+    \end{subfigure}
+    \caption{\texttt{c06\_deep\_critical\_path}: circuit diagrams, nodes colored by slack,
+    critical path highlighted.}
+    \label{fig:app-c06-deep-critical-path-graphs}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{c06_deep_critical_path_conv.png}
+    \caption{\texttt{c06\_deep\_critical\_path}: optimization convergence trace.}
+    \label{fig:app-c06-deep-critical-path-conv}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{c06_deep_critical_path_outc.png}
+    \caption{\texttt{c06\_deep\_critical\_path}: optimization outcomes summary.}
+    \label{fig:app-c06-deep-critical-path-outc}
+\end{figure}
+
+\clearpage
+
+\section{\texttt{c07\_parallel\_paths} (6 gates)}
+\label{app:fig-c07-parallel-paths}
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{c07_parallel_paths_pre.png}
+        \caption{Pre-optimization}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{c07_parallel_paths_post.png}
+        \caption{Post-optimization}
+    \end{subfigure}
+    \caption{\texttt{c07\_parallel\_paths}: circuit diagrams, nodes colored by slack,
+    critical path highlighted.}
+    \label{fig:app-c07-parallel-paths-graphs}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{c07_parallel_paths_conv.png}
+    \caption{\texttt{c07\_parallel\_paths}: optimization convergence trace.}
+    \label{fig:app-c07-parallel-paths-conv}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{c07_parallel_paths_outc.png}
+    \caption{\texttt{c07\_parallel\_paths}: optimization outcomes summary.}
+    \label{fig:app-c07-parallel-paths-outc}
+\end{figure}
+
+\clearpage
+
+\section{\texttt{c08\_non\_unate\_logic} (4 gates)}
+\label{app:fig-c08-non-unate-logic}
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{c08_non_unate_logic_pre.png}
+        \caption{Pre-optimization}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{c08_non_unate_logic_post.png}
+        \caption{Post-optimization}
+    \end{subfigure}
+    \caption{\texttt{c08\_non\_unate\_logic}: circuit diagrams, nodes colored by slack,
+    critical path highlighted.}
+    \label{fig:app-c08-non-unate-logic-graphs}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{c08_non_unate_logic_conv.png}
+    \caption{\texttt{c08\_non\_unate\_logic}: optimization convergence trace.}
+    \label{fig:app-c08-non-unate-logic-conv}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{c08_non_unate_logic_outc.png}
+    \caption{\texttt{c08\_non\_unate\_logic}: optimization outcomes summary.}
+    \label{fig:app-c08-non-unate-logic-outc}
+\end{figure}
+
+\clearpage
+
+\section{\texttt{c09\_high\_fanout} (6 gates)}
+\label{app:fig-c09-high-fanout}
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{c09_high_fanout_pre.png}
+        \caption{Pre-optimization}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{c09_high_fanout_post.png}
+        \caption{Post-optimization}
+    \end{subfigure}
+    \caption{\texttt{c09\_high\_fanout}: circuit diagrams, nodes colored by slack,
+    critical path highlighted.}
+    \label{fig:app-c09-high-fanout-graphs}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{c09_high_fanout_conv.png}
+    \caption{\texttt{c09\_high\_fanout}: optimization convergence trace.}
+    \label{fig:app-c09-high-fanout-conv}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{c09_high_fanout_outc.png}
+    \caption{\texttt{c09\_high\_fanout}: optimization outcomes summary.}
+    \label{fig:app-c09-high-fanout-outc}
+\end{figure}
+
+\clearpage
+
+\section{\texttt{c10\_three\_input\_gates} (5 gates)}
+\label{app:fig-c10-three-input-gates}
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{c10_three_input_gates_pre.png}
+        \caption{Pre-optimization}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{c10_three_input_gates_post.png}
+        \caption{Post-optimization}
+    \end{subfigure}
+    \caption{\texttt{c10\_three\_input\_gates}: circuit diagrams, nodes colored by slack,
+    critical path highlighted.}
+    \label{fig:app-c10-three-input-gates-graphs}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{c10_three_input_gates_conv.png}
+    \caption{\texttt{c10\_three\_input\_gates}: optimization convergence trace.}
+    \label{fig:app-c10-three-input-gates-conv}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{c10_three_input_gates_outc.png}
+    \caption{\texttt{c10\_three\_input\_gates}: optimization outcomes summary.}
+    \label{fig:app-c10-three-input-gates-outc}
+\end{figure}
+
+\clearpage
+
+\section{\texttt{c11\_gate\_sizing\_stress} (6 gates)}
+\label{app:fig-c11-gate-sizing-stress}
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{c11_gate_sizing_stress_pre.png}
+        \caption{Pre-optimization}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{c11_gate_sizing_stress_post.png}
+        \caption{Post-optimization}
+    \end{subfigure}
+    \caption{\texttt{c11\_gate\_sizing\_stress}: circuit diagrams, nodes colored by slack,
+    critical path highlighted.}
+    \label{fig:app-c11-gate-sizing-stress-graphs}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{c11_gate_sizing_stress_conv.png}
+    \caption{\texttt{c11\_gate\_sizing\_stress}: optimization convergence trace.}
+    \label{fig:app-c11-gate-sizing-stress-conv}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{c11_gate_sizing_stress_outc.png}
+    \caption{\texttt{c11\_gate\_sizing\_stress}: optimization outcomes summary.}
+    \label{fig:app-c11-gate-sizing-stress-outc}
+\end{figure}
+
+\clearpage
+
+\section{\texttt{c12\_monte\_carlo\_switching} (7 gates)}
+\label{app:fig-c12-monte-carlo-switching}
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{c12_monte_carlo_switching_pre.png}
+        \caption{Pre-optimization}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{c12_monte_carlo_switching_post.png}
+        \caption{Post-optimization}
+    \end{subfigure}
+    \caption{\texttt{c12\_monte\_carlo\_switching}: circuit diagrams, nodes colored by slack,
+    critical path highlighted.}
+    \label{fig:app-c12-monte-carlo-switching-graphs}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{c12_monte_carlo_switching_conv.png}
+    \caption{\texttt{c12\_monte\_carlo\_switching}: optimization convergence trace.}
+    \label{fig:app-c12-monte-carlo-switching-conv}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{c12_monte_carlo_switching_outc.png}
+    \caption{\texttt{c12\_monte\_carlo\_switching}: optimization outcomes summary.}
+    \label{fig:app-c12-monte-carlo-switching-outc}
+\end{figure}
+
+\clearpage
+
+\section{\texttt{c13\_large\_reconvergent\_network} (74 gates)}
+\label{app:fig-c13-large-reconvergent-network}
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{c13_large_reconvergent_network_pre.png}
+        \caption{Pre-optimization}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{c13_large_reconvergent_network_post.png}
+        \caption{Post-optimization}
+    \end{subfigure}
+    \caption{\texttt{c13\_large\_reconvergent\_network}: circuit diagrams, nodes colored by slack,
+    critical path highlighted.}
+    \label{fig:app-c13-large-reconvergent-network-graphs}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{c13_large_reconvergent_network_conv.png}
+    \caption{\texttt{c13\_large\_reconvergent\_network}: optimization convergence trace.}
+    \label{fig:app-c13-large-reconvergent-network-conv}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{c13_large_reconvergent_network_outc.png}
+    \caption{\texttt{c13\_large\_reconvergent\_network}: optimization outcomes summary.}
+    \label{fig:app-c13-large-reconvergent-network-outc}
+\end{figure}
+
+\clearpage
+
+\section{\texttt{c14\_layered\_reconvergent\_fabric} (104 gates)}
+\label{app:fig-c14-layered-reconvergent-fabric}
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{c14_layered_reconvergent_fabric_pre.png}
+        \caption{Pre-optimization}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{c14_layered_reconvergent_fabric_post.png}
+        \caption{Post-optimization}
+    \end{subfigure}
+    \caption{\texttt{c14\_layered\_reconvergent\_fabric}: circuit diagrams, nodes colored by slack,
+    critical path highlighted.}
+    \label{fig:app-c14-layered-reconvergent-fabric-graphs}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{c14_layered_reconvergent_fabric_conv.png}
+    \caption{\texttt{c14\_layered\_reconvergent\_fabric}: optimization convergence trace.}
+    \label{fig:app-c14-layered-reconvergent-fabric-conv}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{c14_layered_reconvergent_fabric_outc.png}
+    \caption{\texttt{c14\_layered\_reconvergent\_fabric}: optimization outcomes summary.}
+    \label{fig:app-c14-layered-reconvergent-fabric-outc}
+\end{figure}
+
+\clearpage
+
+\section{\texttt{c15\_high\_fanout\_sizing\_fabric} (118 gates)}
+\label{app:fig-c15-high-fanout-sizing-fabric}
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{c15_high_fanout_sizing_fabric_pre.png}
+        \caption{Pre-optimization}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{c15_high_fanout_sizing_fabric_post.png}
+        \caption{Post-optimization}
+    \end{subfigure}
+    \caption{\texttt{c15\_high\_fanout\_sizing\_fabric}: circuit diagrams, nodes colored by slack,
+    critical path highlighted.}
+    \label{fig:app-c15-high-fanout-sizing-fabric-graphs}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{c15_high_fanout_sizing_fabric_conv.png}
+    \caption{\texttt{c15\_high\_fanout\_sizing\_fabric}: optimization convergence trace.}
+    \label{fig:app-c15-high-fanout-sizing-fabric-conv}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{c15_high_fanout_sizing_fabric_outc.png}
+    \caption{\texttt{c15\_high\_fanout\_sizing\_fabric}: optimization outcomes summary.}
+    \label{fig:app-c15-high-fanout-sizing-fabric-outc}
+\end{figure}
+
+\clearpage

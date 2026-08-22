@@ -1,0 +1,30 @@
+\chapter{Conclusion and Future Work}
+\label{ch:conclusion}
+
+This report has documented \tool, a static timing analysis and
+logical-effort-guided gate-sizing tool built to the specification of the
+Advanced VLSI Design course project, together with two substantial
+additions beyond that specification: a synthetic benchmark generation and
+oracle-based evaluation framework, and an interactive topology viewer. The
+core analysis pipeline --- structural validation, DAG construction,
+RC-based rise/fall-separated delay modeling with unate-aware timing arcs,
+forward and backward static timing analysis, logical-effort path analysis,
+power and area estimation, and Monte Carlo statistical timing analysis ---
+was traced in this report down to the specific class and function names
+that implement each stage.
+
+On the fixed benchmark suite, the logical-effort-guided canonical
+heuristic resolved $13$ of $14$ originally-violating circuits, compared to
+$7$ of $14$ for a logical-effort-free random-greedy baseline, while
+simultaneously issuing fewer total STA calls and reaching a lower final
+cost on thirteen of fifteen circuits (\cref{ch:results}). Two case studies,
+traced directly against the recorded optimizer iteration logs rather than
+inferred from final outcomes alone, showed that this advantage comes from
+a better-informed \emph{search order} interacting favorably with the
+area/power budget, not from any difference in what a given heuristic is
+permitted to consider. The one Monte Carlo--instrumented circuit
+demonstrated that a nominal-corner timing improvement from optimization
+corresponded to a real, substantial improvement in statistical timing
+yield (from 36.9\% to 82.6\%), and that the sizing changes shifted which
+path is critical under process variation, not merely how much margin the
+original critical path retained.

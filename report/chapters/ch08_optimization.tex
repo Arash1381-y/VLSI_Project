@@ -1,0 +1,335 @@
+\chapter{Gate-Sizing Optimization}
+\label{ch:optimization}
+
+The optimizer is implemented in
+\code{optimization/optimizer.py:CircuitOptimizer}, with a deliberately
+narrow public surface:
+
+\begin{lstlisting}[style=pythonstyle, numbers=none]
+class CircuitOptimizer:
+    def __init__(self, circuit: Circuit,
+                 heuristic: OptimizationHeuristic = BRUTE_FORCE,
+                 random_seed: int | None = None) -> None: ...
+    def optimize(self) -> OptimizationResult: ...
+\end{lstlisting}
+
+Everything else --- candidate generation, cost evaluation, the acceptance
+policy, and termination --- is private to this class or to
+\code{optimization/heuristics.py}, and is documented in this chapter by
+name because the \emph{names} of these private functions are themselves
+the clearest statement of the algorithm's structure.
+
+\section{Cost Function}
+\label{sec:opt-cost}
+
+Every candidate gate-sizing change is scored by a single normalized cost
+function that trades off circuit delay $D_{\mathrm{circuit}}$, total power
+$P_{\mathrm{total}}$, total area $A_{\mathrm{total}}$, and any remaining
+timing violation, each normalized against the corresponding value of the
+\emph{original, unmodified} design (subscript $\mathrm{ref}$), so that the
+cost is dimensionless and comparable across circuits of very different
+absolute size:
+
+\begin{equation}
+    J = w_D \frac{D_{\mathrm{circuit}}}{D_{\mathrm{ref}}}
+      + w_P \frac{P_{\mathrm{total}}}{P_{\mathrm{ref}}}
+      + w_A \frac{A_{\mathrm{total}}}{A_{\mathrm{ref}}}
+      + \lambda\, \frac{\max(0, -\mathrm{WNS})}{T_{\mathrm{ref}}}.
+    \label{eq:cost}
+\end{equation}
+
+The weights $w_D, w_P, w_A, \lambda$ are read from
+\code{Config.optimization.weights} (\code{Optimizati\newline onWeights},
+\cref{tab:arch-domain-api}). $D_{\mathrm{ref}}, P_{\mathrm{ref}},
+A_{\mathrm{ref}}$ are captured exactly once by the static method
+\code{CircuitOptimizer.\_normalization\_reference(circuit, timing) ->
+\_Normalization Reference}, called only from \code{\_initial\_state()} at
+the very start of \code{optimize()}, and never recomputed thereafter, so
+that $J$ always measures cost \emph{relative to the starting point}.
+$T_{\mathrm{ref}}$, a normalizing time reference for the violation penalty,
+is taken as the tightest required time among the circuit's primary outputs.
+
+Cost itself is computed by the private method
+\code{CircuitOptimizer.\_evaluate(circuit, reference, timing=None) ->
+\_Evaluation}, where \code{\_Evaluation} is a frozen dataclass bundling
+\code{circuit}, \code{timing}, and \code{cost} together --- the single
+value threaded through every other private method below.
+
+\section{Candidate Evaluation}
+\label{sec:opt-eval}
+
+Consistent with the immutability principle stated in
+\cref{sec:arch-principles}, evaluating a candidate resize never mutates the
+circuit currently being optimized.
+\code{CircuitOptimizer.\_candidate\_ evaluation(current, reference, gate,
+candidate\_cell) -> \_CandidateEvaluation | None} is the single choke
+point through which every candidate --- from every heuristic --- passes,
+in three ordered steps.
+
+\begin{enumerate}
+    \item \textbf{Cheap pre-filter.}
+          \code{replacement\_area\_and\_power(current.circuit, gate.name,
+          candidate\_cell)} (\cref{tab:arch-domain-api}) computes the
+          resulting total area and power \emph{without} constructing a new
+          \code{Circuit} object at all. If this alone already exceeds the
+          configured budget
+          (\code{\_violates\_area\_or\_power\_constraints}), the candidate
+          is discarded immediately, before paying for a full circuit
+          construction or a timing re-run.
+    \item \textbf{Full construction and re-analysis.} Only if the cheap
+          check passes is \code{replace\_gate \_cell(current.circuit,
+          gate.name, candidate\_cell)} called to build the new, independent
+          \code{Circuit} variant, which is then fully re-evaluated:
+          \code{\_analyze(circuit)} runs \code{analyze\_timing}
+          (incrementing an internal \code{self.\_sta\_calls} counter,
+          reported as \code{OptimizationResult.sta\_calls}), and
+          \code{\_satisfies\_constraints(circuit)} performs the exact
+          (non-delta) area/power check against the fully rebuilt circuit.
+    \item \textbf{Cost.} \code{\_evaluate(candidate\_circuit, reference)}
+          scores the surviving candidate via \cref{eq:cost}.
+\end{enumerate}
+
+If a candidate is not selected, the \code{Circuit} object built for it is
+simply discarded --- there is no revert step, because nothing was ever
+mutated in place. This is functionally equivalent to an
+evaluate-then-revert pattern built on a mutable graph, but structurally
+eliminates the possibility of a forgotten or incomplete revert silently
+corrupting a subsequent evaluation.
+
+\section{The Acceptance Policy}
+\label{sec:opt-accept}
+
+A detail that is easy to miss without reading the source directly, but is
+central to how the four heuristics relate to one another: \textbf{there is
+exactly one implementation of the two-phase accept/reject policy, and every
+heuristic calls it.}
+
+\vspace{10pt}
+\begin{lstlisting}[style=pythonstyle, numbers=none]
+def _select_next_change(self, current: _Evaluation,
+                        candidates: list[_CandidateEvaluation]
+                        ) -> _AcceptedChange | _StopDecision: ...
+@staticmethod
+def _best_timing_change(current, candidates) -> _CandidateEvaluation | None: ...
+@staticmethod
+def _best_cost_change(candidates) -> _CandidateEvaluation | None: ...
+\end{lstlisting}
+
+
+\newpage \noindent \code{\_select\_next\_change} implements the two-phase rule directly:
+
+\begin{enumerate}
+    \item \textbf{While a timing violation remains}
+          ($\mathrm{WNS} < 0$, \code{OptimizationPhase.TIMING\_REPAIR}):
+          \code{\_best\_timing\_change} selects, among the supplied
+          candidates, the one with the lowest cost $J$ among those that
+          strictly improve WNS, or, failing that, strictly improve TNS with
+          WNS unchanged. If none qualify, \code{\_select\_next\_change}
+          returns a \code{\_StopDecision} with termination reason
+          \code{NO\_TIMING\_IMPROVEMENT}.
+    \item \textbf{Once timing is compliant}
+          ($\mathrm{WNS} \geq 0$, \code{OptimizationPhase.COST\_REDUCTION}):
+          \code{\_best\_cost\_change} selects the lowest-cost candidate that
+          does not reintroduce a violation, and the change is accepted only
+          if the resulting cost improvement exceeds
+          \code{config.optimization.minimum\_cost\_improvement}. Otherwise, termination reason
+          \code{TIMING\_MET\_NO\_COST\_IMPROVEMENT} is returned.
+\end{enumerate}
+
+What differs between heuristics is only \emph{how many} candidates
+\code{\_select\_next\_change} is called with, and \emph{in what order}
+they were generated (\cref{sec:opt-heuristics}) --- not the acceptance
+rule itself. Brute force calls it once per iteration with the
+\emph{entire} evaluated candidate batch:
+
+\begin{lstlisting}[style=pythonstyle, numbers=none]
+choices = tuple(choice_iterator)    # exhaust the whole iterator
+candidates = self._candidate_evaluations(current, reference, choices)
+return self._select_next_change(current, candidates)  # pick the best of all
+\end{lstlisting}
+
+while the other three heuristics instead call
+\code{\_evaluate\_single\_choice}, which evaluates exactly \emph{one}
+candidate and delegates to the very same function with a singleton list:
+
+\begin{lstlisting}[style=pythonstyle, numbers=none]
+def _evaluate_single_choice(self, current, reference, gate, candidate_cell
+        ) -> _AcceptedChange | _RejectedChange:
+    candidate = self._candidate_evaluation(current, reference, gate, candidate_cell)
+    if candidate is None:
+        return _RejectedChange(gate.name, candidate_cell.name,
+                                "candidate violates area or power constraints")
+    decision = self._select_next_change(current, [candidate]) 
+    ...
+\end{lstlisting}
+
+This makes slack-weighted capacitance, criticality/effort-gap, and random
+greedy \emph{sequential, first-improvement} searches: each pulls one
+candidate at a time from a pre-ordered stream and immediately accepts or
+rejects it, moving to the next candidate in that same stream on rejection,
+without re-ranking until a change is actually accepted. Brute force, in
+contrast, is a \emph{best-of-batch} search: every eligible candidate is
+evaluated fresh each iteration, and the single best one is chosen. The
+optimizer's outer loop, \code{optimize()}, regenerates the candidate stream
+(\code{choice\_iterator = None}, forcing a fresh call to
+\code{\_choice\_iterator} on the next iteration) only \emph{after} an
+accepted change, so a rejected candidate does not trigger re-ranking ---
+the search simply continues down the same, still-valid-for-the-current-circuit
+ordering.
+
+\section{Termination}
+\label{sec:opt-termination}
+
+\code{OptimizationTermination} enumerates five possible outcomes, recorded
+verbatim in \code{Optim\newline izationResult.termination} and in the
+\code{optimization\_*.csv} artifacts: \code{DISABLED} (optimization turned
+off in configuration); \code{NO\_TIMING\_IMPROVEMENT} (still violating, no
+candidate improves WNS/TNS); \code{NO\_FEASIBLE\_CHANGE} (the candidate
+stream is exhausted --- only reachable by the three sequential heuristics,
+since brute force always sees its full batch every iteration);
+\code{TIMING\_MET\_NO\_COST\_IMPROVEMENT} (compliant, but no candidate
+reduces cost enough); and \code{MAXIMUM\_ITERATIONS}.
+
+\section{The Four Sizing Heuristics}
+\label{sec:opt-heuristics}
+
+\code{OptimizationHeuristic} (\code{optimization/heuristics.py}) has four
+members: \code{BRUTE\_FORCE}, \code{SLACK\_WEIGHTED\_CAPACITANCE},
+\code{CRITICALITY\_EFFORT\_GAP}, and \code{RANDOM\_GREEDY}. All four are
+dispatched from a single method,
+\code{\_choice\_iterator(self, current, random\_gener\newline ator) ->
+Iterator[\_SizingChoice]}, whose four branches \emph{are} the precise
+definition of what distinguishes the four heuristics: \code{RANDOM\_GREEDY}
+takes \code{\_critical\_path\_one\_step\_c\newline hoices(current)} and shuffles it
+with \code{random\_generator}; \code{CRITICALITY\_EFFORT\_GAP} passes that
+same one-step choice list through
+\code{iter\_criticality\_effort\_gap\_choices}; \code{BRUTE\_FORCE} and
+\code{SLACK\_WEIGHTED\_CAPACITANCE} both instead start from
+\code{\_eligible\_choices(current, allowed\_sizes)}, flattened directly for
+brute force or passed through \code{iter\_ranked\_optimi\newline zation\_choices}
+for the canonical heuristic.
+
+Two \emph{sources} of candidates are used, and it is important not to
+conflate them:
+
+\begin{itemize}
+    \item \code{\_critical\_path\_one\_step\_choices(current) ->
+          list[tuple[Gate, Cell]]} returns, for every gate on any current
+          critical path, only \emph{one} candidate: its immediate
+          next-larger cell in the same family (never a logical-effort-derived
+          bracket, never a jump of more than one discrete size step).
+          \textbf{Both} \code{RANDOM\_GREEDY} \textbf{and}
+          \code{CRITICALITY\_EFFORT\_GAP} draw from this same, narrower
+          candidate set --- they differ from each other only in the
+          \emph{order} they visit it (uniformly shuffled versus
+          score-ranked), not in which cells are candidates at all.
+    \item \code{\_eligible\_choices(current, allowed\_sizes) ->
+          list[OptimizationChoice]} ( where \code{OptimizationChoice =
+          tuple[Gate, tuple[Cell, ...]]}) calls
+          \code{analysis/ logica\_effort.py:get\_optimization\_candidates},
+          which returns, for every gate on any current critical path,
+          \emph{every} discrete cell in its logical-effort sizing bracket
+          (\cref{sec:le-candidates}) --- potentially more than one size
+          step in a single proposal. \textbf{Both} \code{BRUTE\_FORCE}
+          \textbf{and} \code{SLACK\_WEIGHTED\_CAPACITANCE} draw from this
+          wider, logical-effort-derived candidate set.
+\end{itemize}
+
+\subsection{Brute Force}
+\label{sec:opt-bruteforce}
+
+Every $(gate, candidate)$ pair in the logical-effort bracket set is
+evaluated, in full, every iteration, and \code{\_select\_next\_change}
+picks the single best. This is the most thorough of the four heuristics
+--- and, per \cref{sec:opt-accept}, the only one that genuinely compares
+multiple candidates against each other before choosing, rather than
+walking a pre-ordered list --- at the cost of the largest number of full
+STA re-runs per accepted change. It is available for manual and diagnostic
+use but is not the heuristic invoked to produce the canonical optimized
+result reported in \cref{ch:results}.
+
+\subsection{Slack-Weighted Capacitance (Canonical)}
+\label{sec:opt-swc}
+
+Draws from the same logical-effort bracket set as brute force, but visits
+it as a sequential, first-improvement search, in an order fixed once per
+outer-loop iteration by \code{iter\_ranked\_op\newline timization\_choices(circuit,
+paths, choices) -> Iterator[tuple[Gate, Cell]]},\newline which sorts candidates by
+\code{(-score, gate\_position)} --- highest score first, ties broken by
+netlist declaration order for determinism --- where the score is computed
+by the private helper \code{\_slack\_weighted\_capacitance\_scores(circuit,
+paths) -> dict[str, float]}: for every stage of every current critical
+path, an \emph{urgency} factor (ranging from $1.0$, for the
+least-violating path present, up to $2.0$, for the most-violating one,
+linearly interpolated by that path's slack relative to the range of
+slacks across all reported critical paths) is multiplied by the
+logarithmic mismatch $|\ln(C^{*}_{\mathrm{in},i} / C_{\mathrm{in},i})|$
+between the stage's logical-effort target capacitance
+(\cref{eq:le-target-cap}) and its currently-assigned capacitance, and the
+contributions are \emph{summed} across every path a given gate appears on.
+This is the heuristic actually invoked by the standard analysis pipeline
+(\code{CANONICAL\_OPTIMIZATION} in \code{app/experiments.py}) to produce
+the reported ``logical-effort-guided'' result throughout \cref{ch:results}.
+
+\subsection{Criticality/Effort-Gap}
+\label{sec:opt-ceg}
+
+A second logical-effort-\emph{informed} heuristic, but one that --- unlike
+slack-weighted capacitance --- does \emph{not} draw from the capacitance
+bracket at all. It re-orders the same narrow, one-step-up candidate set
+used by random greedy (\code{\_critical\_path\_one\_step\_choices}) via
+\code{iter\_criticality\_effort\_gap\_choices(circuit, paths, choices)},
+whose ranking is produced by \code{criticality\_effort\_gap\_scores(circuit,
+paths) -> dict[str, float]} (documented in-source as scoring gates by
+``urgency \(\times\) (current stage effort $-$ optimal effort)''): the same
+urgency factor as \cref{sec:opt-swc}, but multiplied instead by the raw
+logical-effort stage-effort overshoot $f_i - \hat f$
+(\cref{eq:le-min-delay}) directly --- and, where slack-weighted capacitance
+\emph{sums} a gate's contribution across every path it appears on, this
+score takes the \emph{maximum} over paths instead. In short: slack-weighted
+capacitance asks ``how large a capacitance mismatch does this gate have,
+aggregated over everywhere it's used, and how large a library jump would
+fix it,'' while criticality/effort-gap asks ``how far over its ideal
+per-stage effort is this gate, at its single worst appearance, if I only
+allow myself the next library size up.'' Because both heuristics can, in
+principle, still propose the exact same one-step-up resize when that
+happens to also lie in the logical-effort bracket, a difference in final
+outcome between the two is not guaranteed to come from candidate
+\emph{scope} at all --- \cref{sec:res-case-divergence} traces one benchmark
+circuit where it instead comes from \emph{ordering interacting with the
+area/power budget}: criticality/effort-gap accepts an earlier, WNS-neutral
+change that consumes part of the budget, after which the one candidate
+that would have fixed the violation is rejected purely on that
+now-tighter budget, whereas slack-weighted capacitance reaches the
+identical candidate earlier, before any budget had been spent.
+
+\subsection{Random Greedy (Baseline)}
+\label{sec:opt-random-greedy}
+
+The baseline heuristic against which the three logical-effort-informed
+heuristics are compared: the same one-step-up candidate set as
+criticality/effort-gap, visited in a uniformly random order
+(\code{random\_generator.shuffle(choices)}, seeded by
+\code{CircuitOptimizer(..., random\_seed=...)}) rather than any
+score-based order. It is, in the strict sense, the only one of the four
+heuristics that makes no use of logical effort anywhere in its candidate
+generation.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Heuristic} & \textbf{Candidate source} & \textbf{Ordering} & \textbf{Evaluation} \\
+\midrule
+Brute Force & LE bracket (\code{\_eligible\_choices}) & --- (all at once) & Best-of-batch \\
+Slack-Wtd.\ Capacitance & LE bracket (\code{\_eligible\_choices}) & Score-ranked & Sequential \\
+Criticality/Effort-Gap & One-step-up only & Score-ranked & Sequential \\
+Random Greedy & One-step-up only & Uniform random & Sequential \\
+\bottomrule
+\end{tabular}
+\caption{Summary of the four gate-sizing heuristics, by candidate source
+and search strategy (\cref{sec:opt-heuristics}). All four share the
+identical two-phase accept/reject policy (\cref{sec:opt-accept}).}
+\label{tab:heuristic-summary}
+\end{table}

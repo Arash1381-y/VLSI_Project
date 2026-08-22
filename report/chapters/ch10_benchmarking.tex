@@ -1,0 +1,208 @@
+\chapter{Synthetic Benchmark Generation and Evaluation Framework}
+\label{ch:benchmarking}
+
+\section{Motivation}
+\label{sec:bench-motivation}
+
+The fixed benchmark set supplied with the assignment --- fifteen valid
+circuits and six intentionally invalid ones --- is well suited to
+demonstrating correctness of the parser, the STA engine, and the
+logical-effort analysis, and \cref{ch:results} reports results on it in
+full. It is, however, a poor basis for comparing four different gate-sizing
+heuristics against each other: fifteen circuits is too small a sample to
+distinguish ``heuristic A is genuinely better than heuristic B'' from
+``heuristic A happened to get a favorable draw of critical-path structure
+on this particular handful of circuits.'' A statistically meaningful
+comparison instead requires (i) a much larger population of test cases,
+(ii) enough structural diversity across that population (circuit size,
+depth, fan-out, reconvergence, and violation severity) to characterize
+\emph{where} a heuristic wins or loses rather than only \emph{whether} it
+does on average, and (iii) a known-good reference solution for each case
+against which every heuristic's outcome can be measured, since without a
+reference there is no way to distinguish ``heuristic A stopped early
+because the problem was already solved'' from ``heuristic A stopped early
+because it gave up.'' The benchmarking package addresses all three.
+
+\section{Case Generation}
+\label{sec:bench-generation}
+
+\subsection{Topology Construction}
+
+Two sources of circuit topology are supported: procedurally generated
+levelized DAGs, constructed to a configured target size, depth, and
+fan-out/reconvergence profile, and topologies imported unchanged from one of
+the fixed valid seed circuits (\cref{ch:results}), allowing the same
+generation-and-evaluation pipeline to be run against known, hand-inspectable
+structures as a sanity check on the synthetic generator itself.
+
+\subsection{Reference Solution via Multi-Start Beam Search}
+\label{sec:bench-reference}
+
+For a given topology, a \emph{best-known reference} gate-sizing assignment
+is established independently of any of the four heuristics under test, by
+a multi-start beam search that explores, from several different random
+starting assignments, the space of legal per-gate size choices, retaining
+at each search depth only the most promising partial assignments
+(beam-limited to bound the search cost) and keeping the best complete
+assignment found across all starts. This reference is explicitly certified
+in the output only as \code{best\_known\_multi\_start\_beam} --- global
+optimality is never claimed --- but it is a substantially stronger
+reference than any single heuristic's own output, since it is not subject
+to the same candidate-generation restrictions (top-5 pruning, single random
+gate per iteration, and so on) that the heuristics themselves are.
+
+\subsection{Planted Violations}
+\label{sec:bench-planted}
+
+Starting from the reference assignment, one or more gates are deliberately
+\emph{downsized} until the resulting initial circuit exhibits a negative
+WNS while remaining within its configured area and power budgets. This
+produces a case with a known-repairable violation (the reference assignment
+is a witness that a compliant, budget-respecting solution exists) and a
+recorded ground truth for which specific gates were mutated away from the
+reference (\code{planted\_mutations.csv}), which downstream evaluation
+(\cref{sec:bench-evaluation}) can use as an additional diagnostic signal,
+distinct from its primary correctness metric.
+
+\subsection{Case Integrity and Reproducibility}
+\label{sec:bench-integrity}
+
+Both the initial (post-mutation) circuit and the reference assignment are
+independently replayed through the production netlist parser, \code{Circuit}
+constructor, and STA implementation --- the same code path used for
+ordinary analysis --- before a case is considered valid and written to
+disk, ensuring that no generated case can silently violate an invariant the
+rest of the tool assumes. Every case directory is written atomically: if
+generation is interrupted or exhausts its retry budget partway through, no
+partial case directory is left behind, and suite-level failure diagnostics
+(\code{generation\_failures.csv}) are preserved instead. All random seeds
+used during generation are derived from SHA-256 hashes rather than from
+Python's built-in, per-process-randomized \code{hash()} function, so that a
+given configuration deterministically reproduces the same suite across
+machines and Python invocations.
+
+\subsection{Suite Layout}
+\label{sec:bench-layout}
+
+\begin{lstlisting}[language=bash, style=pythonstyle, numbers=none]
+benchmarks/<suite>/
+  suite_config.json          # the generating configuration
+  cell_library.json          # copy of the library used for the suite
+  suite_manifest.json        # index of every case and its parameters
+  generation_cases.csv       # per-case generation record
+  generation_failures.csv    # diagnostics for any discarded attempt
+  cases/<case-id>/
+    netlist.txt
+    config.json
+    reference_assignment.json
+    benchmark_manifest.json
+    planted_mutations.csv
+\end{lstlisting}
+
+\section{Evaluation Methodology}
+\label{sec:bench-evaluation}
+
+\subsection{Counterfactual Oracle}
+\label{sec:bench-oracle}
+
+The central evaluation instrument is an \emph{oracle} that is entirely
+independent of any of the four heuristics being evaluated. For every gate
+assignment (``state'') actually visited while replaying a heuristic's
+recorded decisions on a case, the oracle evaluates \emph{every} legal
+same-family cell replacement on \emph{every} gate in the circuit --- not
+merely the gates a given heuristic happened to consider as candidates ---
+and ranks them by the same two-phase rule used by the optimizer itself
+(\cref{sec:opt-accept}): while a violation remains, rank by WNS
+improvement, then TNS improvement on ties; once compliant, rank by cost
+reduction subject to remaining compliant. This makes it possible to ask a
+question no heuristic's own reported outcome can answer on its own: at each
+individual decision point, was the choice the heuristic actually made the
+\emph{best available} choice, a merely \emph{tied-best} choice, or a
+strictly worse choice than something the oracle can show was available?
+Exact recovery of the planted reference assignment
+(\cref{sec:bench-planted}) is retained only as a secondary diagnostic,
+since more than one gate-sizing assignment can be simultaneously compliant
+and cost-optimal; the oracle-ranked decision quality at each step is the
+primary correctness signal.
+
+\subsection{Parallel, Deterministic Evaluation}
+\label{sec:bench-parallel}
+
+Cases are independent of one another and are evaluated in parallel (four
+worker processes by default, configurable), with per-run timeouts enforced
+so that a single pathological case cannot stall an entire suite; individual
+case report fragments are merged back together in a fixed manifest order
+so that the final evaluation report is reproducible regardless of which
+worker happened to finish a given case first. Random Greedy, being
+inherently stochastic, is additionally repeated with several deterministic
+seeds per case so that its reported metrics reflect a distribution of
+outcomes rather than a single draw.
+
+\subsection{Reported Metrics}
+\label{sec:bench-metrics}
+
+\begin{longtable}{@{}p{0.35\textwidth}p{0.65\textwidth}@{}}
+\toprule
+\textbf{Artifact} & \textbf{Contents} \\
+\midrule
+\endhead
+\code{case\_runs.csv} &
+  Final metrics per case/heuristic: constraint-repair status, runtime,
+  iteration and STA-call counts, and distance from the reference
+  assignment. \\[4pt]
+\code{optimizer\_iterations.csv} &
+  A fully replayable, step-by-step history of every heuristic run. \\[4pt]
+\code{oracle\_states.csv}, \code{oracle\_candidates.csv} &
+  Every unique gate-assignment state visited, and every counterfactual
+  candidate the oracle evaluated at that state, with feasibility,
+  benefit, and tied-best status. \\[4pt]
+\code{gate\_selection\_scores.csv} &
+  Per gate/move: selection hit rate, WNS/TNS/cost regret relative to the
+  oracle's best available choice, and missed off-path opportunities. \\[4pt]
+\code{heuristic\_summary.csv} &
+  \textbf{Wilson confidence intervals} on repair rate, failure and timeout
+  rates, Random Greedy's runtime dispersion across its repeated seeds,
+  selection accuracy against the oracle, and aggregate regret. \\[4pt]
+\code{evaluation\_summary.json} &
+  Hierarchical aggregates stratified by circuit source, size, depth,
+  fan-out, reconvergence, violation severity, and slack headroom, plus a
+  manifest of every artifact produced. \\
+\bottomrule
+\caption{Artifacts produced by \code{vlsi-sta benchmark evaluate}.}
+\label{tab:bench-artifacts}
+\end{longtable}
+
+Using a \textbf{Wilson score interval} rather than a naive
+$\hat p \pm 1.96\sqrt{\hat p(1-\hat p)/n}$ normal-approximation interval for
+the repair-rate confidence bound is a deliberately more careful choice: the
+Wilson interval remains well-behaved (bounded within $[0,1]$ and reasonably
+calibrated) even when the observed repair rate is close to $0$ or $1$ or
+the sample count for a given stratum is small, both of which are expected
+to occur in some of the finer-grained strata of
+\cref{sec:bench-metrics}'s hierarchical aggregation.
+
+\section{Plotting}
+\label{sec:bench-plotting}
+
+\code{vlsi-sta benchmark plot} consumes an evaluation directory and
+produces the following plots using the files listed on \Cref{tab:bench-artifacts}:
+
+\begin{lstlisting}[numbers=none]
+benchmarks/<suite>/evaluation/<run-id>/plots
+├── case_reliability.png
+├── heuristic_overview.png
+├── repair_convergence.png
+├── runtime_scalability.png
+└── selection_quality.png
+\end{lstlisting}
+
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[width=0.7\textwidth]{benchmarking/heuristic_overview}
+%     \includegraphics[width=0.7\textwidth]{benchmarking/runtime_scalability}
+%     \includegraphics[width=0.7\textwidth]{benchmarking/repair_convergence}
+%     \includegraphics[width=0.7\textwidth]{benchmarking/case_reliability}
+%     \caption{Example output of the benchmark plotting command. Replace
+%     with an actual generated plot from a completed evaluation run.}
+%     \label{fig:bench-plot-placeholder}
+% \end{figure}

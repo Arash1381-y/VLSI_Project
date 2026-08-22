@@ -1,0 +1,323 @@
+\chapter{Background and Theory}
+\label{ch:background}
+
+This chapter reviews, without reference to any particular implementation,
+the theory that \cref{ch:validation,ch:sta,ch:logical-effort,ch:power-area,ch:optimization,ch:monte-carlo}
+implement. Notation follows the assignment specification.
+
+\section{The Circuit as a Timing Graph}
+\label{sec:bg-graph}
+
+A flattened combinational netlist is modeled as a directed acyclic graph
+$\mathcal{G} = (\mathcal{V}, \mathcal{E})$. Each vertex is either a primary
+input, a gate instance, or (implicitly, via a flag on the driving gate) a
+primary output; each directed edge represents a net connecting the output of
+one vertex to an input pin of another. Because the circuit is purely
+combinational, $\mathcal{G}$ must be acyclic --- a directed cycle would
+correspond to a signal depending on its own future value, which is not
+realizable in combinational logic and must be rejected as a structural
+error (\cref{sec:val-cycle}).
+
+Because $\mathcal{G}$ is a DAG, it admits at least one \emph{topological
+order}: a linear ordering of vertices such that every edge points from an
+earlier vertex to a later one. Any algorithm that must process every gate
+only after all of its fan-in gates have already been processed --- as the
+forward timing pass in \cref{sec:sta-forward} does --- can be implemented as
+a single linear pass over a topological order, in $O(|\mathcal{V}| +
+|\mathcal{E}|)$ time, without needing to re-discover dependency order on the
+fly.
+
+\section{Load and Delay Modeling}
+\label{sec:bg-delay}
+
+\subsection{Output Load Capacitance}
+
+The propagation delay of a logic gate depends on the total capacitance it
+must drive at its output. For gate $i$, let $\mathrm{Fanout}(i)$ be the set
+of $(j,p)$ pairs such that gate $i$'s output drives input pin $p$ of gate
+$j$; let $C_{\mathrm{input},j,p}$ be the input pin capacitance of pin $p$ of
+the currently-assigned cell for gate $j$; and let $C_{\mathrm{external},i}$
+be any additional load applied directly to gate $i$'s output net (nonzero
+only when that net is a primary output, in which case its value is supplied
+by the configuration file). The total output load capacitance of gate $i$
+is
+
+\begin{equation}
+    C_{\mathrm{load},i} \;=\; \sum_{(j,p)\,\in\,\mathrm{Fanout}(i)} C_{\mathrm{input},j,p} \;+\; C_{\mathrm{external},i}.
+    \label{eq:cload}
+\end{equation}
+
+\subsection{Propagation Delay}
+
+A linear delay model based on effective output resistance and load
+capacitance is used. Because the pull-up and pull-down networks of a static
+CMOS gate are generally not symmetric, rising and falling output transitions
+are modeled with independent parameters: an intrinsic (load-independent)
+delay $D_{\mathrm{intrinsic},\mathrm{rise}/\mathrm{fall},i}$ and an
+effective output resistance $R_{\mathrm{rise}/\mathrm{fall},i}$, both
+supplied per cell by the standard-cell library, together with a
+technology-dependent unit-conversion constant $\kappa$:
+
+\begin{align}
+    D_{\mathrm{rise},i} &= D_{\mathrm{intrinsic},\mathrm{rise},i} + \kappa\, R_{\mathrm{rise},i}\, C_{\mathrm{load},i}, \label{eq:drise}\\
+    D_{\mathrm{fall},i} &= D_{\mathrm{intrinsic},\mathrm{fall},i} + \kappa\, R_{\mathrm{fall},i}\, C_{\mathrm{load},i}. \label{eq:dfall}
+\end{align}
+
+Both $D_{\mathrm{rise},i}$ and $D_{\mathrm{fall},i}$ depend only on the
+gate's own currently-assigned cell and its total output load
+(\cref{eq:cload}); neither depends on which input transition triggered the
+output change, nor on any arrival time. This decoupling is what allows load
+and delay to be computed for every gate in the circuit in a single pass,
+independent of, and prior to, the timing-propagation passes described next.
+
+\section{Unate Timing Arcs}
+\label{sec:bg-unate}
+
+A gate's output transition is not always the same polarity as the input
+transition that caused it; the relationship is called the pin's
+\emph{timing sense} and is characterized per input pin by the standard-cell
+library as one of three classes.
+
+\begin{itemize}
+    \item \textbf{Positive unate.} The output transition has the same
+          polarity as the input transition: an input rise causes an output
+          rise, and an input fall causes an output fall. Buffers and
+          AND/OR-type gates (an even number of inversions from that input
+          to the output) exhibit this behavior.
+    \item \textbf{Negative unate.} The output transition has the opposite
+          polarity: an input rise causes an output fall, and vice versa.
+          Inverters and NAND/NOR-type gates (an odd number of inversions)
+          exhibit this behavior.
+    \item \textbf{Non-unate.} Either input polarity can, depending on the
+          state of the gate's other inputs, cause either output polarity.
+          XOR/XNOR-type gates exhibit this behavior, and both possibilities
+          must be considered by the timing engine rather than assuming a
+          fixed relationship.
+\end{itemize}
+
+This classification determines which (input transition, output transition)
+pairs are legal timing arcs through a given pin, and both the forward and
+backward propagation equations in \cref{sec:bg-sta} must restrict their
+maximization/minimization to only the legal pairs for each pin.
+
+\section{Static Timing Analysis Equations}
+\label{sec:bg-sta}
+
+\subsection{Forward Propagation --- Arrival Time}
+\label{sec:bg-sta-forward}
+
+Let $\mathrm{AT}_i^{s}$ denote the arrival time of transition $s \in
+\{\mathrm{rise}, \mathrm{fall}\}$ at the output of gate $i$. For each input
+pin $p$ of gate $i$, let $j = \mathrm{driver}(i,p)$ be the gate (or primary
+input) driving that pin, and let $\mathcal{T}_{i,p}$ be the set of legal
+$(s', s)$ transition pairs for that pin, as determined by its timing sense
+(\cref{sec:bg-unate}). Because the propagation delay of gate $i$
+(\cref{eq:drise,eq:dfall}) depends only on gate $i$'s own output transition
+$s$ and not on which input transition produced it, the arrival time at gate
+$i$'s output is
+
+\begin{equation}
+    \mathrm{AT}_i^{s} \;=\; \max_{\substack{p \in \mathrm{Inputs}(i) \\ j = \mathrm{driver}(i,p) \\ (s',s)\,\in\,\mathcal{T}_{i,p}}} \left( \mathrm{AT}_j^{s'} + D_i^{s} \right), \qquad s \in \{\mathrm{rise},\mathrm{fall}\}.
+    \label{eq:forward-sta}
+\end{equation}
+
+Primary inputs are the base case of this recursion: their arrival times are
+supplied directly by the configuration file rather than computed. Evaluating
+\cref{eq:forward-sta} for every gate, in topological order, yields the
+arrival time of every net in the circuit in a single linear pass.
+
+\subsection{Backward Propagation --- Required Time}
+\label{sec:bg-sta-backward}
+
+Let $\mathrm{RT}_j^{s'}$ denote the required time of transition $s'$ at the
+output of gate $j$: the latest moment that transition may occur without
+causing a violation at any downstream primary output. The base case is now
+at the primary outputs, whose required times are supplied directly by the
+configuration file. For an internal gate $j$, let $\mathrm{Fanout}(j)$ be
+the set of $(i,p)$ pairs such that $j$'s output drives pin $p$ of gate $i$.
+Because $j$'s output must be ready in time to satisfy \emph{every} path that
+depends on it, the required time is the \emph{minimum} over all of $j$'s
+fan-out arcs:
+
+\begin{equation}
+    \mathrm{RT}_j^{s'} \;=\; \min_{\substack{(i,p)\,\in\,\mathrm{Fanout}(j) \\ (s',s)\,\in\,\mathcal{T}_{i,p}}} \left( \mathrm{RT}_i^{s} - D_i^{s} \right), \qquad s' \in \{\mathrm{rise},\mathrm{fall}\}.
+    \label{eq:backward-sta}
+\end{equation}
+
+Evaluating \cref{eq:backward-sta} for every gate, in \emph{reverse}
+topological order, yields the required time of every net in the circuit.
+
+\subsection{Slack, WNS, and TNS}
+\label{sec:bg-sta-slack}
+
+The \emph{slack} of transition $s$ at node $i$ is the margin between when
+the signal is required and when it actually arrives:
+
+\begin{equation}
+    S_i^{s} = \mathrm{RT}_i^{s} - \mathrm{AT}_i^{s}, \qquad S_i = \min\!\left(S_i^{\mathrm{rise}}, S_i^{\mathrm{fall}}\right).
+    \label{eq:slack}
+\end{equation}
+
+A negative slack indicates a timing violation at that node. Two
+circuit-level summary metrics are defined over the set $\mathcal{O}$ of
+primary outputs: the \emph{worst negative slack} (WNS), the single most
+severe violation anywhere in the circuit, and the \emph{total negative
+slack} (TNS), the sum of every violation's magnitude (zero if the circuit is
+fully compliant):
+
+\begin{equation}
+    \mathrm{WNS} = \min_{o \in \mathcal{O}} S_o, \qquad
+    \mathrm{TNS} = \sum_{o \in \mathcal{O}} \min(0, S_o).
+    \label{eq:wns-tns}
+\end{equation}
+
+The \emph{critical path} for a given endpoint is the sequence of gates whose
+delays, summed along the arcs selected by the $\arg\max$ in
+\cref{eq:forward-sta}, produced that endpoint's arrival time; the top-$K$
+critical paths are the $K$ (endpoint, transition) pairs with least slack,
+together with their reconstructed paths.
+
+\section{Logical Effort}
+\label{sec:bg-le}
+
+Logical effort is a technology-independent method for estimating and
+minimizing the delay of a chain of static CMOS gates.
+It decomposes the normalized delay of a single stage $i$ into a
+\emph{parasitic} term $p_i$ (the load-independent delay contributed by the
+gate's own internal capacitance) and a \emph{stage effort} term $f_i$, the
+product of three unitless quantities:
+
+\begin{itemize}
+    \item $g_i$, the \textbf{logical effort} of the input pin the path
+          traverses: how much worse that gate is at driving a given load
+          than a reference inverter of equivalent drive strength, due
+          purely to its logic function (e.g.\ a two-input NAND has $g > 1$
+          because its series pull-down transistors must be sized larger for
+          equal drive strength).
+    \item $h_i$, the \textbf{electrical effort} (fan-out ratio): the ratio
+          of the load capacitance the stage must drive, along the path, to
+          its own input pin capacitance.
+    \item $b_i$, the \textbf{branching effort}: the extra ``tax'' incurred
+          when a stage's output also drives capacitance that lies off the
+          path under analysis.
+\end{itemize}
+
+For a stage with on-path receiver capacitance $C_{\mathrm{onpath},i}$ and
+off-path (other fan-out) capacitance $C_{\mathrm{offpath},i}$, and own input
+pin capacitance $C_{\mathrm{in},i}$:
+
+\begin{equation}
+    b_i = \frac{C_{\mathrm{onpath},i} + C_{\mathrm{offpath},i}}{C_{\mathrm{onpath},i}},
+    \qquad
+    h_i = \frac{C_{\mathrm{onpath},i}}{C_{\mathrm{in},i}},
+    \qquad
+    f_i = g_i\, b_i\, h_i,
+    \qquad
+    d_i = f_i + p_i.
+    \label{eq:le-stage}
+\end{equation}
+
+For an $N$-stage path with path logical effort $G$, path branching effort
+$B$, path electrical effort $H$ (ratio of the path's terminal load to its
+first stage's input capacitance), total path effort $F$, and total
+parasitic delay $P$:
+
+\begin{equation}
+    G = \prod_{i=1}^{N} g_i, \qquad
+    B = \prod_{i=1}^{N} b_i, \qquad
+    H = \frac{C_{L,\mathrm{path}}}{C_{\mathrm{in},1}}, \qquad
+    F = G\,B\,H = \prod_{i=1}^{N} f_i, \qquad
+    P = \sum_{i=1}^{N} p_i.
+    \label{eq:le-path}
+\end{equation}
+
+A classical result of logical effort theory is that, for a fixed number of
+stages $N$, path delay is minimized when every stage carries \emph{equal}
+effort $\hat{f} = F^{1/N}$; the corresponding normalized and absolute
+theoretical minimum delays are
+
+\begin{equation}
+    d_{\mathrm{path,min}} = N F^{1/N} + P,
+    \qquad
+    D_{LE,\mathrm{min}} = \tau\, d_{\mathrm{path,min}},
+    \label{eq:le-min-delay}
+\end{equation}
+
+where $\tau$ is a technology-dependent time unit supplied by the cell
+library. A stage whose actual effort $f_i$ exceeds $\hat{f}$ is, by this
+theory, under-sized relative to the load it drives and is a natural
+candidate for up-sizing; \cref{ch:optimization} uses exactly this
+observation to prioritize which gate to resize first. Inverting
+\cref{eq:le-stage} for a target effort $\hat f$ gives, for stage $i$, the
+continuous \emph{desired} input capacitance that would make its effort
+equal to the path target, which can then be mapped onto the nearest
+discretely-sized cell(s) actually available in the library:
+
+\begin{equation}
+    C^{*}_{\mathrm{in},i} = \frac{g_i\, C_{\mathrm{total},i}}{\hat f},
+    \qquad
+    C_{\mathrm{total},i} = C_{\mathrm{onpath},i} + C_{\mathrm{offpath},i}.
+    \label{eq:le-target-cap}
+\end{equation}
+
+\section{Power and Area Estimation}
+\label{sec:bg-power}
+
+Total circuit area is the sum of the area of every currently-assigned cell.
+Total power is the sum of a static \emph{leakage} component (supplied
+directly per cell by the library, independent of switching activity) and a
+switching-activity-dependent \emph{dynamic} component. For gate $i$ with
+switching activity factor $\alpha_i$, effective switched capacitance
+$C_{\mathrm{sw},i}$ (the sum of its output load and its own internal
+capacitance), supply voltage $V_{DD}$, and clock frequency $f$:
+
+\begin{equation}
+    A_{\mathrm{total}} = \sum_{i \in \mathcal{G}} A_i, \qquad
+    C_{\mathrm{sw},i} = C_{\mathrm{load},i} + C_{\mathrm{internal},i}, \qquad
+    P_{\mathrm{dynamic}} = \sum_{i \in \mathcal{G}} \alpha_i\, C_{\mathrm{sw},i}\, V_{DD}^2\, f,
+    \label{eq:power-area}
+\end{equation}
+\begin{equation}
+    P_{\mathrm{leakage}} = \sum_{i \in \mathcal{G}} P_{\mathrm{leakage},i}, \qquad
+    P_{\mathrm{total}} = P_{\mathrm{dynamic}} + P_{\mathrm{leakage}}.
+    \label{eq:power-total}
+\end{equation}
+
+Short-circuit power is not modeled separately; the assignment specification
+explicitly permits this simplification.
+
+\section{Statistical Timing: Process Variation}
+\label{sec:bg-mc}
+
+Manufacturing process variation causes the true delay of a fabricated gate
+to differ from its nominal (library-specified) value. Two components are
+modeled: a \emph{global} component $Z_g$, shared by every gate in a given
+manufactured die (modeling die-to-die and within-die systematic variation),
+and a \emph{local} component $Z_i$, drawn independently per gate (modeling
+random device-level mismatch). For Monte Carlo sample $k$, with relative
+variation strengths $\sigma_g$ and $\sigma_l$ supplied by the configuration
+file:
+
+\begin{equation}
+    Z_g^{(k)}, Z_i^{(k)} \sim \mathcal{N}(0,1), \qquad
+    D_{i,s}^{(k)} = D_{i,s,\mathrm{nom}}\left(1 + \sigma_g Z_g^{(k)} + \sigma_l Z_i^{(k)}\right), \quad s \in \{\mathrm{rise},\mathrm{fall}\}.
+    \label{eq:mc-delay}
+\end{equation}
+
+Because delay is a strictly positive physical quantity, any sample that
+would yield a non-positive delay for any gate is discarded and re-drawn.
+Given $M$ valid samples, and letting $I^{(k)}_{\mathrm{violation}}$
+indicate whether sample $k$'s worst negative slack is negative, the
+empirical violation probability and timing yield are
+
+\begin{equation}
+    \hat{P}_{\mathrm{violation}} = \frac{1}{M}\sum_{k=1}^{M} I^{(k)}_{\mathrm{violation}}, \qquad
+    \hat{Y}_{\mathrm{timing}} = 1 - \hat{P}_{\mathrm{violation}}.
+    \label{eq:mc-yield}
+\end{equation}
+
+Full STA (\cref{sec:bg-sta}) is re-run once per Monte Carlo sample against
+the perturbed delay set to obtain that sample's WNS, TNS, circuit delay, and
+critical path, from which the distributional statistics reported in
+\cref{ch:monte-carlo,ch:results} are computed.
+

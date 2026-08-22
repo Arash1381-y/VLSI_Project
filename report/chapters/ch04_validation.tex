@@ -1,0 +1,114 @@
+\chapter{Input Parsing and Validation}
+\label{ch:validation}
+
+\section{Netlist and Cell Library Grammar}
+\label{sec:val-grammar}
+
+The netlist format is a flat, line-oriented text grammar with three
+statement forms, one per line, blank lines and \code{\#}-prefixed comments
+ignored:
+
+\begin{lstlisting}[language=bash, style=pythonstyle, numbers=none]
+INPUT  <signal_name>
+OUTPUT <signal_name>
+<instance_name> <cell_name> <input_net_1> ... <input_net_N> <output_net>
+\end{lstlisting}
+
+The standard-cell library is a single JSON file, shared across every
+circuit, describing thirty-six cells across twelve logic families
+(\code{INV}, \code{BUF}, \code{AND2}, \code{NAND2}, \code{OR2}, \code{NOR2},
+\code{XOR2}, \code{XNOR2}, three-input variants, and so on), each available
+in three drive-strength sizes (\code{X1}, \code{X2}, \code{X4}). Every cell
+entry supplies, per input pin, its capacitance, logical effort, and timing
+sense (\cref{sec:bg-unate}), and, per cell, its intrinsic rise/fall delay,
+rise/fall output resistance, internal capacitance, normalized parasitic
+delay, leakage power, and area --- i.e.\ every quantity that appears on the
+right-hand side of \cref{eq:cload,eq:drise,eq:dfall,eq:le-stage,eq:power-area,eq:power-total}.
+
+\section{Configuration Schema}
+\label{sec:val-config}
+
+The configuration file supplies every circuit- and run-specific parameter
+that is not part of the netlist or the (shared) cell library: primary-input
+arrival times, primary-output required times and external loads, operating
+conditions (supply voltage, clock frequency, temperature, switching
+activity factors), area and power budgets, optimizer settings (allowed
+sizes, iteration limit, cost weights), and Monte Carlo settings (sample
+count, variation strengths, random seed). Every field is validated for
+presence, type, and range before any analysis is attempted; a missing or
+malformed field is rejected with a specific error message rather than
+silently substituted with a default, on the reasoning that a silently
+wrong configuration value is more dangerous than a loud rejection.
+
+\section{Structural Validation Stages}
+\label{sec:val-stages}
+
+Validation proceeds through four ordered stages, and the process is
+aborted at the first stage that fails so that no analysis is ever attempted
+on an input the tool cannot trust.
+
+\begin{enumerate}
+    \item \textbf{Configuration.} Schema and range validation as described
+          above.
+    \item \textbf{Cell library.} Schema validation of the shared library
+          file (every cell has a complete, correctly typed set of the
+          fields listed in \cref{sec:val-grammar}).
+    \item \textbf{Netlist.} Parses the grammar and performs every
+          netlist-level structural check listed in \cref{tab:error-classes}.
+    \item \textbf{DAG.} Builds the circuit graph and topologically sorts it;
+          failure at this stage means a combinational (feedback) loop was
+          detected.
+\end{enumerate}
+
+\subsection{Combinational Loop Detection}
+\label{sec:val-cycle}
+
+A combinational loop cannot be resolved by a linear topological ordering:
+Kahn's algorithm repeatedly removes vertices with zero remaining in-degree
+and terminates having placed every vertex if and only if the graph is
+acyclic. If any vertices remain unplaced when the algorithm's queue empties,
+those vertices participate in (or exclusively depend on) a cycle, and the
+netlist is rejected with the specific set of implicated gate instances
+reported to the user.
+
+\section{Error Taxonomy and the Invalid-Circuit Benchmark Set}
+\label{sec:val-errors}
+
+Six structural error classes are validated against, matching the six
+invalid benchmark circuits supplied with the assignment
+(\code{e01}--\code{e06}). \Cref{tab:error-classes} summarizes each class,
+the pipeline stage at which it is detected, and the diagnostic message
+format produced.
+
+\begin{longtable}{@{}p{0.25\textwidth}p{0.10\textwidth}p{0.5\textwidth}@{}}
+\toprule
+\textbf{Error class} & \textbf{Stage} & \textbf{Detection} \\
+\midrule
+\endhead
+\code{undefined\_cell} &
+  Netlist &
+  A gate instance references a cell name absent from the library. \\[4pt]
+\code{undriven\_signal} &
+  Netlist &
+  A gate input net is neither a primary input nor the output of any gate
+  in the netlist. \\[4pt]
+\code{multiple\_drivers} &
+  Netlist &
+  A net name appears as the output of more than one gate instance (or of
+  both a gate and a declared primary input). \\[4pt]
+\code{invalid\_input\_count} &
+  Netlist &
+  The number of input nets listed for a gate instance does not match the
+  defined cell's number of input pins. \\[4pt]
+\code{undriven\_output} &
+  Netlist &
+  A signal declared with \code{OUTPUT} is not the output of any gate
+  instance. \\[4pt]
+\code{combinational\_loop} &
+  DAG &
+  Topological sort fails to place every gate (\cref{sec:val-cycle}). \\
+\bottomrule
+\caption{Structural error taxonomy.}
+\label{tab:error-classes}
+\end{longtable}
+

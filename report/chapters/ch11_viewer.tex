@@ -1,0 +1,83 @@
+\chapter{Interactive Topology Viewer}
+\label{ch:viewer}
+
+\section{Purpose and Architecture}
+\label{sec:viewer-purpose}
+
+Static PNG renderings of a circuit's DAG (\code{circuit\_graph\_\{pre,post\}\_optimization.png} artifacts of
+\cref{tab:output-contract}) are adequate for small circuits but become
+difficult to read once a circuit reaches the size of the larger benchmark
+circuits (upwards of a hundred gates) or once a reader wants to compare the
+pre- and post-optimization state of the same circuit interactively rather
+than by flipping between two static images. The interactive viewer
+addresses this: every analysis run exports \code{circuit\_topology.json}, a
+versioned, self-contained graph description --- one shared topology
+(primary inputs, gates, primary outputs, and named nets) with two named
+overlays, \code{original} and \code{canonical\_optimized}, each supplying
+per-gate cell assignment, load capacitance, rise/fall delay, and ranked
+critical paths for that state of the circuit. A small local server,
+launched with
+
+\begin{lstlisting}[language=bash, style=pythonstyle, numbers=none]
+vlsi-sta view outputs/c15_high_fanout_sizing_fabric
+\end{lstlisting}
+
+serves this JSON contract to a browser-based front end and opens it
+automatically (suppressible with \code{--no-browser} for remote or scripted
+use, with \code{--host}/\code{--port} available for remote access).
+
+\section{Features}
+\label{sec:viewer-features}
+
+\begin{itemize}
+    \item Mouse- and touch-based panning, cursor-anchored wheel zoom, and a
+          fit-to-view command, with keyboard shortcuts (\code{+}, \code{-},
+          \code{F}, \code{0}, \code{Escape}) mirroring the on-screen
+          controls.
+    \item Optional net labels and node selection, with connected-net
+          isolation to declutter the view of a densely fanned-out node.
+    \item Independent visibility toggles for the \code{original} and
+          \code{canonical\_optimized} overlays, so the two states can be
+          viewed separately or superimposed.
+    \item Critical-path coloring consistent with the static PNG renderings.
+    \item \textbf{Dual-state gate inspection}: selecting a gate shows its
+          cell, load, and delay in both the original and optimized state
+          side by side.
+    \item \textbf{Target-size highlighting} for any gate the optimizer
+          resized: an amber halo marks a gate resized to an \code{X2}
+          target, a wider purple halo marks a gate resized to an \code{X4}
+          target. This highlighting is shown only while both overlays are
+          simultaneously enabled, since it is inherently a comparison
+          between the two states.
+      \item \textbf{Analysis and Schematic View modes}: Analysis view is the
+          normal mode (similar to the PNG files), but a \emph{Schematic View} feature
+          enables the user to see the real circuit elements instead of boxes.
+\end{itemize}
+
+\section{Screenshots}
+\label{sec:viewer-screenshots}
+\vspace{-10pt}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{viewer/analysis view}
+    \caption{Interactive topology viewer: Analysis View mode.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{viewer/schematic view}
+    \caption{Interactive topology viewer: Schematic View mode.}
+\end{figure}
+\vspace{-60pt}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{viewer/gate select}
+    \caption{Interactive topology viewer: gate inspection mode (clicked on a gate).}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{viewer/big circuit}
+    \caption{Interactive topology viewer: Schematic view for a larger circuit.}
+\end{figure}

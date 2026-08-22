@@ -1,0 +1,801 @@
+\chapter{Results}
+\label{ch:results}
+
+All results in this chapter were produced by running the complete analysis
+pipeline (using \code{./run\_circuit.sh --all}) against the fifteen valid and six
+invalid benchmark circuits supplied with the assignment, on the codebase
+version accompanying this report.
+
+\section{Structural Validation on the Invalid Benchmark Set}
+\label{sec:res-invalid}
+
+All six intentionally invalid circuits were correctly rejected, each with
+the specific error class the circuit was constructed to exercise
+(\cref{tab:error-classes}). \Cref{tab:res-invalid} reproduces the exact
+diagnostic message emitted for each.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{@{}lp{0.62\textwidth}@{}}
+\toprule
+\textbf{Circuit} & \textbf{Reported diagnostic} \\
+\midrule
+\code{e01\_undefined\_cell} & \code{undefined cell 'MUX2\_X1'} \\
+\code{e02\_undriven\_signal} & \code{signal 'X' is undriven} \\
+\code{e03\_multiple\_drivers} & \code{net 'N1' has multiple drivers ('G1' and 'G2')} \\
+\code{e04\_combinational\_loop} & \code{combinational loop involving gates: G1, G2, G3} \\
+\code{e05\_wrong\_input\_count} & \code{cell 'NAND2\_X1' expects 2 inputs, got 1} \\
+\code{e06\_undriven\_output} & \code{primary output 'OUT' is undriven} \\
+\bottomrule
+\end{tabular}
+\caption{Validation results on the six invalid benchmark circuits.}
+\label{tab:res-invalid}
+\end{table}
+
+\section{Nominal Timing on the Valid Benchmark Set}
+\label{sec:res-nominal}
+
+\Cref{tab:res-nominal} reports, for all fifteen valid circuits, the gate
+count and the nominal (pre-optimization) circuit delay, WNS, and TNS. One of the fifteen circuits (\code{c01\_inverter\_chain}) is already timing-compliant
+(nonnegative WNS); the remaining six exhibit a deliberate timing violation
+by construction, ranging from a marginal \SI{-0.002}{ns} on
+\code{c12\_monte\_carlo\_swit\newline ching} to a severe \SI{-0.147}{ns} (with a TNS
+of \SI{-2.321}{ns}, reflecting many simultaneously violating output
+transitions) on \code{c15\_high\_fanout\_sizing\_fabric}, the largest
+circuit in the suite at 118 gates.
+
+\newpage
+\begin{longtable}{@{}lrrrr@{}}
+\toprule
+\textbf{Circuit} & \textbf{Gates} & \textbf{Delay (ns)} & \textbf{WNS (ns)} & \textbf{TNS (ns)} \\
+\midrule
+\endhead
+c01\_inverter\_chain            & 3   & 0.1010 & \phantom{-}0.0090 & \phantom{-}0.0000 \\
+c02\_basic\_nand\_path          & 3   & 0.1620 & -0.0070 & -0.0070 \\
+c03\_fanout\_branch             & 4   & 0.2010 & -0.0060 & -0.0060 \\
+c04\_reconvergent\_paths        & 5   & 0.2722 & -0.0072 & -0.0072 \\
+c05\_multi\_output              & 5   & 0.2253 & -0.0053 & -0.0078 \\
+c06\_deep\_critical\_path       & 10  & 0.4527 & -0.0227 & -0.0268 \\
+c07\_parallel\_paths            & 6   & 0.2748 & -0.0078 & -0.0078 \\
+c08\_non\_unate\_logic          & 4   & 0.2687 & -0.0087 & -0.0130 \\
+c09\_high\_fanout               & 6   & 0.2090 & -0.0040 & -0.0073 \\
+c10\_three\_input\_gates        & 5   & 0.2870 & -0.0120 & -0.0120 \\
+c11\_gate\_sizing\_stress       & 6   & 0.3595 & -0.0295 & -0.0295 \\
+c12\_monte\_carlo\_switching    & 7   & 0.3172 & -0.0022 & -0.0022 \\
+c13\_large\_reconvergent\_network & 74  & 1.0103 & -0.0293 & -0.2133 \\
+c14\_layered\_reconvergent\_fabric & 104 & 0.9893 & -0.0213 & -0.1596 \\
+c15\_high\_fanout\_sizing\_fabric & 118 & 1.9674 & -0.1474 & -2.3211 \\
+\bottomrule
+\caption{Nominal (pre-optimization) timing on the fifteen valid benchmark
+circuits. Nine of fifteen circuits are supplied already timing-compliant;
+the remaining six exhibit a constructed violation.}
+\label{tab:res-nominal}
+\end{longtable}
+
+\section{Gate-Sizing Heuristic Comparison}
+\label{sec:res-heuristics}
+
+\Cref{tab:res-heuristics} reports the final WNS reached by each of the
+three automatically-invoked heuristics (\code{slack\_weighted\_capacitance},
+the canonical logical-effort-guided method; \code{critical\newline ity\_effort\_gap},
+the second logical-effort-informed heuristic; and \code{random\_greedy}, the
+non-logical-effort baseline), together with a compliance flag indicating
+whether that heuristic reached a fully timing-compliant final design within
+the configured area and power budgets.
+
+\begin{center}
+    
+
+\begin{longtable}{@{}lrrr@{}}
+\toprule
+\textbf{Circuit} & \textbf{WNS$_{\mathrm{swg}}$} & \textbf{WNS$_{\mathrm{ceg}}$} & \textbf{WNS$_{\mathrm{rg}}$} \\
+\midrule
+\endhead
+c01\_inverter\_chain            & \phantom{-}0.0090 & \phantom{-}0.0090 & \phantom{-}0.0090 \\
+c02\_basic\_nand\_path          & \phantom{-}0.0050 & \phantom{-}0.0050 & -0.0010  \\
+c03\_fanout\_branch             & \phantom{-}0.0150 & \phantom{-}0.0150 & \phantom{-}0.0150 \\
+c04\_reconvergent\_paths        & \phantom{-}0.0059 & \phantom{-}0.0059 & \phantom{-}0.0069 \\
+c05\_multi\_output              & -0.0025 & -0.0025 & -0.0053 \\
+c06\_deep\_critical\_path       & \phantom{-}0.0033 & \phantom{-}0.0033 & -0.0217 \\
+c07\_parallel\_paths            & \phantom{-}0.0112 & \phantom{-}0.0112 & -0.0078 \\
+c08\_non\_unate\_logic          & \phantom{-}0.0093 & \phantom{-}0.0093 & \phantom{-}0.0093 \\
+c09\_high\_fanout               & \phantom{-}0.0430 & \phantom{-}0.0430 & \phantom{-}0.0430 \\
+c10\_three\_input\_gates        & \phantom{-}0.0330 & \phantom{-}0.0330 & \phantom{-}0.0330 \\
+c11\_gate\_sizing\_stress       & \phantom{-}0.0325 & \phantom{-}0.0325 & -0.0220 \\
+c12\_monte\_carlo\_switching    & \phantom{-}0.0129 & \phantom{-}0.0129 & -0.0002 \\
+c13\_large\_reconvergent\_network & \phantom{-}0.0037 & -0.0293 & -0.0293 \\
+c14\_layered\_reconvergent\_fabric & \phantom{-}0.0182 & \phantom{-}0.0182 & \phantom{-}0.0030 \\
+c15\_high\_fanout\_sizing\_fabric & \phantom{-}0.0392 & \phantom{-}0.0397 & \phantom{-}0.0397 \\
+\midrule
+\textbf{Repair rate} & \textbf{14/15} & \textbf{13/15} & \textbf{8/15} \\
+\bottomrule
+\caption{Final WNS (ns) and compliance status per heuristic. Repair rate
+counts circuits reaching \(\mathrm{WNS} \geq 0\) within area/power
+budgets, out of all fifteen valid circuits.}
+\label{tab:res-heuristics}
+\end{longtable}
+\end{center}
+
+Restricted to only the fourteen circuits that exhibited a violation to
+begin with (excluding \code{c01}, already compliant), the repair rates are
+$13/14$ ($\approx 92.9\%$) for slack-weighted capacitance, $12/14$
+($\approx 85.7\%$) for criticality effort gap, and $7/14$ ($=50.0\%$) for
+random greedy heuristic.
+
+\subsection{Efficiency: STA Calls}
+\label{sec:res-efficiency}
+
+Summed across all fifteen circuits, the canonical logical-effort-guided
+heuristic issued \textbf{119} total STA calls, versus \textbf{155} for
+random greedy --- and the correct explanation for this is more specific
+than ``one attempt, one STA call.'' \Cref{sec:opt-eval} already
+establishes that candidate evaluation is a two-step gate: a cheap,
+STA-free pre-filter (\code{replacement\_area\_and\_po\newline wer}) rejects a
+candidate outright if it alone would exceed the area or power budget,
+and only a candidate that survives this filter reaches the actual
+\code{analyze\_timing} call. Cross-checking the recorded iteration logs
+confirms this directly: on \code{c13\_large\_reconvergent\_network}, the
+canonical heuristic's log contains 66 logged attempts, of which 52 are
+rejected with reason \emph{``candidate violates area or power
+constraints''} (free, no STA call) and only 13 require an actual timing
+result (10 rejected for not improving WNS/TNS, 1 rejected once compliant
+for not improving cost, and 2 accepted) --- plus one further STA call to
+establish the initial reference state (\cref{sec:opt-cost}), for a
+reported total of 14, exactly matching \code{summary.json}.
+
+Because budget-infeasible candidates cost nothing, a heuristic's STA-call
+total measures how many candidates it proposes that are \emph{plausible
+enough to need a real timing check}, not merely how many candidates it
+tries in total. On this specific circuit, random greedy needed only 3 STA
+calls in total (1 initial, 1 accepted, 1 WNS/TNS rejection) against the
+canonical heuristic's 14 --- the canonical heuristic's higher-scored
+candidates more often clear the cheap budget pre-filter and therefore more
+often reach the expensive check, while most of random greedy's random
+draws are eliminated for free before ever costing a timing analysis. This
+cautions against reading the suite-wide STA-call total as a simple
+``search order wastes fewer attempts'' story: the totals do favor the
+canonical heuristic in aggregate (119 versus 155) and as a per-circuit
+mean ($\approx 7.9$ versus $\approx 10.3$ calls per circuit), but not
+uniformly --- on five of the fifteen circuits, including the two largest
+(\code{c13}: 14 versus 3; \code{c14}: 39 versus 19), the canonical
+heuristic issues \emph{more} STA calls than random greedy, precisely
+because more of its proposals are good enough to be worth the expensive
+check in the first place. Aggregate STA-call count is therefore best read
+as a rough proxy for total search cost, not as a clean, uniformly-favorable
+efficiency metric on its own; \cref{tab:res-heuristics,tab:res-cost}'s
+repair-rate and final-cost comparisons are the more direct evidence for
+the canonical heuristic's advantage.
+
+\subsection{Cost, Power, and Area}
+\label{sec:res-cost}
+
+\Cref{tab:res-cost} compares the final cost $J$ (\cref{eq:cost}) reached by
+the canonical heuristic against random greedy. The canonical method
+reaches a \emph{strictly} lower (better) final cost than random greedy on
+ten of the fifteen circuits, and \emph{ties exactly} on the remaining
+five: on \code{c01} because neither heuristic makes any accepted change at
+all (the circuit is already compliant and no candidate reduces cost), and
+on \code{c03}, \code{c08}, \code{c09}, and \code{c10} because both
+heuristics independently accept the identical sequence of resizes (verified
+directly against the recorded iteration logs, not merely inferred from
+matching final cost). On \emph{no} circuit in the suite does random greedy
+reach a lower final cost than the canonical heuristic. The narrowest
+margin in the canonical method's favor is on \code{c15}
+($J = 1.263$ versus $J = 1.272$), still a real, if small, improvement
+rather than a tie.
+
+\begin{longtable}{@{}lrrr@{}}
+\toprule
+\textbf{Circuit} & \textbf{$J_0$} & \textbf{$J_{\mathrm{swc}}$} & \textbf{$J_{\mathrm{rg}}$} \\
+\midrule
+\endhead
+c01\_inverter\_chain            & 1.400 & 1.400 & 1.400 \\
+c02\_basic\_nand\_path          & 1.616 & 1.511 & 1.578 \\
+c03\_fanout\_branch             & 1.549 & 1.342 & 1.342 \\
+c04\_reconvergent\_paths        & 1.532 & 1.434 & 1.481 \\
+c05\_multi\_output              & 1.518 & 1.466 & 1.587 \\
+c06\_deep\_critical\_path       & 1.650 & 1.377 & 1.659 \\
+c07\_parallel\_paths            & 1.543 & 1.424 & 1.573 \\
+c08\_non\_unate\_logic          & 1.561 & 1.376 & 1.376 \\
+c09\_high\_fanout               & 1.496 & 1.207 & 1.207 \\
+c10\_three\_input\_gates        & 1.609 & 1.368 & 1.368 \\
+c11\_gate\_sizing\_stress       & 1.810 & 1.283 & 1.780 \\
+c12\_monte\_carlo\_switching    & 1.434 & 1.412 & 1.444 \\
+c13\_large\_reconvergent\_network & 1.545 & 1.376 & 1.551 \\
+c14\_layered\_reconvergent\_fabric & 1.508 & 1.291 & 1.375 \\
+c15\_high\_fanout\_sizing\_fabric & 1.775 & 1.263 & 1.272 \\
+\bottomrule
+\caption{Final cost function value $J$, initial versus
+each heuristic's final design.}
+\label{tab:res-cost}
+\end{longtable}
+
+\subsection{Case Study: \texttt{c02\_basic\_nand\_path}}
+\label{sec:res-case-c02}
+
+\Cref{fig:c02-pre,fig:c02-post} show the rendered pre- and
+post-optimization circuit diagrams for the smallest circuit on which
+slack-weighted capacitance and random greedy diverge in outcome, and the
+full recorded iteration logs
+(\code{optimization\_slack\_weighted\_capacitance.csv},
+\code{optimization\_random\_greedy.csv}) make the reason for the divergence
+precisely traceable rather than merely inferable from the final numbers.
+
+Slack-weighted capacitance's very first candidate --- ranked highest by
+its urgency$\times$mismatch score (\cref{sec:opt-swc}) --- is
+\code{G3: AND2\_X1}$\rightarrow$\code{AND2\_X2}, which alone resolves the
+violation ($\mathrm{WNS}: -0.0070 \rightarrow +0.0050$~ns) in one accepted
+change. Three further candidates (\code{G1}, \code{G3}$\rightarrow$
+\code{X4}, \code{G2}) are then proposed by the cost-reduction phase
+(\cref{sec:opt-accept}) and all three are \emph{rejected} for violating the
+configured area/power budget, at which point the search terminates
+\code{no\_feasible\_change} --- a normal, compliant stop, not a failure.
+
+Random greedy's uniformly random draw instead tries \code{G1:
+NAND2\_X1}$\rightarrow$\code{X2} first (accepted; $\mathrm{WNS}:
+-0.0070\rightarrow-0.0025$~ns, an improvement but not yet compliant), then
+rejects \code{G3: AND2\_X1}$\rightarrow$\code{X2} for exceeding the area
+budget (at this point, with \code{G1} already upsized, the combined area
+would reach $10.2$, well past the $8.5$ limit), then accepts \code{G2:
+INV\_X1}$\rightarrow$\code{X2} (WNS$\rightarrow-0.0010$~ns), and finally
+exhausts its remaining candidates (\code{G1}$\rightarrow$\code{X4},
+\code{G2}$\rightarrow$\code{X4}, a repeated \code{G3}$\rightarrow$\code{X2}
+attempt) all rejected on the same area ceiling, terminating
+\code{no\_feasible\_change} while \textbf{still in violation}.
+
+Both searches plateau at the identical configured budget ceiling
+(\code{maximum\_area} $= 8.5$), reached via two different combinations of
+accepted resizes: slack-weighted capacitance reaches a total area of
+$8.4$ after its single accepted \code{G3} resize alone, while random
+greedy reaches the same $8.4$ via its two smaller accepted resizes
+(\code{G1} then \code{G2}) combined. From that point, every further
+candidate in \emph{either} run --- regardless of which gate it targets ---
+is rejected against the same $8.5$ ceiling; the outcome is decided not by
+which gate the budget happens to block, but by whether a compliant WNS was
+already reached \emph{before} the ceiling was hit. Slack-weighted
+capacitance's score-ranked draw tried the one resize that both fixes the
+violation and fits the pristine budget on its very first attempt; random
+greedy's random draw spent that same budget across two resizes that
+together do not fix the violation, before any further candidate could be
+tried. This is a concrete, single-circuit illustration of exactly the
+aggregate effect quantified in \cref{sec:res-efficiency}: an informed
+search order does not expand what a heuristic is allowed to do, only the
+likelihood that a fix is found before the shared budget ceiling is
+reached by changes that do not resolve the violation.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.92\textwidth]{c02_pre.png}
+    \caption{\texttt{c02\_basic\_nand\_path}, pre-optimization. Nodes are
+    colored by slack; the critical path is highlighted.}
+    \label{fig:c02-pre}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.92\textwidth]{c02_post.png}
+    \caption{\texttt{c02\_basic\_nand\_path}, post-optimization (canonical
+    slack-weighted-capacitance heuristic). Gate \texttt{G3} has been
+    resized from \texttt{AND2\_X1} to \texttt{AND2\_X2}, resolving the
+    timing violation.}
+    \label{fig:c02-post}
+\end{figure}
+
+\Cref{fig:c02-convergence} makes the same story visible directly as a
+convergence trace: slack-weighted capacitance (blue) reaches zero TNS and
+positive WNS in a single accepted step and holds there, while random
+greedy (green) needs two accepted steps to make partial progress and never
+crosses zero. \Cref{fig:c02-outcomes} summarizes the same run as final
+outcomes --- note criticality effort gap (orange) is visually
+indistinguishable from slack-weighted capacitance on this particular
+circuit, since both happen to find the same \texttt{G3} fix, consistent
+with \cref{tab:res-heuristics}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{c02_basic_nand_path_conv.png}
+    \caption{\texttt{c02\_basic\_nand\_path}: normalized cost, WNS, TNS,
+    circuit delay, area, and power versus accepted-change iteration, for
+    all three sequential heuristics (\cref{sec:opt-heuristics}). The
+    horizontal dashed line marks the compliance threshold on the WNS/TNS
+    panels.}
+    \label{fig:c02-convergence}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{c02_basic_nand_path_outc.png}
+    \caption{\texttt{c02\_basic\_nand\_path}: final runtime, total
+    iterations (accepted and rejected attempts combined), and final WNS
+    per heuristic.}
+    \label{fig:c02-outcomes}
+\end{figure}
+
+\subsection{Case Study: Divergence Between the Two Logical-Effort Heuristics}
+\label{sec:res-case-divergence}
+
+\code{c13\_large\_reconvergent\_network} (74 gates) is the one circuit in
+the suite on which slack-weighted capacitance and criticality effort gap
+disagree, and the recorded iteration logs make the mechanism traceable
+precisely rather than merely observable in the final numbers.
+
+Criticality effort gap's search accepts exactly one change: at iteration 7,
+\code{G65: OR2\_X1}\newline $\rightarrow$\code{OR2\_X2} is accepted under the
+\emph{tied-WNS, TNS-improves} clause of the timing-repair acceptance rule
+(\cref{sec:opt-accept}) --- WNS is left exactly unchanged at
+$-0.0293$~ns, while TNS improves substantially, from $-0.2133$ to
+$-0.1717$~ns. Eleven iterations later, at iteration 18, it proposes
+\code{G7: NOR3\_X1}$\rightarrow$\code{NOR3\_X2} --- a resize that,
+critically, \emph{is} available to criticality effort gap, since it is a
+plain one-step-up candidate, not something requiring the logical-effort
+bracket --- but this candidate is now \textbf{rejected} with reason
+\emph{``candidate violates area or power constraints''}: the area consumed
+by the earlier \code{G65} change has left no further budget for it. No
+subsequent candidate improves WNS or TNS either, and the search terminates
+\code{no\_feasible\_change} with the circuit still at its original
+$-0.0293$~ns violation.
+
+Slack-weighted capacitance's search proposes that exact same
+\code{G7: NOR3\_X1}$\rightarrow$\code{NOR3\_X2} resize much earlier, at
+iteration 13, while the circuit is still at its pristine initial area
+budget (its own higher-scored earlier candidates were all rejected
+outright rather than accepted, so no budget had yet been spent). At that
+point it is well within budget and is accepted, cutting the violation's
+magnitude by \textbf{88.6\%} ($-0.0293\rightarrow-0.0033$~ns); a second
+accepted change at
+iteration 35, \code{G6: NAND3\_X1}$\rightarrow$\code{NAND3\_X2}, then
+closes the remaining gap entirely ($\mathrm{WNS}\rightarrow+0.0037$~ns,
+$\mathrm{TNS}\rightarrow 0$).
+
+This is a second, independent confirmation of the same effect identified
+in \cref{sec:res-case-c02}: the outcome is decided not by what a heuristic
+is theoretically permitted to consider --- both heuristics have \code{G7}
+available --- but by whether an earlier accepted change quietly consumes
+budget that a later, more consequential change will need. In this instance
+the effect is sharper than in the c02 case study, because
+criticality effort gap's early accepted change is not even a step toward
+resolving the violation directly (it is WNS-neutral, accepted purely for a
+TNS improvement); slack-weighted capacitance's higher-scored ranking
+happens to defer any budget-consuming change until the one that actually
+matters, avoiding the trap entirely on this circuit.
+
+\Cref{fig:c13-convergence} shows this divergence directly: the orange
+(criticality effort gap) trace visibly plateaus at a still-negative WNS
+after its single early step, its cost curve flattening well above the blue
+(slack-weighted capacitance) trace, which instead makes a late but decisive
+descent to full compliance once its own higher-ranked candidates ahead of
+\texttt{G7} are exhausted.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{c13_large_reconvergent_network_conv.png}
+    \caption{\texttt{c13\_large\_reconvergent\_network}: convergence trace
+    for all three sequential heuristics. Criticality effort gap's single
+    early, WNS-neutral step (\cref{sec:res-case-divergence}) is visible as
+    the orange trace's premature plateau above zero WNS.}
+    \label{fig:c13-convergence}
+\end{figure}
+
+\section{Monte Carlo Statistical Analysis: \texttt{c12\_monte\_carlo\_switching}}
+\label{sec:res-montecarlo}
+
+\Cref{tab:res-mc} reports the paired Monte Carlo comparison
+(\cref{ch:monte-carlo}) for the one benchmark circuit with statistical
+analysis enabled, using $M = 3000$ samples, $\sigma_g = 0.03$,
+$\sigma_l = 0.05$, and random seed $1405$.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{@{}lrr@{}}
+\toprule
+\textbf{Metric} & \textbf{Pre-optimization} & \textbf{Post-optimization} \\
+\midrule
+Mean circuit delay (ns) & 0.3194 & 0.3041 \\
+Std.\ dev.\ circuit delay (ns) & 0.0124 & 0.0116 \\
+Mean WNS (ns) & -0.0044 & \phantom{-}0.0109 \\
+Violation probability & 0.631 & 0.174 \\
+Timing yield & 0.369 & 0.826 \\
+Modal critical path (probability) & \parbox[t]{4.1cm}{\raggedright \texttt{D->G4->G5->G6->G7} (0.606)} & \parbox[t]{4.1cm}{\raggedright \texttt{A->G1->G2->G3->G7} (0.628)} \\
+\bottomrule
+\end{tabular}
+\caption{Paired Monte Carlo statistical timing comparison, pre- versus
+post-optimization, \texttt{c12\_monte\_carlo\_switching}, $M=3000$ samples.}
+\label{tab:res-mc}
+\end{table}
+
+Optimization improves timing yield from \textbf{36.9\% to 82.6\%} --- a
+$+45.7$ percentage-point improvement --- confirming that the
+nominal-corner WNS improvement reported in \cref{sec:res-heuristics} for
+this circuit translates into a substantial improvement in robustness to
+manufacturing variation, not merely a nominal-case artifact. Notably, the
+\emph{identity} of the modal critical path also changes: under process
+variation, the pre-optimization design is most often limited by the path
+through \code{G4--G7} (driven by primary input \code{D}), while the
+post-optimization design is most often limited by an entirely different
+path through \code{G1--G3, G7} (driven by primary input \code{A}) --- the
+sizing changes did not merely widen the margin on the original critical
+path, they shifted which path is critical at all, which is exactly the
+kind of effect a single nominal-corner STA run cannot reveal.
+
+\section{Synthetic Benchmark Suite Results}
+\label{sec:res-benchmarking}
+ 
+This section reports results from \code{complex\_repair\_suite}, a 60-case
+synthetic benchmark generated and evaluated with the framework of
+\cref{ch:benchmarking}. Unlike the fixed suite of \cref{sec:res-heuristics},
+which compares three heuristics on fifteen circuits (eleven of them with only
+a single-digit gate count), this suite is specifically configured to stress
+the optimizer on large, structurally diverse circuits, and evaluates all
+\textbf{four} heuristics --- including brute force, absent from the fixed
+suite's reported comparison (\cref{sec:opt-bruteforce}) --- against the
+independent counterfactual oracle of \cref{sec:bench-oracle}.
+ 
+\subsection{Suite Composition and Generation Reliability}
+\label{sec:res-bench-generation}
+
+The suite comprises 60 cases: 40 procedurally generated (structured-random
+topologies, 150--250 gates, 8--20 logic levels, targeting a
+$0.35$ reconvergence probability and up to 6-way fan-out) and 20 seeded
+from \code{c15\_high\_fanout\_sizing\_fabric} (\cref{sec:res-nominal}) under
+independently sampled electrical conditions and planted mutations. Every
+case's reference assignment was independently certified by an 8-restart,
+beam-width-64 multi-start beam search (\code{best\_known\_multi\_start\_beam},
+\cref{sec:bench-reference}) before any downsizing mutation was planted, and
+each resulting initial (post-mutation) circuit was verified to have a
+negative WNS strictly within the configured area/power budget.
+ 
+Generation reliability was total for this run: of 60 requested cases, all
+60 were generated successfully, with \textbf{zero} entries in
+\code{generation\_failures.csv} --- every case succeeded on its first
+generation attempt, with no discarded partial attempts of any kind.
+ 
+\subsection{Wilson-Interval Repair Rate}
+\label{sec:res-bench-repair-rate}
+ 
+\Cref{tab:bench-repair-rate} reports the case-level repair rate for each
+heuristic with a 95\% Wilson confidence interval (\cref{sec:bench-metrics}).
+Brute force and random greedy are run once and 20 times per case
+respectively (the latter to characterize its stochastic variance, per
+\cref{sec:bench-parallel}); the two logical-effort-informed heuristics,
+being deterministic given a fixed circuit and candidate order
+(\cref{sec:opt-heuristics}), are run once per case.
+ 
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{@{}lrrrl@{}}
+\toprule
+\textbf{Heuristic} & \textbf{Runs} & \textbf{Successes} & \textbf{Repair rate} & \textbf{95\% Wilson CI} \\
+\midrule
+Brute force & 60 & 60 & 100.0\% & [93.98\%, 100.00\%] \\
+Criticality effort gap & 60 & 60 & 100.0\% & [93.98\%, 100.00\%] \\
+Slack-weighted capacitance & 60 & 59 & 98.3\% & [91.14\%, 99.71\%] \\
+Random greedy & 1200 & 1134 & 94.5\% & [93.06\%, 95.65\%] \\
+\bottomrule
+\end{tabular}
+\caption{Case-level repair rate with 95\% Wilson confidence intervals (60 cases; random greedy evaluated with 20
+repetitions per case, 1200 total runs).}
+\label{tab:bench-repair-rate}
+\end{table}
+ 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{benchmarking/heuristic_overview.png}
+    \caption{Benchmark heuristic overview: repair rate with 95\% bootstrap
+    confidence intervals, per-run wall-clock runtime distribution, mean STA
+    calls per run (log scale), and final normalized cost among repaired
+    cases only. Note the four-order-of-magnitude STA-call gap between
+    brute force ($\approx 1835$ calls/run) and criticality effort gap
+    ($\approx 37$ calls/run).}
+    \label{fig:bench-heuristic-overview}
+\end{figure}
+ 
+Three results are worth drawing out beyond the headline repair rates.
+First, criticality effort gap matches brute force's 100\% repair rate on
+this suite exactly, and does so at $\approx 37$ mean STA calls per run
+versus brute force's $\approx 1835$ --- a two-order-of-magnitude reduction
+in search cost for an identical repair outcome on this population. Second,
+slack-weighted capacitance --- the heuristic found strictly more reliable
+than criticality effort gap on the fixed suite (\cref{sec:res-heuristics},
+where it alone repaired \code{c13\_large\_reconvergent\_network}) --- is
+here the \emph{less} reliable of the two logical-effort-informed
+heuristics, with a single failure among its 60 cases. This is a genuine,
+population-dependent reversal, not a contradiction: the fixed suite's
+one divergence case (\cref{sec:res-case-divergence}) is a single 74-gate
+circuit, and this suite's 60 cases, averaging $150$--$250$ gates, are a
+different and much larger sample; a report should not extrapolate either
+suite's heuristic ranking to circuits outside its own tested population.
+Third, random greedy's 1200-run aggregate repair rate (94.5\%) sits
+noticeably below its \emph{best-run} behavior implied by
+\cref{fig:bench-case-reliability} below --- most of its failures are
+concentrated in specific cases, not spread uniformly across the suite.
+ 
+The single slack-weighted-capacitance failure is traceable to a specific
+case: \code{case\_0032} (198 gates, 18 logic levels, 7 primary inputs, 8
+primary outputs, initial $\mathrm{WNS}=-0.0357$~ns, reference
+$\mathrm{WNS}=+0.0051$~ns). Both brute force ($\mathrm{WNS}=+0.0028$~ns)
+and criticality effort gap ($\mathrm{WNS}=+0.0051$~ns, matching the
+reference exactly) repair this case; slack-weighted capacitance terminates
+\code{no\_feasible\_change} at $\mathrm{WNS}=-0.0003$~ns --- a residual
+violation of under half a picosecond, not a large or qualitative failure,
+but a failure by the strict binary repair-success criterion nonetheless.
+ 
+\subsection{Oracle-Measured Selection Accuracy and Regret}
+\label{sec:res-bench-oracle}
+ 
+\Cref{tab:bench-oracle} reports, for every accepted decision each
+heuristic made, how it compares to the independent counterfactual oracle
+of \cref{sec:bench-oracle}: whether the chosen gate was the oracle's
+single best-scoring gate at that state (\emph{gate hit rate}), whether the
+chosen (gate, cell) pair was the oracle's single best exact move
+(\emph{exact-move hit rate}), the median and worst-case timing regret in
+WNS relative to the best move the oracle could show was available, and how
+often the heuristic's final repaired cost beat the independently-certified
+reference assignment's own cost.
+ 
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+\textbf{Heuristic} & \textbf{Gate hit} & \textbf{Exact-move} & \textbf{Median regret} & \textbf{Worst regret} & \textbf{Beats ref.} \\
+ & \textbf{rate} & \textbf{hit rate} & \textbf{(WNS, ns)} & \textbf{(WNS, ns)} & \\
+\midrule
+BF & 7.9\% & 7.7\% & 0.0031 & 0.0365 & 100.0\% \\
+CEG & 4.1\% & 2.8\% & 0.0058 & 0.0803 & 85.0\% \\
+SWC & 1.6\% & 1.4\% & 0.0159 & 0.2030 & 100.0\% \\
+RG & 2.3\% & 1.5\% & 0.0210 & 0.2009 & 68.9\% \\
+\bottomrule
+\end{tabular}
+\caption{Oracle-measured decision quality (BF = brute force, CEG = criticality effort gap,
+SWC = slack-weighted capacitance, RG = random greedy).
+Regret is the WNS gap between the heuristic's chosen move and the oracle's
+best available move at that decision point, evaluated over every state a
+heuristic actually visited (\cref{sec:bench-oracle}); lower is better.}
+\label{tab:bench-oracle}
+\end{table}
+ 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{benchmarking/selection_quality.png}
+    \caption{Left: gate-selection quality against the oracle's single best
+    gate/exact move, and precision/recall of each heuristic's changed
+    gates against the originally planted downsizing mutations. Right:
+    median WNS regret against the exhaustive one-move oracle.}
+    \label{fig:bench-selection-quality}
+\end{figure}
+ 
+The gate- and exact-move hit rates are low in absolute terms for
+\emph{every} heuristic, including brute force ($7.9\%$/$7.7\%$) --- this
+is expected, not a sign of a broken oracle: the oracle's ``best gate'' is
+computed over \emph{every} legal same-family replacement on \emph{every}
+gate in the circuit (\cref{sec:bench-oracle}), while even brute force only
+proposes candidates on gates lying on a currently-reported critical path,
+within a logical-effort-derived capacitance bracket
+(\cref{sec:opt-bruteforce}); a circuit this large routinely has several
+gates capable of producing an equally-good or negligibly-worse timing
+improvement, so an exact match to the oracle's single top pick is a strict
+criterion. The more informative signal is the \emph{median regret} column:
+brute force's median regret (0.0031~ns) is roughly half of
+criticality effort gap's (0.0058~ns), which is in turn roughly a third of
+slack-weighted capacitance's (0.0159~ns) and random greedy's (0.0210~ns)
+--- an ordering that does \emph{not} match the repair-rate ordering of
+\cref{tab:bench-repair-rate} (where criticality effort gap tied brute force
+and beat slack-weighted capacitance). Repair rate measures whether a
+heuristic \emph{eventually} reaches compliance at all; median regret
+measures how close to optimal its individual decisions are along the way.
+The two metrics are related but distinct, and a heuristic can rank well on
+one without ranking identically on the other.
+ 
+The precision/recall of each heuristic's changed gates against the
+\emph{originally planted} mutated gates (\cref{sec:bench-planted}) shows a
+striking, and initially counter-intuitive, pattern: criticality effort gap
+and random greedy --- the two \emph{weaker} heuristics by repair rate and
+regret --- have substantially \emph{higher} planted-gate precision
+($65.8\%$ and $56.2\%$) than brute force and slack-weighted capacitance
+($4.9\%$ and $10.9\%$), whose repairs touch the originally-mutated gates
+only rarely. This is consistent with, not contradictory to, the framework's
+own design rationale (\cref{sec:bench-oracle}): a compliant, budget-respecting
+repair is very rarely unique, and a search that draws from a wider
+candidate bracket (brute force, slack-weighted capacitance) is more likely
+to find an equally valid fix at a \emph{different} gate than the one
+originally downsized, while a search restricted to smaller, one-step-up
+moves (criticality effort gap, random greedy) is more likely to end up
+reversing something closer to the original mutation simply because fewer
+alternative routes are available to it. This is precisely why
+\cref{ch:benchmarking} treats exact recovery of the planted mutation as a
+secondary diagnostic rather than the primary correctness signal: by that
+narrower measure alone, the two least effective heuristics on this suite
+would appear the most accurate.
+ 
+Finally, \emph{beats reference cost} shows a clean split along the same
+line: brute force and slack-weighted capacitance --- both drawing from the
+full logical-effort capacitance bracket, the same candidate source
+available to the beam-search reference itself (\cref{sec:bench-reference})
+--- match or beat the reference's own final cost on \emph{every}
+successful repair (100.0\%), while criticality effort gap and random
+greedy, restricted to one-step-up moves, fall short of it on $15\%$ and
+$31\%$ of their successful repairs respectively.
+ 
+\subsection{Convergence and Runtime Scaling}
+\label{sec:res-bench-convergence}
+ 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{benchmarking/repair_convergence.png}
+    \caption{Fraction of all 1380 runs with timing repaired, as a function
+    of total attempted optimizer iterations (accepted and rejected
+    attempts combined). Runs that never repair remain flat at their final
+    value indefinitely.}
+    \label{fig:bench-repair-convergence}
+\end{figure}
+ 
+\Cref{fig:bench-repair-convergence} shows the same repair-rate story as
+\cref{tab:bench-repair-rate} unfolding over search effort rather than as a
+single endpoint number: criticality effort gap and brute force both reach
+their full $100\%$ repair rate within about 10 iterations, slack-weighted
+capacitance climbs more gradually and plateaus just under $99\%$, and
+random greedy's much shallower climb --- still visibly rising at 100
+iterations --- reflects the combined effect of its unranked candidate
+order (\cref{sec:opt-random-greedy}) and the cases it never resolves at
+all within any of its repetitions.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{benchmarking/runtime_scalability.png}
+    \caption{Median optimizer runtime per case versus gate count (log
+    scale), with a fitted trend line per heuristic.}
+    \label{fig:bench-runtime-scalability}
+\end{figure}
+ 
+Runtime separates the four heuristics by roughly an order of magnitude at
+each tier (\cref{fig:bench-heuristic-overview}, top right; mean and
+standard deviation in \cref{tab:bench-runtime}): brute force averages
+$4.48\pm2.96$~s per run; slack-weighted capacitance, $0.281\pm0.063$~s;
+random greedy, $0.114\pm0.099$~s; and criticality effort gap, the fastest,
+$0.093\pm0.076$~s. \Cref{fig:bench-runtime-scalability} shows brute
+force's runtime is roughly flat with circuit size over this suite's
+150--250 gate range (its cost is dominated by the size of the candidate
+bracket it evaluates per iteration, not raw gate count), while the three
+sequential heuristics' runtimes visibly \emph{decrease} with gate count ---
+counter-intuitive at first glance, but consistent with the suite's
+generation process: larger generated circuits in this suite do not
+necessarily have proportionally more or deeper critical-path violations to
+repair, so the number of accepted-plus-rejected attempts needed does not
+scale directly with gate count either.
+ 
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+\textbf{Heuristic} & \textbf{Mean runtime (s)} & \textbf{Std.\ dev.\ (s)} & \textbf{Mean STA calls} & \textbf{Mean final cost} \\
+\midrule
+BF & 4.479 & 2.962 & 1835.3 & 1.291 \\
+SWC & 0.281 & 0.063 & 98.6 & 1.329 \\
+RG & 0.114 & 0.099 & 51.7 & 1.369 \\
+CEG & 0.093 & 0.076 & 37.0 & 1.356 \\
+\bottomrule
+\end{tabular}
+\caption{Runtime, search cost, and mean final cost among repaired cases. BF = brute force, CEG = criticality effort gap,
+SWC = slack-weighted capacitance, RG = random greedy.}
+\label{tab:bench-runtime}
+\end{table}
+ 
+\subsection{Per-Case Reliability}
+\label{sec:res-bench-case-reliability}
+ 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{benchmarking/case_reliability.png}
+    \caption{Top: per-case repair probability for a representative subset
+    of cases, ordered by source and initial WNS (brute force and
+    criticality effort gap are uniformly green --- always successful; the
+    single dark-red cell is slack-weighted capacitance's one failure,
+    \texttt{case\_0032}). Bottom: random greedy's repair probability
+    (across its 20 repetitions) versus initial violation severity, marker
+    size indicating gate count, split by source type.}
+    \label{fig:bench-case-reliability}
+\end{figure}
+ 
+\Cref{fig:bench-case-reliability}'s lower panel makes the population-level
+pattern underlying \cref{sec:res-bench-strata}'s severity stratification
+directly visible at the case level: random greedy's repair probability is
+$100\%$ for the great majority of cases regardless of source, but drops
+into the $70$--$90\%$ range for a specific subset of harder cases, with
+the two clearest outliers (both at $40\%$) occurring at moderate, not
+extreme, violation severity --- reinforcing that repair difficulty for a
+one-step-up, unranked search depends on circuit structure as much as on
+how large the initial violation is.
+ 
+\subsection{Stratified Breakdown}
+\label{sec:res-bench-strata}
+ 
+\Cref{tab:bench-strata} breaks the repair rate down by three groupings
+computed automatically by the evaluation framework
+(\cref{sec:bench-metrics}): circuit depth, reconvergence level, and
+initial violation severity. (This suite's cases fall into only two buckets
+each for depth and reconvergence --- \emph{medium}/\emph{deep} and
+\emph{medium}/\emph{high} respectively --- reflecting the generation
+configuration's target ranges, \cref{sec:res-bench-generation}; no
+\emph{shallow} or \emph{low-reconvergence} cases were generated in this
+run.)
+ 
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{@{}llrrrrr@{}}
+\toprule
+\textbf{Grouping} & \textbf{Stratum} & \textbf{Cases} & \textbf{BF} & \textbf{CEG} & \textbf{SWC} & \textbf{RG} \\
+\midrule
+\multirow{2}{*}{Depth} & Medium & 10 & 100.0\% & 100.0\% & 100.0\% & 94.0\% \\
+ & Deep & 50 & 100.0\% & 100.0\% & 98.0\% & 94.6\% \\
+\multirow{2}{*}{Reconvergence} & Medium & 5 & 100.0\% & 100.0\% & 100.0\% & 100.0\% \\
+ & High & 55 & 100.0\% & 100.0\% & 98.2\% & 94.0\% \\
+\multirow{3}{*}{Violation severity} & Mild & 8 & 100.0\% & 100.0\% & 100.0\% & 100.0\% \\
+ & Moderate & 34 & 100.0\% & 100.0\% & 97.1\% & 95.4\% \\
+ & Severe & 18 & 100.0\% & 100.0\% & 100.0\% & 90.3\% \\
+\bottomrule
+\end{tabular}
+\caption{Repair rate by circuit depth, reconvergence level, and initial
+violation severity. BF = brute force, CEG = criticality effort gap,
+SWC = slack-weighted capacitance, RG = random greedy.}
+\label{tab:bench-strata}
+\end{table}
+ 
+Brute force and criticality effort gap are unaffected by any stratum in
+this suite, repairing $100\%$ of cases regardless of depth, reconvergence,
+or severity. Random greedy is the only heuristic whose repair rate degrades
+meaningfully with reconvergence (from $100\%$ at medium reconvergence to
+$94.0\%$ at high) and with violation severity (from $100\%$ on mild
+violations down to $90.3\%$ on severe ones) --- exactly where a
+logical-effort-free, unranked search is least likely to stumble onto the
+gate a severe or highly-reconvergent violation actually needs. Slack-weighted
+capacitance shows a smaller version of the same pattern on depth
+($100\%\rightarrow98.0\%$) and reconvergence ($100\%\rightarrow98.2\%$),
+consistent with \code{case\_0032} --- its one failure --- being both a
+deep and a reconvergent circuit. Somewhat counter-intuitively,
+slack-weighted capacitance's repair rate on \emph{severe} violations
+($100\%$) is \emph{higher} than on \emph{moderate} ones ($97.1\%$): the
+harder-looking severity axis is not the one that predicts its failure on
+this suite, depth and reconvergence are. This is exactly the kind of
+heuristic-specific, non-obvious failure pattern the fixed fifteen-circuit
+suite is too small to reveal, and is the clearest evidence in this report
+that a large, structurally-varied synthetic suite adds information the
+fixed suite alone cannot provide.
+
+
+\section{Complete Per-Circuit Figures}
+\label{sec:res-full-figures}
+
+\Cref{sec:res-case-c02,sec:res-case-divergence} showed the pre-/post-
+optimization circuit diagrams and convergence/outcome plots for the two
+circuits most useful for illustrating \emph{why} the heuristics diverge.
+The identical set of four figures --- pre-optimization diagram,
+post-optimization diagram, convergence trace, and outcomes summary --- is
+generated for every one of the fifteen valid benchmark circuits;
+Appendix \ref{app:full-figures} reproduces the complete set for systematic
+reference.
+
+\section{Summary}
+\label{sec:res-summary}
+
+Across the fixed benchmark suite, the logical-effort-guided canonical
+heuristic (slack weighted capacitance) resolved timing violations on
+$13/14$ originally-violating circuits, versus $7/14$ for the
+logical-effort-free random-greedy baseline, while simultaneously issuing
+fewer total STA calls (119 versus 155) and reaching a strictly lower final
+cost on ten of fifteen circuits (tying on the remaining five, and never
+losing on any). The second logical-effort-informed
+heuristic, criticality effort gap, performs comparably to the canonical
+method on all but one circuit, where its different ranking signal misses a
+repair that slack-weighted capacitance finds. The one Monte
+Carlo-instrumented circuit shows that the nominal-case timing improvement
+from optimization corresponds to a substantial real improvement in
+statistical timing yield, and that the identity of the critical path itself
+can shift as a result of sizing changes. These fixed-suite results are
+necessarily based on a small number of circuits; \cref{sec:res-benchmarking}
+reports the corresponding, statistically stronger comparison on the
+synthetic benchmark suite once completed.

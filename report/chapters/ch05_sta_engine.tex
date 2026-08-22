@@ -1,0 +1,325 @@
+\chapter{Static Timing Analysis Engine}
+\label{ch:sta}
+
+This chapter documents the implementation of the theory reviewed in
+\cref{sec:bg-sta}, as it appears in \code{analysis/sta.py}. The module's
+only two public entry points are
+
+\begin{lstlisting}[style=pythonstyle, numbers=none]
+def analyze_timing(circuit: Circuit,
+                   gate_delays: Mapping[str, RiseFall] | None = None
+                   ) -> TimingAnalysisResult: ...
+
+def analyze_timing_metrics(circuit: Circuit,
+                   gate_delays: Mapping[str, RiseFall] | None = None
+                   ) -> TimingMetrics: ...
+\end{lstlisting}
+
+\code{analyze\_timing} is the full analysis used everywhere in this report
+(\cref{ch:results}) and returns a \code{TimingAnalysisResult} --- a frozen
+dataclass carrying \code{critical\_paths}, \code{wns}, \code{tns},
+\code{circuit\_delay}, and the full \code{arrival\_times} /
+\code{required\_times} / \code{transition\_slacks} tables (each a mapping
+from net name to a \code{RiseFall} pair), plus a
+\code{node\_slack(net\_name)} convenience method.
+\code{analyze\_timing\_metrics} is a deliberately cheaper sibling, used by
+the optimizer's inner evaluation loop (\cref{sec:opt-eval}) whenever the
+full critical-path list is not needed for a particular candidate check. Its
+speedup is not merely skipping the reporting of unneeded data: since
+$\mathrm{WNS}$/$\mathrm{TNS}$ (\cref{eq:wns-tns}) only ever need each
+primary output's \emph{own} configured required time
+(\code{circuit.config.output\_required(net\_name)}) compared against that
+output's forward-computed arrival time, \code{analyze\_timing\_metrics}
+never performs the full backward propagation of \cref{eq:backward-sta}
+through the circuit's internal nodes at all --- it calls only the lean
+arrival-time pipeline (\code{\_compute\_arrival\_values} /
+\code{\_maximum\_gate\_arrival}, \cref{sec:sta-forward}), which does not
+even retain the tie-tracking predecessor information \code{analyze\_timing}
+needs for path reconstruction, and computes each output's slack directly
+against its own configured requirement.
+
+Both public functions accept an optional \code{gate\_delays} override,
+which the Monte Carlo module (\cref{ch:monte-carlo}) uses to inject a
+sample's perturbed delay set without needing a variant analysis path of its
+own. Internally, both are thin wrappers around a shared private pipeline in
+\code{analysis/sta.py}, whose exact signatures are reproduced below since
+they pin down what state flows between the forward pass, the
+backward pass, and path extraction:
+
+\begin{lstlisting}[style=pythonstyle, numbers=none]
+def _run_sta(circuit: Circuit, gate_delays: Mapping[str, RiseFall]
+             ) -> tuple[dict[str, RiseFall],   # arrival_times
+                        dict[str, RiseFall],   # required_times
+                        PredecessorTable,      # controlling arcs
+                        dict[str, RiseFall]]:  # transition_slacks
+
+def _compute_arrival_times(circuit, gate_delays
+    ) -> tuple[dict[str, RiseFall], PredecessorTable]: ...   # Sec. 5.3
+def _compute_required_times(circuit, gate_delays) -> dict[str, RiseFall]: ...     # Sec. 5.4
+def _compute_transition_slacks(arrival_times, required_times
+        ) -> dict[str, RiseFall]: ...                    # Sec. 5.5
+def _find_critical_paths(circuit, predecessors, transition_slacks
+        ) -> list[CriticalPath]: ...                     # Sec. 5.6
+def _trace_paths_backward(circuit, current_net, current_transition,
+        output_net, reversed_steps, reversed_transitions, endpoint_slack, found_paths, predecessors) -> None: ...    # Sec. 5.6
+\end{lstlisting}
+
+with \code{\_compute\_circuit\_delay} and \code{\_compute\_output\_slack\_metrics}
+deriving \code{circuit \_delay}, \code{wns}, and \code{tns} from the
+completed arrival/slack tables, and \code{\_timing\_result} assembling the
+final \code{TimingAnalysisResult}. The type
+\code{PredecessorTable = Mapping[tuple[str, Transition],
+tuple[PredecessorArc, ...]]} is itself worth noting: it is keyed by
+\emph{every} (net, transition) pair to a \emph{tuple} of controlling
+predecessor arcs, not a single one --- this is precisely the data structure
+that makes exhaustive tie recording (\cref{sec:sta-forward}) possible,
+since \code{\_compute\_arrival\_times} records every arc attaining the
+maximum in \cref{eq:forward-sta}, and \code{\_trace\_paths\_backward}
+later branches over exactly that stored tuple rather than recomputing or
+re-deciding predecessor selection from scratch.
+
+The engine executes in five ordered steps for a given, fixed gate-sizing
+assignment: (1) load and delay computation (\cref{sec:sta-load}), performed
+eagerly by \code{Circuit.\_\_init\_\_} itself rather than by
+\code{analyze\_timing} (\cref{sec:arch-principles}); (2) forward propagation
+(\cref{sec:sta-forward}); (3) backward propagation
+(\cref{sec:sta-backward}); (4) slack, WNS, and TNS computation
+(\cref{sec:sta-slack}); and (5) critical-path extraction
+(\cref{sec:sta-paths}). Steps (2) and (3) both consume the results of step
+(1) but not of each other, and are logically independent of one another
+aside from that shared dependency.
+
+\section{Circuit Graph Construction and Topological Order}
+\label{sec:sta-graph}
+
+Once a netlist has passed validation (\cref{ch:validation}), it is
+represented as an object graph rather than a collection of string-indexed
+lookup tables: each net object holds a direct reference to the gate object
+that drives it and a list of the \code{(pin\_index, gate)} pairs it loads,
+and each gate object holds direct references to its input net objects and
+its output net object. This means that finding ``who drives net $X$'' or
+``what does gate $Y$ fan out to'' is an $O(1)$ pointer dereference rather
+than a linear scan over every gate in the circuit, which matters
+materially at the scale of the optimizer's inner loop
+(\cref{ch:optimization}), where the same queries are issued on the order of
+hundreds of times per circuit.
+
+The topological order is computed once, at \code{Circuit} construction, by
+the module-level helper \code{\_make\_topological\_order(netlist, gates) ->
+tuple[tuple[Gate, ...], ...]} (\code{domain/circuit.py}) using Kahn's
+algorithm, and is stored not as a flat list but as a sequence of
+\emph{levels} --- exactly the nested-tuple return type above: gates are
+grouped by their longest-path depth from any
+primary input, so that all gates in level $\ell$ depend only on gates in
+levels $0, \ldots, \ell-1$, and this is the \code{topological\_order}
+field consumed directly by \code{\_compute\_arrival\_times}'s outer
+\code{for level in circuit.topological\_order:\allowbreak\ for gate in
+level:} loop (\cref{sec:sta-forward}). Flattening the levels in order recovers an
+ordinary topological order; the level structure itself is not required for
+correctness of the forward/backward passes below (which only need \emph{a}
+topological order, not a minimal-depth one), but is retained because it is
+useful metadata for the benchmark generator's stratification by circuit
+depth (\cref{ch:benchmarking}).
+
+\section{Load and Delay Computation}
+\label{sec:sta-load}
+
+\Cref{eq:cload,eq:drise,eq:dfall} are evaluated for every gate in a single
+pass, independent of iteration order, since both quantities depend only on
+the currently-assigned cell sizes of a gate and its fan-out --- never on an
+arrival or required time. Concretely, this computation lives entirely in
+\code{domain/circuit.py} and runs once, eagerly, inside
+\code{Circuit.\_\_init\_\_}, via two private methods:
+
+\begin{lstlisting}[style=pythonstyle, numbers=none]
+def _compute_fanout_capacitances(self) -> dict[str, float]: ...
+    # Eq. (2.1)
+def _compute_gate_delays(self) -> dict[str, RiseFall]: ...
+    # Eq. (2.2)-(2.3)
+\end{lstlisting}
+
+with the per-gate rise/fall delay itself computed by the module-level
+helper \code{\_gate\_delay( cell: Cell, load\_capacitance: float, kappa:
+float) -> RiseFall}, and total area and power by
+\code{Circuit.\_compute\_area()} and \code{Circuit.\_compute\_power()}
+(\cref{ch:power-area}). This is a common point of confusion worth stating
+explicitly: delay is \emph{not} recomputed as a function of arrival
+time during the forward pass; it is a fixed property of the current sizing
+assignment, computed once by \code{Circuit.\_\_init\_\_} and only ever
+\emph{read} by \code{analysis/sta.py}, never recomputed there.
+
+\section{Forward Propagation}
+\label{sec:sta-forward}
+
+\Cref{eq:forward-sta} is evaluated for every gate in topological order by
+\code{\_compute\_arrival\_times} (\cref{sec:sta-graph}), which delegates
+the per-gate, per-transition maximization to
+\code{\_select\_pred \newline ecessors(circuit, gate, output\_transition,
+arrival\_times, gate\_delays) ->\newline tuple[float, tuple[PredecessorArc, ...]]}.
+Two implementation details, both visible directly in this function's body,
+are worth making explicit.
+
+\paragraph{Net-keyed timing tables.} Arrival times are stored in a single
+\code{dict[str, RiseFall]} keyed by \emph{net} name, not by gate name. A
+primary input's net and a gate's output net are both, from this table's
+point of view, just nets with an associated
+$(\mathrm{AT}^{\mathrm{rise}}, \mathrm{AT}^{\mathrm{fall}})$
+pair; primary-input nets have theirs supplied directly from
+\code{circuit.config.input\_arrival(net \_name)}, while gate-output nets have
+theirs computed by \cref{eq:forward-sta}. This avoids the need for a
+downstream consumer of an arrival time to first determine ``is this a
+primary input or a gate output'' before looking it up.
+
+\paragraph{Exhaustive tie recording.} \code{\_select\_predecessors} builds a
+list of every \code{(candidate\_arrival, (pin\_number,
+input\_transition))} pair across a gate's input pins and their legal input
+transitions (\code{\_valid\_input\_transitions}, implementing
+\cref{sec:bg-unate}), takes \code{maximum\_arrival = max(...)}, and returns
+\emph{every} candidate whose arrival exactly equals that maximum as a tuple
+of \code{PredecessorArc}s --- not merely the first one encountered. This
+matters directly for critical-path reconstruction (\cref{sec:sta-paths}): a
+circuit with a genuinely symmetric or reconvergent structure can have two
+structurally distinct paths that are exactly equally critical, and
+discarding all but one of them arbitrarily would silently under-report the
+set of paths actually responsible for the reported worst-case delay.
+
+\section{Backward Propagation}
+\label{sec:sta-backward}
+
+\Cref{eq:backward-sta} is evaluated for every gate in \emph{reverse}
+topological order by \code{\_compute\_required \_times}, seeded at the
+primary outputs with \code{circuit.config.output\_required(net\_name)}. The
+propagation of a single required time backward through one timing arc is
+isolated into its own pure function,
+
+\begin{lstlisting}[style=pythonstyle, numbers=none]
+def _propagate_required(output_required: RiseFall, gate_delay: RiseFall,
+                        timing_sense: TimingSense) -> RiseFall: ...
+\end{lstlisting}
+
+whose three branches implement \cref{sec:bg-unate}'s three timing-sense
+cases directly: positive-unate subtracts $D_i^{s}$ from
+$\mathrm{RT}_i^{s}$ transition-for-transition; negative-unate does the same
+with rise and fall swapped; and, for a non-unate pin, both output
+transitions are legal regardless of which input transition is being
+evaluated, so the function computes
+\code{earliest\_candidate = min(output\_required.rise - gate\_delay.rise,
+output\_required.fall - gate\_d\newline elay.fall)} once and returns it as
+\emph{both} the rise and fall required time propagated through that pin --- a
+conservative choice that is required for correctness, since a non-unate
+input transition's required time must respect whichever output transition
+it might actually cause. \code{\_compute\_required\_times} then folds this
+per-arc result into the running required time of each input net via a
+plain \code{min(...)}, implementing the outer minimization of
+\cref{eq:backward-sta} over every fan-out arc.
+
+\section{Slack, WNS, and TNS}
+\label{sec:sta-slack}
+
+\Cref{eq:slack,eq:wns-tns} are evaluated by
+\code{\_compute\_transition\_slacks} and
+\code{\_compute\_o\newline utput\_slack\_metrics} directly from the arrival- and
+required-time tables produced above. A configuration flag,
+\code{config.timing\_analysis.separate\_rise\_fall}
+(\code{TimingAnalysisConfig}, \cref{tab:arch-domain-api}), read inside
+\code{\_output\_slack\_values}, controls whether rise and fall slack at a given
+primary output are treated as two independent entries in the WNS/TNS
+computation (the default, and the behavior implied by a literal reading of
+\cref{eq:wns-tns}) or collapsed to a single per-output worst-case value
+first; this is useful when a downstream consumer only cares
+about the offending net, not which polarity of transition is responsible.
+
+\section{Critical-Path Extraction}
+\label{sec:sta-paths}
+
+A na\"ive definition of ``the $K$ worst paths'' as ``the $K$ worst
+(endpoint, transition) pairs, each with one arbitrarily chosen predecessor
+chain'' would silently under-represent circuits with tied critical paths.
+Path extraction is instead implemented by \code{\_find\_critical\_paths},
+which iterates every primary-output net and both of its transitions and
+calls the recursive helper:
+
+\begin{lstlisting}[style=pythonstyle, numbers=none]
+def _trace_paths_backward(circuit, current_net, current_transition,
+        output_net, reversed_steps, reversed_transitions, endpoint_slack, found_paths, predecessors) -> None: ...
+\end{lstlisting}
+
+which \emph{branches} at every tie recorded by \code{\_select\_predecessors}
+(\cref{sec:sta-forward}): it looks up \code{predecessors[(current\_net.name,
+current\_transition)]}, and recurses once per stored \code{PredecessorArc}
+in that tuple, prepending a \code{PathStep(gate, input\_pin)} to
+\code{rever\newline sed\_steps} each time, until \code{current\_net.net\_type is
+NetType.INPUT}, at which point a complete \code{CriticalPath(path, transitions,
+slack)} is appended to \code{found\_paths}. All paths produced by this
+search, across all endpoints, are pooled into a single list, sorted by
+\code{path.slack}, and truncated to
+\code{circuit.config.timing\_analysis.top\_k\_paths} by
+\code{\_find\_critical\_paths} itself. Two consequences of this design are
+worth stating explicitly, since they differ from a simpler ``one path per
+worst endpoint'' scheme: first, the reported top-$K$ list is not guaranteed
+to contain one path per distinct endpoint --- a circuit with several tied
+routings to the same endpoint can occupy multiple slots in the list; second,
+this is a strictly more complete answer to ``which paths are responsible
+for the worst delay'' than an implementation that picks one arbitrary
+routing per endpoint, at the cost of a somewhat less predictable
+relationship between $K$ and the number of distinct endpoints represented.
+
+\section{Worked Example: \texttt{c01\_inverter\_chain}}
+\label{sec:sta-worked-example}
+
+To ground the equations of this chapter in concrete numbers, this section
+traces the engine's computation by hand on the smallest supplied benchmark
+circuit, a three-gate inverter--buffer--inverter chain:
+
+\begin{lstlisting}[language=bash, style=pythonstyle, numbers=none]
+INPUT A
+G1 INV_X1 A  N1
+G2 BUF_X1 N1 N2
+G3 INV_X1 N2 OUT
+OUTPUT OUT
+\end{lstlisting}
+
+with primary-input arrival times $\mathrm{AT}_A^{\mathrm{rise}} =
+\mathrm{AT}_A^{\mathrm{fall}} = 0$~ns, primary-output required times
+$\mathrm{RT}_{\mathrm{OUT}}^{\mathrm{rise}} =
+\mathrm{RT}_{\mathrm{OUT}}^{\mathrm{fall}} = 0.11$~ns, and an external load
+of $4.0$~fF on \code{OUT}. \Cref{tab:c01-worked} reproduces, gate by gate,
+the load, delay, arrival time, required time, and slack computed by
+\cref{eq:cload,eq:drise,eq:dfall,eq:forward-sta,eq:backward-sta,eq:slack}
+using the \code{INV\_X1}/\code{BUF\_X1} library entries. The resulting
+$\mathrm{WNS} = 0.009$~ns and $\mathrm{TNS} = 0$~ns (no violation) were
+confirmed to match the tool's reported output to six decimal places, and,
+as discussed in \cref{ch:testing}, also match an independently written
+second implementation of the same specification.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+\textbf{Gate} & \textbf{$C_{\mathrm{load}}$ (fF)} & \textbf{$D_{\mathrm{rise}}/D_{\mathrm{fall}}$ (ns)} & \textbf{$\mathrm{AT}^{\mathrm{rise}}/\mathrm{AT}^{\mathrm{fall}}$} & \textbf{$\mathrm{RT}^{\mathrm{rise}}/\mathrm{RT}^{\mathrm{fall}}$} & \textbf{Slack (ns)} \\
+\midrule
+G1 (\code{INV\_X1}) & 1.0 & 0.0240 / 0.0185 & 0.0240 / 0.0185 & 0.0350 / 0.0275 & 0.011 / 0.009 \\
+G2 (\code{BUF\_X1}) & 1.0 & 0.0370 / 0.0315 & 0.0610 / 0.0500 & 0.0720 / 0.0590 & 0.011 / 0.009 \\
+G3 (\code{INV\_X1}) & 4.0 & 0.0510 / 0.0380 & 0.1010 / 0.0990 & 0.1100 / 0.1100 & 0.009 / 0.011 \\
+\bottomrule
+\end{tabular}
+\caption{Hand-verified static timing analysis of
+\texttt{c01\_inverter\_chain}. G3 is the sole primary-output-driving gate;
+its rise slack of \SI{0.009}{ns} equals the circuit-level WNS.}
+\label{tab:c01-worked}
+\end{table}
+
+Two points are worth drawing attention to that a reader might otherwise
+gloss over. First, because \code{INV\_X1} is negative-unate, G1's rise
+\emph{output} arrival time is driven by the primary input's \emph{fall}
+transition ($\mathrm{AT}_A^{\mathrm{fall}} = 0 \Rightarrow
+\mathrm{AT}_{G1}^{\mathrm{rise}} = 0 + D_{\mathrm{rise},G1} = 0.024$), not
+its rise transition; a reader tracing the table without accounting for
+timing sense would expect the opposite pairing. Second, the worst slack in
+the circuit (\SI{0.009}{ns}) alternates which transition it belongs to at
+every stage of the chain ($\mathrm{fall}$ at G1, $\mathrm{fall}$ at G2,
+$\mathrm{rise}$ at G3) precisely because of this same negative-unate
+alternation --- a further illustration of why rise and fall must be
+propagated as genuinely independent quantities rather than a single
+worst-case delay per gate.

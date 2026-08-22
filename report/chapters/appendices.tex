@@ -1,0 +1,29 @@
+\begin{appendices}
+
+\chapter{Full Equation Reference}
+\label{app:equations}
+
+This appendix collects every governing equation used in this report, in
+one place, for quick reference during the presentation.
+
+\begin{align*}
+    C_{\mathrm{load},i} &= \sum_{(j,p)\,\in\,\mathrm{Fanout}(i)} C_{\mathrm{input},j,p} + C_{\mathrm{external},i} & &\text{(\cref{eq:cload})}\\
+    D_{\mathrm{rise}/\mathrm{fall},i} &= D_{\mathrm{intrinsic},\mathrm{rise}/\mathrm{fall},i} + \kappa\, R_{\mathrm{rise}/\mathrm{fall},i}\, C_{\mathrm{load},i} & &\text{(\cref{eq:drise,eq:dfall})}\\
+    \mathrm{AT}_i^{s} &= \max_{p,\,j,\,(s',s)\in\mathcal{T}_{i,p}} \left(\mathrm{AT}_j^{s'} + D_i^{s}\right) & &\text{(\cref{eq:forward-sta})}\\
+    \mathrm{RT}_j^{s'} &= \min_{(i,p)\in\mathrm{Fanout}(j),\,(s',s)\in\mathcal{T}_{i,p}} \left(\mathrm{RT}_i^{s} - D_i^{s}\right) & &\text{(\cref{eq:backward-sta})}\\
+    S_i^{s} &= \mathrm{RT}_i^{s} - \mathrm{AT}_i^{s}, \quad S_i = \min(S_i^{\mathrm{rise}}, S_i^{\mathrm{fall}}) & &\text{(\cref{eq:slack})}\\
+    \mathrm{WNS} &= \min_{o\in\mathcal{O}} S_o, \quad \mathrm{TNS} = \sum_{o\in\mathcal{O}} \min(0,S_o) & &\text{(\cref{eq:wns-tns})}\\
+    b_i &= \frac{C_{\mathrm{onpath},i}+C_{\mathrm{offpath},i}}{C_{\mathrm{onpath},i}}, \quad h_i = \frac{C_{\mathrm{onpath},i}}{C_{\mathrm{in},i}}, \quad f_i = g_i b_i h_i & &\text{(\cref{eq:le-stage})}\\
+    G &= \prod_i g_i, \quad B = \prod_i b_i, \quad H = \frac{C_{L,\mathrm{path}}}{C_{\mathrm{in},1}}, \quad F = GBH & &\text{(\cref{eq:le-path})}\\
+    \hat f &= F^{1/N}, \quad D_{LE,\mathrm{min}} = \tau\left(NF^{1/N}+P\right) & &\text{(\cref{eq:le-min-delay})}\\
+    C^{*}_{\mathrm{in},i} &= \frac{g_i C_{\mathrm{total},i}}{\hat f} & &\text{(\cref{eq:le-target-cap})}\\
+    A_{\mathrm{total}} &= \sum_i A_i, \quad C_{\mathrm{sw},i} = C_{\mathrm{load},i}+C_{\mathrm{internal},i}, \quad P_{\mathrm{dynamic}} = \sum_i \alpha_i C_{\mathrm{sw},i} V_{DD}^2 f & &\text{(\cref{eq:power-area})}\\
+    P_{\mathrm{total}} &= P_{\mathrm{dynamic}} + P_{\mathrm{leakage}} & &\text{(\cref{eq:power-total})}\\
+    D^{(k)}_{i,s} &= D_{i,s,\mathrm{nom}}\left(1+\sigma_g Z_g^{(k)} + \sigma_l Z_i^{(k)}\right) & &\text{(\cref{eq:mc-delay})}\\
+    \hat P_{\mathrm{violation}} &= \frac1M\sum_k I^{(k)}_{\mathrm{violation}}, \quad \hat Y_{\mathrm{timing}} = 1-\hat P_{\mathrm{violation}} & &\text{(\cref{eq:mc-yield})}\\
+    J &= w_D\frac{D_{\mathrm{circuit}}}{D_{\mathrm{ref}}} + w_P\frac{P_{\mathrm{total}}}{P_{\mathrm{ref}}} + w_A\frac{A_{\mathrm{total}}}{A_{\mathrm{ref}}} + \lambda\frac{\max(0,-\mathrm{WNS})}{T_{\mathrm{ref}}} & &\text{(\cref{eq:cost})}
+\end{align*}
+
+\input{chapters/appendix_d_figures}
+
+\end{appendices}

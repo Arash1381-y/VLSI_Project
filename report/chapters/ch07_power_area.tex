@@ -1,0 +1,48 @@
+\chapter{Power and Area Estimation}
+\label{ch:power-area}
+
+Power and area are recomputed, in full, after every accepted change to the
+circuit's sizing assignment, so that the
+optimizer's cost function always operates on the
+current totals.
+
+\section{Static (Leakage) Power}
+\label{sec:pa-leakage}
+
+Leakage power is supplied directly, per cell, by the standard-cell library
+and is independent of switching activity or circuit state; total leakage is
+the direct sum given in \cref{eq:power-total}. It depends only on which
+cells are currently assigned, and therefore changes only when a gate is
+resized.
+
+\section{Dynamic Power}
+\label{sec:pa-dynamic}
+
+Dynamic power follows the activity-factor model of \cref{eq:power-area}. The
+switching activity factor $\alpha_i$ for a given net is read from the
+configuration file's per-net override table if present, and otherwise
+falls back to a single circuit-wide default activity factor, also supplied
+by the configuration. The effective switched capacitance
+$C_{\mathrm{sw},i}$ combines the gate's output load $C_{\mathrm{load},i}$
+--- already computed by the STA engine (\cref{eq:cload}) and therefore
+automatically reflecting the gate's current fan-out --- with its internal
+capacitance, a library-supplied constant per cell that accounts for
+switching energy dissipated inside the gate itself, independent of external
+loading.
+
+\section{Area}
+\label{sec:pa-area}
+
+Total area is the direct sum of the currently-assigned cell's area over
+every gate, as in \cref{eq:power-area}. Because larger-drive-strength cells
+in the library are strictly larger in area (and generally larger in both
+leakage and internal capacitance) than their smaller-drive-strength
+counterparts within the same family, every accepted up-sizing decision made
+by the optimizer (\cref{ch:optimization}) has an unconditional, nonzero
+cost in both area and power, regardless of whether that particular gate
+lies on a currently-critical path --- which is precisely why the optimizer
+restricts its candidate search to gates that are actually on a reported
+critical path (\cref{sec:opt-heuristics}) rather than considering every gate
+in the circuit: up-sizing a gate that is not contributing to any timing
+violation can only ever worsen the cost function's power and area terms for
+no corresponding delay benefit.

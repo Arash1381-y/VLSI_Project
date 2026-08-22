@@ -1,0 +1,54 @@
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+
+Meeting a timing constraint is as much a requirement of a correct digital
+circuit as its logical function, yet timing correctness cannot be verified by
+functional simulation alone. This report documents the design,
+implementation, and evaluation of \tool, a software tool that performs
+static timing analysis (STA) on a flattened gate-level netlist and then
+improves an initial, possibly timing-violating, gate sizing using a
+logical-effort--guided optimizer. The tool ingests a netlist, a sized
+standard-cell library, and a configuration file; validates the netlist's
+structural correctness; builds a combinational directed acyclic graph (DAG);
+performs rise/fall--separated forward and backward timing propagation under
+an RC-based linear delay model with unate-aware timing arcs; extracts the
+top-$K$ least-slack critical paths; performs a logical-effort decomposition
+of each path ($g$, $h$, $b$, $G$, $H$, $B$, $F$, and the theoretical minimum
+path delay); estimates leakage and activity-driven dynamic power together
+with total area; and finally searches for a gate-sizing assignment that
+removes timing violations while respecting area and power budgets, using a
+cost function that trades off delay, power, area, and worst-negative-slack
+violation.
+
+Four gate-sizing heuristics are implemented and compared head-to-head under
+identical stopping and acceptance rules: an exhaustive logical-effort-guided
+search, two logical-effort-informed ranking heuristics of differing
+aggressiveness, and a logical-effort-free random-greedy baseline. Beyond the
+scope required by the course assignment, the project additionally includes
+(i) a synthetic benchmark generation and evaluation framework that produces
+statistically meaningful sizing-repair problems with a certified best-known
+reference solution and evaluates every heuristic's decisions against an
+independent counterfactual oracle, and (ii) an interactive, browser-based
+topology viewer for visually inspecting a circuit's pre- and
+post-optimization state. A Monte Carlo statistical timing analysis models
+global and local manufacturing process variation and reports the resulting
+delay distribution, timing yield, and critical-path stability before and
+after optimization.
+
+The tool is validated against the fifteen valid and six intentionally
+invalid benchmark circuits supplied with the assignment. Results show that
+logical-effort-guided sizing resolves a substantially larger fraction of
+timing violations than a logical-effort-free random-greedy baseline
+(13 of 14 originally-violating circuits versus 7 of 14), reaches a final
+design cost that is never worse and strictly lower on two-thirds of the
+suite, and does so with fewer total static-timing-analysis calls summed
+across the whole suite. The synthetic benchmark suite provides a statistically
+grounded confirmation of this result across a much larger and more diverse
+population of circuits than the fixed benchmark set alone could support.
+
+\vfill
+\noindent\textbf{Keywords:} static timing analysis, logical effort, gate
+sizing, standard-cell library, VLSI CAD, timing closure, Monte Carlo
+statistical timing analysis, benchmark generation.
+
+\clearpage

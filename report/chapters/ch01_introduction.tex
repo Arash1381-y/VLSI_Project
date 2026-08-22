@@ -1,0 +1,130 @@
+\chapter{Introduction}
+\label{ch:introduction}
+
+\section{Problem Statement}
+\label{sec:intro-problem}
+
+A digital VLSI circuit must satisfy two independent kinds of correctness.
+The first is \emph{logical} correctness: for every legal input combination,
+the circuit must eventually settle to the specified output values. The
+second, and the subject of this report, is \emph{timing} correctness: every
+signal transition must arrive at its destination early enough to be
+correctly captured, and no path in the circuit may take longer than the
+timing budget allotted to it. A circuit that is logically correct but
+functionally simulated only at a handful of input vectors can still fail in
+silicon because some rarely-exercised path violates its timing constraint;
+timing correctness is therefore not amenable to verification by input-vector
+simulation, since the number of paths through a circuit of even modest size
+is combinatorially large and no practical vector set can be guaranteed to
+sensitize the worst one.
+
+\emph{Static timing analysis} (STA) sidesteps this problem entirely. Rather
+than simulating logic values, STA treats the circuit as a directed acyclic
+graph (DAG) of timing arcs and propagates \emph{worst-case} delay through
+that graph, independent of the actual logic values that would appear on any
+particular clock cycle. Every combinational path is implicitly covered by
+construction, because the propagation is a graph traversal over every arc,
+not an enumeration of input vectors. The output of STA is, for every node in
+the circuit, an \emph{arrival time} (the latest moment a signal transition
+can occur at that node) and a \emph{required time} (the latest moment it is
+permitted to occur without violating a downstream constraint); their
+difference is \emph{slack}, and a negative slack anywhere in the circuit is
+a timing violation.
+
+Once a violation is identified, one of the standard ways to close it without
+changing the circuit's logic is \emph{gate sizing}: replacing a violating
+path's gates with larger-drive-strength variants from the same logic family
+in the standard-cell library. A larger gate has lower output resistance and
+therefore a lower propagation delay for the same load, at the cost of a
+larger input capacitance (which increases the load, and hence the delay, of
+whatever gate drives it), a larger area, and higher leakage and dynamic
+power. Because these effects compose across the whole circuit, sizing one
+gate can shift the critical path elsewhere or worsen a previously
+non-critical path, and a purely trial-and-error sizing process is both slow
+and difficult to reason about. \emph{Logical effort} is the theoretical
+framework used in this project to guide that search: it decomposes a path's
+delay into a logic-topology-dependent term (how many stages, and how
+electrically ``expensive'' each stage's logic function is) and an
+electrical-loading term (how much capacitance each stage must drive relative
+to its own size), which together identify \emph{which} gate on a violating
+path is most under-sized for its load and therefore the best candidate for
+resizing.
+
+\section{Project Scope and Deliverables}
+\label{sec:intro-scope}
+
+The assignment specification requires a software tool that, given a gate-level
+netlist, a sized standard-cell library, and a configuration file, must:
+
+\begin{enumerate}
+    \item parse the inputs and validate the netlist's structural
+          correctness, reporting every detected error class distinctly;
+    \item build a combinational DAG and topologically order it;
+    \item compute output load capacitance and propagation delay per gate,
+          separately for rising and falling output transitions;
+    \item perform forward (arrival-time) and backward (required-time)
+          timing propagation, correctly handling positive-unate,
+          negative-unate, and non-unate timing arcs;
+    \item report per-node slack, circuit-level worst negative slack (WNS)
+          and total negative slack (TNS), and the top-$K$ least-slack
+          critical paths;
+    \item perform a logical-effort decomposition of each critical path and
+          use it to guide a search for an improved gate-sizing assignment,
+          honoring area and power budgets;
+    \item estimate power and area before and after optimization;
+    \item compare the logical-effort-guided search against a baseline
+          sizing method that does not use logical effort; and
+    \item (bonus) perform a Monte Carlo statistical timing analysis that
+          models manufacturing process variation.
+\end{enumerate}
+
+\section{Contributions Beyond the Base Assignment}
+\label{sec:intro-contributions}
+
+While the base requirements above were implemented in full, two additional
+components were developed that go beyond what the assignment strictly
+requires, and this report documents them at the same level of detail as the
+required components:
+
+\begin{itemize}
+    \item \textbf{A synthetic benchmark generation and evaluation
+          framework} (\cref{ch:benchmarking}), which programmatically
+          constructs large numbers of controlled, repairable timing-violation
+          scenarios --- including a certified best-known reference solution
+          obtained via multi-start beam search --- and evaluates every
+          sizing heuristic's decisions against an independent counterfactual
+          oracle, reporting statistically rigorous metrics (Wilson
+          confidence intervals on repair rate, decision regret, and
+          stratified breakdowns by circuit size, depth, fan-out, and
+          reconvergence). This addresses a limitation of evaluating sizing
+          heuristics only on the fifteen fixed circuits supplied with the
+          assignment: fifteen circuits are too few to distinguish a
+          genuinely better heuristic from one that simply got lucky on a
+          particular benchmark.
+    \item \textbf{An interactive, browser-based topology viewer}
+          (\cref{ch:viewer}), which renders a circuit's structure with
+          pan/zoom navigation, slack-based coloring, critical-path
+          highlighting, and a toggle between the pre-optimization and
+          post-optimization gate-sizing state of the same circuit.
+\end{itemize}
+
+These additions are clearly delineated from the required deliverables
+throughout this report so that grading against the assignment specification
+remains straightforward.
+
+\section{Report Roadmap}
+\label{sec:intro-roadmap}
+
+\Cref{ch:background} reviews the theoretical background needed to read the
+rest of the report: the STA graph model, the RC delay model, logical effort,
+power/area estimation, and the statistical variation model used for Monte
+Carlo analysis. \Cref{ch:architecture} describes the software architecture
+and the overall data flow, including the figure referenced throughout the
+rest of the report. \Cref{ch:validation,ch:sta,ch:logical-effort,ch:power-area}
+document, in the order they execute, the input pipeline, the STA engine, the
+logical-effort analysis, and the power/area estimator.
+\Cref{ch:optimization} documents the cost function, the four sizing
+heuristics, and their acceptance/termination rules. \Cref{ch:monte-carlo}
+documents the statistical timing analysis. \Cref{ch:benchmarking,ch:viewer}
+document the two extensions described above. \Cref{ch:results} presents
+results on both the fixed and synthetic benchmark suites and \cref{ch:conclusion} concludes.

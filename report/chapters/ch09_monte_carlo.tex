@@ -1,0 +1,62 @@
+\chapter{Monte Carlo Statistical Analysis}
+\label{ch:monte-carlo}
+
+\section{Variation Model}
+\label{sec:mc-model}
+
+Following \cref{eq:mc-delay}, each Monte Carlo sample draws one global
+random variable $Z_g$, shared by every gate in that sample, and one local
+random variable $Z_i$ per gate, drawn independently. Because nominal gate
+delay (\cref{eq:drise,eq:dfall}) is always strictly positive for any
+physically valid cell, a sample is discarded and re-drawn only when the
+\emph{multiplicative} variation factor $1 + \sigma_g Z_g + \sigma_l Z_i$
+itself would be non-positive for some gate --- a condition that can be
+checked without reference to any particular circuit's nominal delay values.
+
+\section{Paired Pre-/Post-Optimization Comparison}
+\label{sec:mc-pairing}
+
+A specific correctness property is enforced by construction: the same set
+of $M$ valid variation samples --- the same sequence of $(Z_g^{(k)},
+Z_i^{(k)})$ draws, including the same accept/reject decisions from the
+resampling rule --- is generated exactly once per run and then applied
+unchanged to \emph{both} the pre-optimization circuit and the
+post-optimization circuit. This is possible precisely because the
+resampling condition above depends only on the variation factor, not on
+any circuit-specific nominal delay, so the same sample set is guaranteed
+valid for both circuits regardless of how their sizing differs. The result
+is a genuinely paired comparison: sample $k$ represents the \emph{same}
+hypothetical manufactured die under both sizing assignments, which is a
+meaningfully stronger guarantee than independently reseeding a random
+number generator for each of the two runs, since two independently-seeded
+runs are only guaranteed to draw identically if they consume randomness in
+exactly the same order and quantity, which is not obviously true once
+resampling is involved and the two circuits' nominal delays differ.
+
+\section{Reported Metrics}
+\label{sec:mc-metrics}
+
+For each of the two paired runs, full STA (\cref{ch:sta}) is re-executed
+once per sample against that sample's perturbed delay set, and the
+following are reported: the mean, standard deviation, minimum, and maximum
+of circuit delay, WNS, and TNS across all samples; the empirical violation
+probability and timing yield (\cref{eq:mc-yield}); the modal (most
+frequently observed) critical path and the fraction of samples on which it
+occurs, as a measure of critical-path stability under variation; and, per
+gate, the empirical probability that it appears on the sample's single most
+critical path, which identifies gates whose criticality is stable versus
+gates that only become critical under specific variation draws.
+
+\section{Interpretation}
+\label{sec:mc-interpretation}
+
+Comparing the pre- and post-optimization statistical summaries answers a
+question that a single, nominal-corner STA run cannot: whether the
+gate-sizing changes made by the optimizer (\cref{ch:optimization}) improved
+robustness to manufacturing variation, not merely the nominal-case WNS/TNS.
+A design can be nominally compliant yet statistically fragile (a high
+violation probability under realistic variation) if its post-optimization
+slack margin is thin; \cref{ch:results} reports this comparison for the
+supplied Monte Carlo-enabled benchmark circuit and discusses whether the
+optimizer's nominal-case improvement translated into a statistically
+meaningful yield improvement.

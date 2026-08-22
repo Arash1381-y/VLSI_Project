@@ -1,0 +1,270 @@
+\chapter{System Architecture}
+\label{ch:architecture}
+
+\section{Design Principles}
+\label{sec:arch-principles}
+
+Three principles shape the implementation described in the remaining
+chapters.
+
+\begin{enumerate}
+    \item \textbf{Immutability of the circuit model.} A \code{Circuit}
+          object, once constructed from a netlist and a specific assignment
+          of cell sizes, is never mutated. Its topological order, per-gate
+          load capacitance, per-gate delay, total area, and total power are
+          computed once, eagerly, at construction time. Resizing a gate does
+          not modify an existing \code{Circuit}; it produces an entirely new
+          \code{Circuit} instance with one gate's cell replaced and every
+          net reference correctly rebuilt. This trades additional memory
+          allocation during optimization (\cref{ch:optimization}, where many
+          candidate resizes are evaluated per iteration) for the elimination
+          of an entire class of bugs in which a trial mutation is
+          incompletely reverted and silently corrupts subsequent analysis.
+    \item \textbf{Separation of static circuit state from one analysis
+          run's results.} A \code{Circuit} describes \emph{what the circuit
+          currently is}: its topology and its currently-assigned sizes. It
+          does not store arrival times, required times, or slack. Those are
+          the output of a separate, pure \code{analyze\_timing} function
+          that takes a \code{Circuit} and a configuration as input and
+          returns a timing-result value. This means the same
+          \code{Circuit} can be analyzed multiple times (for example, once
+          per Monte Carlo sample, or once per stage in a diagnostic sweep)
+          without the results of one analysis leaking into another.
+    \item \textbf{Pure, side-effect-free analysis modules.} STA, logical
+          effort, power/area estimation, and Monte Carlo analysis are each
+          implemented as functions that take immutable inputs and return a
+          new result value, rather than as methods that accumulate state on
+          an object across calls. This makes each module independently
+          testable and makes the overall data flow
+          (\cref{sec:arch-dataflow}) easy to reason about: every stage's
+          inputs are exactly the outputs of the stages before it.
+\end{enumerate}
+
+\section{Module Map}
+\label{sec:arch-modules}
+
+The implementation is organized into eight top-level packages, listed here
+in the order a reader unfamiliar with the codebase should study them ---
+each package depends only on the ones listed above it.
+
+\begin{longtable}{@{}p{0.24\textwidth}p{0.70\textwidth}@{}}
+\toprule
+\textbf{Package} & \textbf{Responsibility} \\
+\midrule
+\endhead
+\code{domain/} &
+  Owns the \code{Cell}, \code{Gate}, \code{Net}, and \code{Circuit} data
+  model, and shared numeric helpers. Every other package depends on this
+  one; it depends on nothing else in the project. \\[4pt]
+\code{input/} &
+  Parses and validates the netlist, standard-cell library, and
+  configuration file, and builds the initial \code{Circuit}
+  (\cref{ch:validation}). \\[4pt]
+\code{analysis/} &
+  Static timing analysis, logical-effort path
+  analysis, and Monte Carlo statistical analysis
+  (\cref{ch:sta,ch:logical-effort,ch:monte-carlo}). \\[4pt]
+\code{optimization/} &
+  The cost function, the four gate-sizing heuristics, and the optimizer
+  driver loop (\cref{ch:optimization}). \\[4pt]
+\code{reporting/} &
+  Serializes every analysis result to the on-disk output contract (CSV,
+  JSON, and PNG artifacts), including the topology export consumed by the
+  interactive viewer. \\[4pt]
+\code{app/} &
+  Coordinates a full single-circuit run end to end and exposes the
+  unified command-line interface. \\[4pt]
+\code{benchmarking/} &
+  The synthetic benchmark generation and evaluation framework
+  (\cref{ch:benchmarking}). \\[4pt]
+\code{viewer/} &
+  The interactive topology viewer's local server and static front-end
+  assets (\cref{ch:viewer}). \\
+\bottomrule
+\end{longtable}
+
+\section{Key Classes and Public API}
+\label{sec:arch-api}
+
+Before tracing the data flow (\cref{sec:arch-dataflow}), it is worth naming
+the concrete classes and functions each phase is built from, since the
+remainder of this report refers to them by name rather than only
+describing their behavior in prose. \Cref{tab:arch-domain-api} lists the
+core data model (\code{domain/}); the analysis, optimization, and reporting
+entry points are listed at the start of their respective chapters
+(\cref{ch:sta,ch:logical-effort,ch:optimization,ch:monte-carlo}).
+
+\begin{longtable}{@{}p{0.30\textwidth}p{0.62\textwidth}@{}}
+\toprule
+\textbf{Class / function} & \textbf{Role} \\
+\midrule
+\endhead
+\code{Cell}, \code{InputPin}, \code{RiseFall} &
+  Frozen dataclasses holding one library cell's characterization data:
+  \code{name}, \code{family}, \code{size}, \code{size\_factor},
+  \code{num\_inputs}, \code{input\_pins}, \code{timing\_sense},
+  \code{intrinsic\_delay}, \code{output\_resistance},
+  \code{internal\_capacitance}, \code{parasitic\_delay},
+  \code{leakage\_power}, \code{area}. Constructed and validated by
+  \code{Cell.from\_dict(name, data)}. \\[4pt]
+\code{CellLibrary(Mapping[\newline str, Cell])} &
+  Parses \code{cell\_library.json} in \code{\_\_init\_\_(path)} and exposes
+  cells as a read-only mapping. Key methods: \code{find(name)},
+  \code{variants(family)}, and \code{sizing\_candidates(family,\allowbreak
+  input\_pin,target\_ capacitance)} (\cref{sec:le-candidates}). \\[4pt]
+\code{Net}, \code{Gate} &
+  Frozen dataclasses describing structural connectivity, independent of
+  which cell size is assigned: \code{Net} holds \code{driver} and
+  \code{loads: tuple[(pin, gate\_name), ...]}; \code{Gate} holds
+  \code{cell\_family}, \code{inputs}, \code{output}. \\[4pt]
+\code{PathStep}, \code{CircuitPath} &
+  \code{PathStep(gate, input\_pin)} is one gate traversal through a
+  specific pin; \code{CircuitPath} is an ordered tuple of steps between a
+  primary input and a primary output, exposing \code{.gates} as a derived
+  property. \\[4pt]
+\code{NetListParser} &
+  \code{\_\_init\_\_(netlist\_path, cell\_library)}; \code{parse()} returns
+  \code{(nets, gates, cell\_assignment)} after performing every structural
+  check of \cref{tab:error-classes}. \\[4pt]
+\code{CircuitTopology} &
+  Frozen, cell-assignment-independent structure
+  (\code{netlist}, \code{gates}, \code{topological\_order}), built once by
+  \code{CircuitTopology.create(netlist, gates)} and shared by every sizing
+  variant of the same circuit. \\[4pt]
+\code{Circuit} &
+  One immutable cell-sizing assignment over a shared topology.
+  \code{\_\_init\_\_(netlist, gates, gate\_cells, config, cell\_library)}
+  eagerly computes area, power, fan-out capacitances, and gate delays.
+  Query methods: \code{cell\_for(gate)}, \code{input\_net(gate,pin)},
+  \code{output\_net(gate)}. \code{with\_gate\_cell(gate\_name, replacement)}
+  returns a new \code{Circuit} with one gate resized, reusing the shared
+  topology and updating only the affected metrics incrementally
+  (\cref{sec:opt-eval}). \\[4pt]
+\code{replace\_gate\_cell(\newline circuit, gate\_name, replacement)} &
+  Module-level convenience wrapper around
+  \code{Circuit.with\_gate\_cell}. \\[4pt]
+\code{replacement\_area\_and \newline \_power(circuit, gate\_name, replacement)} &
+  Returns the \emph{delta}-updated $(A_{\mathrm{total}}, P_{\mathrm{total}})$
+  a candidate resize would produce \emph{without} constructing a full
+  \code{Circuit} variant --- used by the optimizer as a cheap pre-filter before paying for a
+  full STA re-run. \\[4pt]
+\code{Config} &
+  \code{\_\_init\_\_(path)} validates \code{config.json} in full
+  (\cref{sec:val-config}) and exposes typed sub-configurations
+  (\code{TimingAnalysisConfig}, \code{OperatingConditions},
+  \code{DesignConstraints}, \code{OptimizationConfig},
+  \code{MonteCarloConfig}) plus per-net accessor methods
+  \code{output\_load(net)}, \code{input\_arrival(net)},
+  \code{output\_required(net)}, \code{activity\_factor(node)}. \\
+\bottomrule
+\caption{Core data-model classes in \texttt{domain/} and \texttt{input/},
+used throughout the rest of this report.}
+\label{tab:arch-domain-api}
+\end{longtable}
+
+\section{End-to-End Data Flow}
+\label{sec:arch-dataflow}
+
+\Cref{fig:dataflow} shows the complete pipeline for a single circuit, from
+its two input files through to the reported outputs, annotated with the
+governing equation at each stage. The pipeline has five clearly separated
+phases: (1) parsing and structural validation (\code{NetListParser.parse},
+\code{Config.\_\_init\_\_}), which either rejects the
+circuit outright or produces a validated \code{Circuit}; (2) static timing
+analysis (\code{analyze\_timing}, \cref{ch:sta}), itself split into a forward pass (arrival time), a backward pass
+(required time), and their combination into slack, WNS/TNS, and the top-$K$
+critical paths; (3) logical-effort analysis
+(\code{analyze\_path\_logical\_effort}, \cref{ch:logical-effort}) of those critical paths; (4) the
+optimization loop (\code{CircuitOptimizer.optimize}), which repeatedly proposes a gate resize, evaluates it
+with a full re-run of phase (2), and accepts or rejects it according to the
+cost function and termination rules of \cref{ch:optimization}; and (5)
+Monte Carlo statistical analysis (\code{run\_monte\_carlo}) and report generation. Phases (1)--(5) are
+driven end to end by \code{Experiments.run(circuit)}
+(\code{app/experiments.py}), which dispatches to one handler function per
+named experiment in the fixed order given by \code{DEFAULT\_EXPERIMENTS}:
+\code{fanout\_capacitances}, \code{gate\_delays}, \code{timing\_analysis},
+\code{logical\_ effort\_analysis}, \code{optimization},
+\code{topology\_export}, \code{visualization}, \code{monte\_carlo}, and
+\code{summary} --- an explicit, literal ordering that doubles as the most
+authoritative statement of the pipeline's dependency order.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.97\textwidth]{Architecture}
+    \caption{End-to-end data flow of the analyzer, from input files to
+    reported outputs.}
+    \label{fig:dataflow}
+\end{figure}
+
+\section{Command-Line Interface and Output Contract}
+\label{sec:arch-cli}
+
+The command-line entry point is \code{app/cli.py:main(argv)}, which builds
+its parser via \code{build\_argument\_parser()} and delegates to
+\code{app/application.py:run\_application(argv)}. That function performs,
+in order: \code{setup\_logging(verbose, log\_path)}; input loading via
+\code{load\_circuit(arguments)} (which internally parses the configuration,
+cell library, and netlist, and constructs the initial \code{Circuit}); and,
+if loading succeeds, \code{run\_experiments(circuit, netlist\_path,
+output\_dir)}, which constructs an \code{Experiments} instance
+(\cref{sec:arch-dataflow}) and calls its \code{run(circuit)} method. A
+single circuit is analyzed with:
+
+\begin{lstlisting}[language=bash, style=pythonstyle, numbers=none]
+./run_circuit.sh c01_inverter_chain
+\end{lstlisting}
+
+which writes an independent, self-contained directory
+\code{outputs/c01\_inverter\_chain/} containing every artifact listed in
+\cref{tab:output-contract}. Invalid inputs produce only
+\code{validation\_report .json} and \code{run.log}, and the process exits
+with a nonzero status without attempting any timing analysis, so that a
+downstream script (or the batch mode, \code{run\_circuit.sh --all}) can
+mechanically distinguish an analyzed circuit from a rejected one.
+
+\begin{longtable}{@{}p{0.34\textwidth}p{0.60\textwidth}@{}}
+\toprule
+\textbf{Artifact} & \textbf{Contents} \\
+\midrule
+\endhead
+\code{validation\_report.json}, \code{run.log} &
+  Structured input-validation result and the complete execution log. \\[3pt]
+\code{fanout\_capacitances.csv}, \code{gate\_delays.csv} &
+  One row per gate, topologically ordered: output load and rise/fall
+  delay. \\[3pt]
+\code{timing\_analysis.csv} &
+  One row per gate: load, rise/fall delay, arrival time, required time,
+  transition slack, and overall node slack. \\[3pt]
+\code{timing\_summary.csv}, \code{critical\_paths.csv} &
+  Circuit delay, WNS, TNS, compliance flag, and the top-$K$ critical
+  paths. \\[3pt]
+\code{logical\_effort\_paths/ stages/candidates.csv} &
+  Path-level ($G,B,H,F,P$), stage-level, and discrete-candidate logical
+  effort records. \\[3pt]
+\code{optimization\_*.csv}, \code{optimization\_comparison.csv} &
+  Complete iteration histories for every heuristic and their head-to-head
+  comparison. \\[3pt]
+\code{circuit\_graph\_\{pre,post\}\_ optimization.png} &
+  Slack-colored circuit diagrams with the critical path highlighted. \\[3pt]
+\code{circuit\_topology.json} &
+  Versioned graph contract consumed by the interactive viewer
+  (\cref{ch:viewer}). \\[3pt]
+\code{monte\_carlo\_*.csv}, \code{monte\_carlo\_summary.json} &
+  Paired pre-/post-optimization statistical timing results
+  (\cref{ch:monte-carlo}), or an explicit ``skipped'' summary when
+  disabled. \\[3pt]
+\code{summary.json} &
+  Aggregate summary for the circuit. \\
+\bottomrule
+\caption{Output contract produced for every successfully analyzed
+circuit.}
+\label{tab:output-contract}
+\end{longtable}
+
+\newpage
+All CSV column names carry explicit units (\code{\_ns}, \code{\_fF},
+\code{\_uW}); all numeric computation and serialization retain full
+floating-point precision, with rounding applied only when a value is
+formatted for a plot label, so that downstream tooling never operates on
+already-rounded intermediate values.
+
