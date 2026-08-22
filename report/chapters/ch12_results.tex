@@ -778,24 +778,3 @@ post-optimization diagram, convergence trace, and outcomes summary --- is
 generated for every one of the fifteen valid benchmark circuits;
 Appendix \ref{app:full-figures} reproduces the complete set for systematic
 reference.
-
-\section{Summary}
-\label{sec:res-summary}
-
-Across the fixed benchmark suite, the logical-effort-guided canonical
-heuristic (slack weighted capacitance) resolved timing violations on
-$13/14$ originally-violating circuits, versus $7/14$ for the
-logical-effort-free random-greedy baseline, while simultaneously issuing
-fewer total STA calls (119 versus 155) and reaching a strictly lower final
-cost on ten of fifteen circuits (tying on the remaining five, and never
-losing on any). The second logical-effort-informed
-heuristic, criticality effort gap, performs comparably to the canonical
-method on all but one circuit, where its different ranking signal misses a
-repair that slack-weighted capacitance finds. The one Monte
-Carlo-instrumented circuit shows that the nominal-case timing improvement
-from optimization corresponds to a substantial real improvement in
-statistical timing yield, and that the identity of the critical path itself
-can shift as a result of sizing changes. These fixed-suite results are
-necessarily based on a small number of circuits; \cref{sec:res-benchmarking}
-reports the corresponding, statistically stronger comparison on the
-synthetic benchmark suite once completed.
